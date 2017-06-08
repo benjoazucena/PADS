@@ -1,0 +1,882 @@
+<!doctype html>
+<html class="no-js" lang="en">
+
+    <head>
+    <!-- IMPORTS -->
+
+    <script src='js/jquery.min.js'></script>
+    <script src='js/jquery-ui.min.js'></script>
+    <link rel="stylesheet" href="css/bootstrap.css">
+    <script src="js/bootstrap.min.js"></script>
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+   
+		<link href='css/fullcalendar.css' rel='stylesheet' />
+ 
+
+    <link href='calendar/fullcalendar.print.css' rel='stylesheet' media='print' />
+	 <link href='css/vendor.css' rel='stylesheet' />
+	<script src='calendar/lib/moment.min.js'></script>
+	<script src='calendar/fullcalendar.min.js'></script>
+	
+	<script type="text/javascript" src="js/jspdf.min.js"></script>
+	<!-- END IMPORTS -->
+	
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title> PAASCU - Accreditation Schedule Manager </title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        
+        <!-- Place favicon.ico in the root directory -->
+        
+        <!-- Theme initialization -->
+        <script>
+            var themeSettings = (localStorage.getItem('themeSettings')) ? JSON.parse(localStorage.getItem('themeSettings')) :
+            {};
+            var themeName = themeSettings.themeName || '';
+            if (themeName)
+            {
+                document.write('<link rel="stylesheet" id="theme-style" href="css/app-' + themeName + '.css">');
+            }
+            else
+            {
+            	document.write('<link rel="stylesheet" id="theme-style" href="css/app.css">');
+            }
+			
+			function delayDelete(id,delay)
+			{
+				setTimeout( function() { deleteEvent(id); }, delay );
+			}
+
+			function deleteEvent(id){
+			$('#calendar').fullCalendar( 'removeEvents', id );
+			}
+        </script>
+
+
+
+<script>
+	var past = 'rgb(12, 48, 107)';
+	var complete = 'rgb(0, 119, 29)';
+	var incomplete = 'rgb(91, 9, 9)';
+		
+	$(document).ready(function() {
+		
+		$("[data-toggle='tooltip']").tooltip(); 
+		
+		/* initialize the external events
+		-----------------------------------------------------------------*/
+
+		$('#external-events .fc-event').each(function() {
+
+			// store data so the calendar knows to render an event upon drop
+			$(this).data('event', {
+				title: $.trim($(this).text()), // use the element's text as the event title
+				stick: true // maintain when user navigates (see docs on the renderEvent method)
+			});
+
+			// make the event draggable using jQuery UI
+			$(this).draggable({
+				zIndex: 9999,
+				revert: true,      // will cause the event to go back to its
+				revertDuration: 0  //  original position after the drag
+			});
+
+		});
+
+		
+		$('#calendar').fullCalendar({
+			header: {
+				left: 'prev,next today',
+				center: 'title',
+				right: 'month,basicWeek,basicDay'
+			},
+			defaultDate: '2016-09-12',
+			navLinks: true, // can click day/week names to navigate views
+			editable: true,
+			droppable: true, // this allows things to be dropped onto the calendar
+			drop: function() {
+					$(this).remove();
+				}
+			,
+			eventDrop: function(event, delta, revertFunc) {
+		        alert(event.title + " was dropped on " + event.start.format());
+		    },
+		    eventReceive: function(event) {
+		        alert(event.title + " was dropped on " + event.start.format());
+		    },
+		    eventRender: function(event, element) {
+				
+				if(event.status == "unconfirmed"){
+					element.append("<button class='closeon btn btn-sm btn-link' data-toggle='tooltip' data-placement='top' title='Delete'><i class='fa fa-trash' aria-hidden='true'></i></button><button class='btn btn-sm btn-link' data-toggle='tooltip' data-placement='top' title='Not confirmed.'><i class='fa fa-exclamation' aria-hidden='true' ></i> </button>");
+				} else{
+					element.append("<button class='closeon btn btn-sm btn-link' data-toggle='tooltip' data-placement='top' title='Delete'><i class='fa fa-trash' aria-hidden='true'></i></button>");
+				}
+				$('[data-toggle="tooltip"]').tooltip(); 
+	            element.find(".closeon").click(function() {
+					if(confirm("Are you sure?")) {
+						alert(event.title + " was removed.");
+						$('#calendar').fullCalendar('removeEvents',event._id);
+					}
+	            });
+				$('[data-toggle="tooltip"]').tooltip(); 
+	        },
+	        
+			eventClick: function(event, jsEvent, view){
+				var add = "";
+				
+				$('#modalTitle').html(event.title + "<a class='btn btn-oval btn-sm btn-secondary'style='position: releative;float:right; right:10px; ' href='confirmationPage.html'>Go to confirmation page</a>");
+	            $('#modalBody').html("<div style='width: 49%; float:left;'><h4>Date: " + event.start.format() + "</h4><h4>Institutions: De La Salle University</h4></div>");
+	            
+	            add += ("<button class='btn btn-sm btn-info' data-toggle='collapse' data-target='#reports' style='float:right;'><i class='fa fa-folder-open'></i> Reports</button>");
+	            add += ("<div style='width: 49%; float:right;' id='reports' class='collapse'><div style='float:right; width: 40%;'><button class='btn btn-link btn-sm' onclick='generateTeam()' data-toggle='tooltip' data-placement='left' title='This will generate a ready-to-print PDF file of the team line up for this survey.'><i class='fa fa-file-pdf-o'></i> Team Line Up</button><label class='btn btn-link btn-sm' data-toggle='tooltip' data-placement='left' title='This will let you upload the Team Recommendations file the accreditors have filled up after the visit.'><i class='fa fa-upload'></i> Team Recommendation <input style='display:none;' type='file'></label><button class='btn btn-link btn-sm' data-toggle='tooltip' data-placement='left' title='This will let you download a copy of the survey details.'><i class='fa fa-download'></i> Survey Details</button></div></div>");
+	            add += ("<br><br><br><hr><div><h4>Programs and Proponents</h4><ul class='list-group'>");
+	            
+	            add += ("<li class='list-group-item'><label>Computer Science - Formal Visit</label><button class='btn btn-link btn-sm' style='float:right;' data-toggle='tooltip' title='This will delete the whole program currently associated with the visit.'><i class='fa fa-times'></i> Delete</button><button class='btn btn-link btn-sm' style='float:right;' data-toggle='tooltip' title='This will take you to another page that will let you edit the proponents currently associated with the program and their areas. It will also allow you to change the type of the visit.'><i class='fa fa-pencil-square-o'></i> Edit</button>");
+	            add += ("<br><br><table class='table'>");
+	            add += ("<thead><tr><th style='width: 20%;'>Name</th> <th style='width: 50%;'>Area</th> <th style='width: 30%;'>Specify Availability</th></tr></thead>");
+	            add += ("<tbody>"); 
+	            add += ("<tr class='success'><td><a href='accreditorsProfile.html' data-toggle='tooltip' title='This will take you to the accreditor page.'>Nelson, Marcos</a></td><td>Instruction, Faculty</td><td><button class='btn btn-link btn-sm'><i class='fa fa-thumbs-o-down'></i> Not Available</button><button class='btn btn-link btn-sm'><i class='fa fa-thumbs-o-up'></i> Available</button></td></tr>");
+	            add += ("<tr class='danger'><td><a href='accreditorsProfile.html' data-toggle='tooltip' title='This will take you to the accreditor page.'>Basilio, Mikko</a></td><td>Administration, Community Involvement</td><td><button class='btn btn-link btn-sm'><i class='fa fa-thumbs-o-down'></i> Not Available</button><button class='btn btn-link btn-sm'><i class='fa fa-thumbs-o-up'></i> Available</button></td></tr>");
+	            add += ("<tr><td><a href='accreditorsProfile.html' data-toggle='tooltip' title='This will take you to the accreditor page.'>Azucena, Benjo</a></td><td>Laboratories, Libraries, Student Services</td><td><button class='btn btn-link btn-sm'><i class='fa fa-thumbs-o-down'></i> Not Available</button><button class='btn btn-link btn-sm'><i class='fa fa-thumbs-o-up'></i> Available</button></td></tr>");
+	            add += ("</tbody>");
+	            add += ("</table></tl>");
+	            
+	            add += ("<li class='list-group-item'><label>Computer Engineering - Resurvey Visit</label><button class='btn btn-link btn-sm' style='float:right;' data-toggle='tooltip' title='This will delete the whole program currently associated with the visit.'><i class='fa fa-times'></i> Delete</button><button class='btn btn-link btn-sm' style='float:right;' data-toggle='tooltip' title='This will take you to another page that will let you edit the proponents currently associated with the program and their areas. It will also allow you to change the type of the visit.'><i class='fa fa-pencil-square-o'></i> Edit</button>");
+	            add += ("<br><br><table class='table'>");
+	            add += ("<thead><tr><th style='width: 20%;'>Name</th> <th style='width: 50%;'>Area</th> <th style='width: 30%;'>Specify Availability</th></tr></thead>");
+	            add += ("<tbody>"); 
+	            add += ("<tr class='success'><td><a href='accreditorsProfile.html' data-toggle='tooltip' title='This will take you to the accreditor page.'>Nelson, Marcos</a></td><td>Instruction, Faculty</td><td><button class='btn btn-link btn-sm'><i class='fa fa-thumbs-o-down'></i> Not Available</button><button class='btn btn-link btn-sm'><i class='fa fa-thumbs-o-up'></i> Available</button></td></tr>");
+	            add += ("<tr class='success'><td><a href='accreditorsProfile.html' data-toggle='tooltip' title='This will take you to the accreditor page.'>Basilio, Mikko</a></td><td>Administration, Community Involvement</td><td><button class='btn btn-link btn-sm'><i class='fa fa-thumbs-o-down'></i> Not Available</button><button class='btn btn-link btn-sm'><i class='fa fa-thumbs-o-up'></i> Available</button></td></tr>");
+	            add += ("<tr class='success'><td><a href='accreditorsProfile.html' data-toggle='tooltip' title='This will take you to the accreditor page.'>Azucena, Benjo</a></td><td>Laboratories, Libraries, Student Services</td><td><button class='btn btn-link btn-sm'><i class='fa fa-thumbs-o-down'></i> Not Available</button><button class='btn btn-link btn-sm'><i class='fa fa-thumbs-o-up'></i> Available</button></td></tr>");
+	            add += ("</tbody>");
+	            add += ("</table></tl>");
+	            
+	            add += ("</ul></div>");
+	            $('#modalBody').append(add);
+	            $('#fullCalModal').modal();
+	            $('[data-toggle="tooltip"]').tooltip(); 
+			},
+			eventLimit: true, // allow "more" link when too many events
+			
+			// EVENTS COLORS
+			// Past = rgb(118, 212, 245)
+			// Not Complete = rgb(238, 116, 116)
+			// Complete =  rgb(133, 206, 54)
+			//past, incomplete, complete
+			
+			events: [
+				{	id:1,
+					title: 'try',
+					start: '2016-09-01',
+					backgroundColor: past,
+					status: 'unconfirmed'
+				},
+				{
+					title: 'Ateneo - Katipunan',
+					start: '2016-09-11',
+					backgroundColor: past,
+					status: 'unconfirmed'
+				},
+				{
+					title: 'Ateneo - Davao',
+					start: '2016-09-22',
+					backgroundColor: past,
+					status: 'unconfirmed'
+				},
+				{
+					title: 'ESS - Main',
+					start: '2016-09-06',
+					backgroundColor: past,
+					status: 'unconfirmed'
+				},
+				{
+					title: 'DLSU - Manila',
+					start: '2016-10-12',
+					backgroundColor: incomplete,
+					status: 'incomplete'
+					
+				},
+				{
+					title: 'DLSU - Dasma',
+					start: '2016-10-12',
+					backgroundColor: complete,
+					status: 'complete'
+				},
+				{
+					title: 'DLSU - Canlubang',
+					start: '2016-10-12',
+					backgroundColor: complete,
+					status: 'complete'
+				},
+				{
+					title: 'PCU - Dasma',
+					start: '2016-10-15',
+					backgroundColor: complete,
+					status: 'complete'
+				},
+				{
+					title: 'CEU - Manila',
+					start: '2016-10-10',
+					backgroundColor: complete,
+					status: 'complete'
+				},
+				{
+					title: 'CEU - Dasma',
+					start: '2016-10-16',
+					backgroundColor: complete,
+					status: 'complete'
+				},
+				{
+					title: 'UE - Manila',
+					start: '2016-10-18',
+					backgroundColor: complete,
+					status: 'complete'
+				},
+				{
+					title: 'UE - Dasma',
+					start: '2016-10-21',
+					backgroundColor: complete,
+					status: 'complete'
+				},
+				{
+					title: 'FEU - Manila',
+					start: '2016-10-06',
+					backgroundColor: complete,
+					status: 'complete'
+				},
+				{
+					title: 'FEU - Caloocan',
+					start: '2016-10-25',
+					backgroundColor: complete,
+					status: 'complete'
+				}
+			],
+			
+			
+	        eventTextColor: 'white'
+		});
+		
+	});
+$('[data-toggle="tooltip"]').tooltip(); 
+function addAlert(asd){
+	$('#section').append('<div class="alert alert-success"><a class="close" data-dismiss="alert" aria-label="close">&times;</a><strong>Success!</strong> Successfully added survey called: '+asd +'.</div> <br>');
+}
+
+function addSurvey(){
+	var sysVar = document.getElementById("systemForm").value;
+	var instVar = document.getElementById("institutionForm").value;
+	
+	
+	$('#external-events').append('<div class="fc-event ui-draggable ui-draggable-handle" data-event="{\"title\":\"' + sysVar + '\"}">' + instVar + '</div> <br>');
+	$('#external-events .fc-event').each(function() {
+
+		// store data so the calendar knows to render an event upon drop
+		$(this).data('event', {
+			title: $.trim($(this).text()), // use the element's text as the event title
+			backgroundColor: incomplete,
+			stick: true // maintain when user navigates (see docs on the renderEvent method)
+		});
+
+		// make the event draggable using jQuery UI
+		$(this).draggable({
+			
+			revert: true,      // will cause the event to go back to its
+			revertDuration: 0  //  original position after the drag
+		});
+
+	});
+	$('#systemForm').value = "";
+	$('#institutionForm').value = "" ;
+	
+
+}
+
+    jsPDF.API.align = function(txt, options, x, y) {
+        options = options ||{};
+        /* Use the options align property to specify desired text alignment
+         * Param x will be ignored if desired text alignment is 'center'.
+         * Usage of options can easily extend the function to apply different text 
+         * styles and sizes 
+        */
+        if( options.align == "center" ){
+            // Get current font size
+            var fontSize = this.internal.getFontSize();
+
+            // Get page width
+            var pageWidth = this.internal.pageSize.width;
+
+            // Get the actual text's width
+            /* You multiply the unit width of your string by your font size and divide
+             * by the internal scale factor. The division is necessary
+             * for the case where you use units other than 'pt' in the constructor
+             * of jsPDF.
+            */
+            txtWidth = this.getStringUnitWidth(txt)*fontSize/this.internal.scaleFactor;
+
+            // Calculate text's x coordinate
+            x = ( pageWidth - txtWidth ) / 2;
+        }
+
+        // Draw text at x,y
+        this.text(txt,x,y);
+    };
+
+
+function generateTeam(){
+	
+	
+	var pdf = new jsPDF('p', 'mm', 'a4');
+	pdf.setFontSize(12);
+    pdf.align("SURVEY TEAM",{align: "center"},0,20);
+    pdf.align("FOR",{align: "center"},0,25);
+    pdf.setFontType("bold");
+    pdf.align("De La Salle - University - Manila",{align: "center"},0,30);
+    pdf.setFontType("normal");
+    pdf.align("Metro Manila",{align: "center"},0,35);
+    pdf.setFontType("bold");
+    pdf.align("Computer Science - Formal Visit",{align: "center"},0,45);
+    pdf.align("Computer Engineering - Resurvey Visit",{align: "center"},0,50);
+    pdf.setFontType("normal");
+    pdf.align("October 10, 2016",{align: "center"},0,60);
+    pdf.text("Staff Chair Person", 30, 70);
+    pdf.setFontType("bold");
+    pdf.text(": Nelson, Marcos", 120, 70);
+    pdf.setFontType("normal");
+    pdf.text(": Co-Chair", 120, 75);
+    pdf.text(": PAASCU Commission on Engineering", 120, 80)
+    pdf.text(": (CECSTE)", 120, 85)
+    
+    pdf.setFontType("bold");
+    pdf.align("Computer Science - Formal Visit",{align: "center"},0,95)
+    
+    pdf.setFontType("normal");
+    pdf.text("Instruction, Faculty", 30, 105);
+    pdf.setFontType("bold");
+    pdf.text(": Nelson, Marcos", 120, 105)
+    pdf.setFontType("normal");
+    pdf.text(": Co-Chair", 120, 110);
+    pdf.text(": PAASCU Commission on Engineering", 120, 115)
+    pdf.text(": (CECSTE)", 120, 120)
+    
+    pdf.text("Administration, Community Involvement", 30, 130);
+    pdf.setFontType("bold");
+    pdf.text(": Basilio, Mikko Pogi", 120, 130)
+    pdf.setFontType("normal");
+    pdf.text(": Student", 120, 135);
+    pdf.text(": DLSU - Manila", 120, 140)
+    pdf.text(": (CCS)", 120, 145)
+    
+    pdf.text("Laboratories, Libraries, Student Services", 30, 155);
+    pdf.setFontType("bold");
+    pdf.text(": Azucena, Benedict", 120, 155)
+    pdf.setFontType("normal");
+    pdf.text(": Student", 120, 160);
+    pdf.text(": DLSU - Manila", 120, 165)
+    pdf.text(": (CCS)", 120, 170)
+	
+    pdf.setFontType("bold");
+    pdf.align("Computer Engineering - Resurvey Visit",{align: "center"},0,180)
+    
+    pdf.setFontType("normal");
+    pdf.text("Instruction, Faculty", 30, 190);
+    pdf.setFontType("bold");
+    pdf.text(": Nelson, Marcos", 120, 190)
+    pdf.setFontType("normal");
+    pdf.text(": Co-Chair", 120, 195);
+    pdf.text(": PAASCU Commission on Engineering", 120, 200)
+    pdf.text(": (CECSTE)", 120, 205)
+    
+    pdf.text("Administration, Community Involvement", 30, 215);
+    pdf.setFontType("bold");
+    pdf.text(": Basilio, Mikko Pogi", 120, 215)
+    pdf.setFontType("normal");
+    pdf.text(": Student", 120, 220);
+    pdf.text(": DLSU - Manila", 120, 225)
+    pdf.text(": (CCS)", 120, 230)
+    
+    pdf.text("Laboratories, Libraries, Student Services", 30, 240);
+    pdf.setFontType("bold");
+    pdf.text(": Azucena, Benedict", 120, 240)
+    pdf.setFontType("normal");
+    pdf.text(": Student", 120, 245);
+    pdf.text(": DLSU - Manila", 120, 250)
+    pdf.text(": (CCS)", 120, 255)
+    
+    pdf.text("PAASCU Representative: ", 30, 265);
+    pdf.setFontType("bold");
+    pdf.text(": N/A", 120, 265)
+    pdf.save('Team line up.pdf');
+}
+
+</script>
+
+<style>
+
+	#contenthole{
+		-webkit-box-shadow: 0px 4px 13px -4px rgba(0,0,0,0.5);
+		-moz-box-shadow: 0px 4px 13px -4px rgba(0,0,0,0.5);
+		box-shadow: 0px 4px 13px -4px rgba(0,0,0,0.5);
+		padding:10px;
+		background-color: #f8f8f8;
+	}
+
+	
+	#smarttable th, #smarttable td {		
+		text-align: left;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;	}
+		
+	#smarttable th{
+		background-color:#85CE36;
+		color:#3c4731;
+		font-size:110%;		}
+
+	#smarttable td{
+		padding:15px;
+		padding-left:10px;
+		border: none;
+		color:#3c4731;		}
+
+
+	#smarttable tr:nth-child(even){
+		background-color:#e6f2da;}
+	
+	.container{
+		width: 125%;
+		overflow:hidden;
+		display:block;
+		height: 130px;
+	
+		margin-left:-15px;}
+		
+	#smarttable tr:hover {
+		background: rgba(255,255,255,1);
+		background: -moz-linear-gradient(top, rgba(255,255,255,1) 0%, rgba(246,246,246,1) 47%, rgba(237,237,237,1) 100%);
+		background: -webkit-gradient(left top, left bottom, color-stop(0%, rgba(255,255,255,1)), color-stop(47%, rgba(246,246,246,1)), color-stop(100%, rgba(237,237,237,1)));
+		background: -webkit-linear-gradient(top, rgba(255,255,255,1) 0%, rgba(246,246,246,1) 47%, rgba(237,237,237,1) 100%);
+		background: -o-linear-gradient(top, rgba(255,255,255,1) 0%, rgba(246,246,246,1) 47%, rgba(237,237,237,1) 100%);
+		background: -ms-linear-gradient(top, rgba(255,255,255,1) 0%, rgba(246,246,246,1) 47%, rgba(237,237,237,1) 100%);
+		background: linear-gradient(to bottom, rgba(255,255,255,1) 0%, rgba(246,246,246,1) 47%, rgba(237,237,237,1) 100%);
+		filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#ededed', GradientType=0 );
+
+		-webkit-box-shadow: inset 0px 1px 5px 0px rgba(0,0,0,0.49);
+		-moz-box-shadow: inset 0px 1px 5px 0px rgba(0,0,0,0.49);
+		box-shadow: inset 0px 1px 5px 0px rgba(0,0,0,0.49);
+		cursor: pointer;}
+
+	#bgvid{
+		position:relative;
+		top:-400px;
+		margin-top:0px;
+		width:115%	}
+
+	body {		
+		font-family: "Lucida Grande",Helvetica,Arial,Verdana,sans-serif;
+		font-size: 14px;	}
+
+	#calendar {
+		max-width: 900px;
+		margin: 0 auto;	
+		z-index:21;
+		}
+		
+	#bg{
+		height: 640px;
+		position:fixed;	}
+	
+	#main{
+		position:relative;
+		top:-290px;	}
+	
+	#pnum_danger,#pnum_info,#pnum_warning,#pnum_primary{
+		font-size:75px; 
+		text-align:center;
+		margin-left: -2px;
+		padding: 0;
+		
+		line-height:85px;	}
+		
+	#pnum_danger{
+	color:#ff2b2b;	}
+	
+	#pnum_warning{
+		color:#fe8832;	}
+	
+	#pnum_info{
+		color:#5ecdf3;	}
+	
+	#pnum_primary{
+		color:#85CE36;	}
+	
+	#psub{
+		font-size:17px; 
+		color:#bcbcbc;
+		text-align:center;
+		margin-top: 6px;
+		padding: 0;
+		line-height:20px;	}
+	
+	#bc {
+		color:white;	}
+	
+	#bc:hover { 
+		color:#85CE36;	}
+	
+	#welcome{
+		position:relative;
+		top:-65px;
+		color:white;
+		left:20px;
+		font-family:Existence-Light;	}
+		
+	.h1{
+		font-size:100%;	}
+	
+	@font-face {
+		font-family: Existence-Light;
+		src: url(fonts/Roboto-Thin.ttf);}
+		
+	@font-face {
+		font-family: Existence-Medium;
+		src: url(fonts/Roboto-Regular.ttf);	}
+			
+	#notifcard{
+		-webkit-box-shadow: 0px 1px 5px 0px rgba(50, 50, 50, 0.58);
+		-moz-box-shadow:    0px 1px 5px 0px rgba(50, 50, 50, 0.58);
+		box-shadow:         0px 1px 5px 0px rgba(50, 50, 50, 0.58);
+		width:87%;
+		left:15px;	}
+	
+	#customheader{
+		overflow:hidden;
+		top:122px;  
+		height:10px; 
+		-webkit-box-shadow: 0px 2px 6px 2px rgba(50, 50, 50, 0.58);
+		-moz-box-shadow:    0px 2px 6px 2px rgba(50, 50, 50, 0.58);
+		box-shadow:         0px 2px 7px 2px rgba(50, 50, 50, 0.58); 
+		font-family:Existence-Medium;
+		color:#f4f4f4;
+		font-size:90%;
+		/* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#e2e2e2+0,dbdbdb+50,d1d1d1+51,fefefe+100;Grey+Gloss+%231 */
+		background: rgb(226,226,226); /* Old browsers */
+		background: -moz-linear-gradient(top,  rgba(226,226,226,1) 0%, rgba(219,219,219,1) 50%, rgba(209,209,209,1) 51%, rgba(254,254,254,1) 100%); /* FF3.6-15 */
+		background: -webkit-linear-gradient(top,  rgba(226,226,226,1) 0%,rgba(219,219,219,1) 50%,rgba(209,209,209,1) 51%,rgba(254,254,254,1) 100%); /* Chrome10-25,Safari5.1-6 */
+		background: linear-gradient(to bottom,  rgba(226,226,226,1) 0%,rgba(219,219,219,1) 50%,rgba(209,209,209,1) 51%,rgba(254,254,254,1) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+		filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#e2e2e2', endColorstr='#fefefe',GradientType=0 ); /* IE6-9 */	}
+	
+	#customheader h2{
+	color:black;	}
+		
+	#maincard{
+		width:100%;
+		padding:0px;
+		background-color: #ffffff;
+		top:-50px;
+		margin-bottom: 10px;
+		margin-top: 0px;
+		height:700px;
+		border-radius: 3px;
+	   
+		-webkit-box-shadow: 0px 9px 24px 0px rgba(0,0,0,0.75);
+		-moz-box-shadow: 0px 9px 24px 0px rgba(0,0,0,0.75);
+		box-shadow: 0px 9px 24px 0px rgba(0,0,0,0.75);	}
+		
+		#leftbar{
+		position:absolute;
+			background:#e9e9e9;
+			left:83%;
+			-webkit-box-shadow: inset 2px 0px 7px 2px rgba(0,0,0,0.52);
+-moz-box-shadow: inset 2px 0px 7px 2px rgba(0,0,0,0.52);
+box-shadow: inset 2px 0px 7px 2px rgba(0,0,0,0.52);
+		}
+		
+</style>
+
+
+<style>
+
+#logo{
+top:80px;
+left:14%;
+height: 625px;
+position:absolute;
+opacity:0.05;
+
+}
+#delButton{
+position:relative;
+float:right;
+right:10px;
+top:0px;
+opacity:1;
+height:35px;
+}
+
+#delIcon{
+left:40px;
+top:10px;
+color: #4e4e4e; !important
+transition: 1s ease;
+}
+
+#delIcon:hover{
+color:red;
+font-size:120%;
+}
+
+.fc-content{
+  transition:  height 2s ease;
+}
+.fc-content:hover{
+height:25px;
+
+}
+
+#aPending{
+position:relative;
+top:10px;
+left:10px;
+font-family:Existence-Medium; 
+}
+#bPending{
+position:relative;
+top:80px;
+left:17%;
+-webkit-box-shadow: 0px 4px 7px 1px rgba(0,0,0,0.41);
+-moz-box-shadow: 0px 4px 7px 1px rgba(0,0,0,0.41);
+box-shadow: 0px 4px 7px 1px rgba(0,0,0,0.41);
+}
+#bPending:hover{
+
+top:83px;
+-webkit-box-shadow: 0px 1px 7px 1px rgba(0,0,0,0.41);
+-moz-box-shadow: 0px 1px 7px 1px rgba(0,0,0,0.41);
+box-shadow: 0px 1px 7px 1px rgba(0,0,0,0.41);
+
+}
+#cPending{
+position:relative;
+top:75px;
+left:5px;
+
+
+}
+.widget{
+ overflow:visible;
+}
+</style>
+    </head>
+
+    <body>
+    	 
+        <div class="main-wrapper">
+            <div class="app" id="app">
+               
+                <aside class="sidebar"><img id ="bg" src="assets/bg.jpg">
+				
+                    <div class="sidebar-container">
+                    	
+                        <div class="sidebar-header">
+                            <div class="brand">
+                                <div class="logo"> <span class="l l1"></span> <span class="l l2"></span> <span class="l l3"></span> <span class="l l4"></span> <span class="l l5"></span> </div> PAASCU </div>
+                        </div>
+                        <nav class="menu">
+                            <ul class="nav metismenu" id="sidebar-menu">
+                                <li>
+                                    <a href="index.html"> <i class="fa fa-home"></i> Dashboard </a>
+                               <li class="active">
+                                    <a href="survey.html"> <i class="fa fa-table"></i> Survey Schedule </a>
+								
+                                </li>
+								<li>
+                                    <a href="addsurvey.html"> <i class="fa fa-pencil-square-o"></i> Add New Survey </a>
+								</li>
+								<li>
+									
+                                    <a href="#demo" data-toggle="collapse"> <i class="fa fa-file-text-o"></i> Database <i class="fa arrow"></i> </a>
+                                    
+                                    <ul id="demo" class="collapse">
+                                        <li> <a href="accreditors.html">
+    								Accreditors
+    							</a> </li>
+                                        <li> <a href="institutions.html">
+    								Institutions
+    							</a> </li>
+								 <li> <a href="schoolSystems.html">
+    								School Systems
+    							</a> </li>
+								 <li> <a href="programs.html">
+    								Programs
+    							</a> </li>
+								 
+                                 
+                                    </ul>
+                                    
+                                    
+                                </li>
+                                 <li><a href="#demo3" data-toggle="collapse"> <i class="fa fa-bar-chart"></i> Reports <i class="fa arrow"></i> </a><ul id="demo3" class="collapse"><li> <a href="reportGA.html">GA Awardees</a> </li><li> <a href="reportHistory.html">History</a> </li></ul></li>
+								<li>
+								    <a href="notifications.html"> <i class="fa fa-bell-o"></i> Notifications <p style="width:15px; height:17px;text-align:center; border-radius:10px; font-family: Verdana; font-size:10px;float:right; background-color:red; color:white;">10</p></a> 
+								 </li>
+                                
+                               
+                            </ul>
+                        </nav>
+                    </div>
+                    <footer class="sidebar-footer">
+            
+			
+					
+                </aside>
+				 <aside class="sidebar" id="leftbar">
+				
+                    <div class="sidebar-container">
+					
+						
+						<button id="bPending" type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#myModal"><i class="fa fa-plus"></i> Quick Add Survey</button><br><br>
+					
+
+                            <div id="cPending" class="col-xl-12">
+                                <div class="card card-default" style="height:460px;-webkit-box-shadow: 0px 2px 5px 0px rgba(0,0,0,0.31);-moz-box-shadow: 0px 2px 5px 0px rgba(0,0,0,0.31);box-shadow: 0px 2px 5px 0px rgba(0,0,0,0.31);" >
+                                    <div class="card-header">
+                                        <div class="header-block"id="aPending">
+                                            <p class="title"> Pending Surveys</p>
+                                        </div>
+                                    </div>
+                                    <div class="card-block"style="height:75%;">
+												<div id='external-events' style=" padding:5px;height:100%;width:100%;border-radius: 6px 6px 6px 6px;-moz-border-radius: 6px 6px 6px 6px;-webkit-border-radius: 6px 6px 6px 6px;border: 1px solid #e6e6e6;">
+							
+							
+												</div>
+									   </div>
+                                    <div class="card-footer"><small> You may drag events to calendar </small></div>
+                                </div>
+                            </div>
+						
+						
+			
+						
+					</div>
+				</aside>
+				<div class="container">
+	<video poster="assets/banner.jpg" id="bgvid"  playsinline autoplay muted loop>
+  <!-- WCAG general accessibility recommendation is that media such as background video play through only once. Loop turned on for the purposes of illustration; if removed, the end of the video will fade in the same way created by pressing the "Pause" button  -->
+
+<source src="assets/vid.mp4" type="video/mp4">
+</video>
+</div>
+            
+			   
+			   
+                <article class="content dashboard-page" style="position: relative; top:-170px; left:-25px; width:78%; ">
+				 <section class="section" id="section"style="position:relative; width:110%;" >  
+				 <img id ="logo" src="assets/logo.png">                 
+				   <div id='calendar' style="position:relative; float:right; width:100%;"></div>
+				   </section>
+				   				
+				  
+                </article>
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+                
+        <!-- QUICK ADD MODAL -->
+			<div id="myModal" class="modal fade" role="dialog">
+  				<div class="modal-dialog">
+
+    			<!-- Modal content-->
+    			<div class="modal-content">
+      			<div class="modal-header">
+        			<button type="button" class="close" data-dismiss="modal">&times;</button>
+        			<h4 class="modal-title">Quick Add Survey</h4>
+      			</div>
+      			<div class="modal-body">
+      				<form>
+        			<div class="form-group">
+  						<label for="sel1">Institution:</label>
+  						<select class="form-control" id="systemForm">
+    						<option>DLSU</option>
+        					<option>Ateneo</option>
+        					<option>Elizabeth Ann Seton Institution</option>
+        					<option>Manila Science High Institution</option>
+  						</select>
+					</div>
+					
+					<div class="form-group">
+  						<label for="sel1">Institutions:</label>
+  						<select class="form-control" id="institutionForm">
+    						<option>DLSU - Manila</option>
+        					<option>DLSU - Dasma</option>
+        					<option>Ateneo - Davao</option>
+        					<option>Ateneo - Katipunan</option>
+  						</select>
+					</div>
+
+        			
+					
+					
+					
+					<div class="form-group">
+  						<button type="button" class="btn btn-link"><a href="addsurvey.html">Add Proponents Now?</a></button>
+					</div>
+					
+					
+        			</form>
+        			
+      			</div>
+      			<div class="modal-footer">
+					
+        			<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        			<button type="button" class="btn btn-success" onclick="addSurvey(); "data-dismiss="modal" >Submit</button>
+      			</div>
+    			</div>
+
+  				</div>
+			</div>  
+			
+        <!-- EVENT MODAL -->
+       	<div id="fullCalModal" class="modal fade">
+    		<div class="modal-dialog modal-lg" style="width:70%;">
+        		<div class="modal-content">
+            	
+            		<div class="modal-header">
+                		<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span> <span class="sr-only">close</span></button>
+                		<h4 id="modalTitle" class="modal-title"></h4>
+            		</div>
+            	
+            		<div id="modalBody" class="modal-body"></div>
+            		<div id="modalfooter" class="modal-footer">
+					<button id="delButton" type="button" class="close" data-dismiss="modal" onclick="delayDelete(1,650)"><em id="delIcon" class="fa fa-trash-o"></em></button>
+                	
+           		 	</div>
+        		</div>
+    		</div>
+		
+		</div>
+        <!-- Reference block for JS -->
+        <div class="ref" id="ref">
+            <div class="color-primary"></div>
+            <div class="chart">
+                <div class="color-primary"></div>
+                <div class="color-secondary"></div>
+            </div>
+        </div>
+       </div></div>
+        <script src="js/app.js"></script>
+		
+		
+		</body>
+
+</html>

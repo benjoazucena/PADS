@@ -1,0 +1,210 @@
+<!doctype html>
+<html class="no-js" lang="en">
+
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title> PAASCU - Accreditation Schedule Manager </title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="apple-touch-icon" href="apple-touch-icon.png">
+        <!-- Place favicon.ico in the root directory -->
+        <link rel="stylesheet" href="css/vendor.css">
+        <!-- Theme initialization -->
+        <script>
+            var themeSettings = (localStorage.getItem('themeSettings')) ? JSON.parse(localStorage.getItem('themeSettings')) :
+            {};
+            var themeName = themeSettings.themeName || '';
+            if (themeName)
+            {
+                document.write('<link rel="stylesheet" id="theme-style" href="css/app-' + themeName + '.css">');
+            }
+            else
+            {
+                document.write('<link rel="stylesheet" id="theme-style" href="css/app.css">');
+            }
+        </script><link href='fullcalendar.css' rel='stylesheet' />
+ <link title="timeline-styles" rel="stylesheet" href="css/timeline.css">
+
+
+<style>
+
+	body {
+		
+		font-family: "Lucida Grande",Helvetica,Arial,Verdana,sans-serif;
+		font-size: 14px;
+	}
+
+	#calendar {
+		max-width: 900px;
+		margin: 0 auto;
+	}
+	#bg{
+	height: 640px;
+	position:fixed;
+	}
+
+</style>
+    </head>
+
+    <body>
+        <div class="main-wrapper">
+            <div class="app" id="app">
+                <header class="header">
+                    <div class="header-block header-block-collapse hidden-lg-up"> <button class="collapse-btn" id="sidebar-collapse-btn">
+    			<i class="fa fa-bars"></i>
+    		</button> </div>
+                    <div class="header-block header-block-search hidden-sm-down">
+                        <form role="search">
+                            <div class="input-container"> <i class="fa fa-search"></i> <input type="search" placeholder="Search">
+                                <div class="underline"></div>
+                            </div>
+                        </form>
+                    </div>
+                     <div style="margin-left:-150px;">
+						<button style="background-color: Transparent; " type="button" class="btn btn-pill-left btn-secondary" onclick="location.href = 'survey.html';">Calendar</button>
+							<button style="box-shadow: 1px 2px 5px #888888;" type="button" class="btn btn-pill-right btn-primary" onclick="location.href = 'timeline.html';">Timeline</button> 
+					 </div>
+                    <div class="header-block header-block-nav">
+                        <ul class="nav-profile">
+                            <li class="notifications new">
+                                <a href="" data-toggle="dropdown"> <i class="fa fa-bell-o"></i> <sup>
+    			      <span class="counter">1</span>
+    			    </sup> </a>
+                                <div class="dropdown-menu notifications-dropdown-menu">
+                                    <ul class="notifications-container">
+                                        <li>
+                                            <a href="" class="notification-item">
+                                                <div class="img-col">
+                                                    <div class="img" style="background-image: url('assets/faces/marcos,nelson.jpg')"></div>
+                                                </div>
+                                                <div class="body-col">
+                                                    <p> <span class="accent">Marcos, Nelson Phd</span> Achievement: <span class="accent">Completed 100th survey</span>. </p>
+                                                </div>
+                                            </a>
+                                        </li>
+                                       
+                                    </ul>
+                                    <footer>
+                                        <ul>
+                                            <li> <a href="">
+    			            View All
+    			          </a> </li>
+                                        </ul>
+                                    </footer>
+                                </div>
+                            </li>
+                            
+                        </ul>
+                    </div>
+                </header>
+                <aside class="sidebar">
+				<img id="bg" src="assets/bg.jpg">
+                    <div class="sidebar-container">
+                        <div class="sidebar-header">
+                            <div class="brand">
+                                <div class="logo"> <span class="l l1"></span> <span class="l l2"></span> <span class="l l3"></span> <span class="l l4"></span> <span class="l l5"></span> </div> PAASCU </div>
+                        </div>
+                        <nav class="menu">
+                            <ul class="nav metismenu" id="sidebar-menu">
+                                <li>
+                                    <a href="index.html"> <i class="fa fa-home"></i> Dashboard </a>
+                                </li>
+								<li class="active">
+                                    <a href="timeline.html"> <i class="fa fa-table"></i> Survey Schedule </a>
+								
+                                </li>
+								<li>
+                                    <a href="addsurvey.html"> <i class="fa fa-pencil-square-o"></i> Add New Survey </a>
+								</li>
+								<li>
+									
+                                    <a href="#demo" data-toggle="collapse"> <i class="fa fa-file-text-o"></i> Lists <i class="fa arrow"></i> </a>
+                                    
+                                    <ul id="demo" class="collapse">
+                                        <li> <a href="accreditors.html">
+    								Accreditors
+    							</a> </li>
+                                        <li> <a href="schools.html">
+    								Schools
+    							</a> </li>
+								 <li> <a href="schoolGroups.html">
+    								School Groups
+    							</a> </li>
+								 <li> <a href="programs.html">
+    								Programs
+    							</a> </li>
+								 
+                                 
+                                    </ul>
+                                    
+                                    
+                                </li>
+                                <li>
+                                    <a href=""> <i class="fa fa-bar-chart"></i> Reports <i class="fa arrow"></i> </a>
+                                    <ul>
+                                        <li> <a href="charts-flot.html">
+    								Accreditor surveys
+    							</a> </li>
+                                        <li> <a href="charts-morris.html">
+    								Activity chart
+    							</a> </li>
+										<li> <a href="charts-morris.html">
+    								Awards List
+    							</a> </li>
+                                    </ul>
+                                </li>
+								<li>
+								  <a href="settings.html"> <i class="fa fa-cog"></i> Settings </a>
+								 </li>
+                                
+                               
+                            </ul>
+                        </nav>
+                    </div>
+                    <footer class="sidebar-footer">
+            
+			
+					
+                </aside>
+				
+                <div class="sidebar-overlay" id="sidebar-overlay"></div>
+				
+                <article class="content dashboard-page">
+					<section class="section">                   
+						<script src="js/timeline.js"></script>
+							<div id='timeline-embed' style="width: 100%; height: 600px; background: rgba(255,255,255,1);
+background: -moz-linear-gradient(45deg, rgba(255,255,255,1) 0%, rgba(246,246,246,1) 47%, rgba(237,237,237,1) 100%);
+background: -webkit-gradient(left bottom, right top, color-stop(0%, rgba(255,255,255,1)), color-stop(47%, rgba(246,246,246,1)), color-stop(100%, rgba(237,237,237,1)));
+background: -webkit-linear-gradient(45deg, rgba(255,255,255,1) 0%, rgba(246,246,246,1) 47%, rgba(237,237,237,1) 100%);
+background: -o-linear-gradient(45deg, rgba(255,255,255,1) 0%, rgba(246,246,246,1) 47%, rgba(237,237,237,1) 100%);
+background: -ms-linear-gradient(45deg, rgba(255,255,255,1) 0%, rgba(246,246,246,1) 47%, rgba(237,237,237,1) 100%);
+background: linear-gradient(45deg, rgba(255,255,255,1) 0%, rgba(246,246,246,1) 47%, rgba(237,237,237,1) 100%);
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#ededed', GradientType=1 );"></div>
+
+							<!-- 3 -->
+							<script type="text/javascript">
+								  
+								var text = '{"title": {"text": {"headline": "Welcome to your Timeline", "text": "This is the new timeline developed by Mikko Basilio and Benjo Azucena"}}, "events": [ {"start_date": {"month": "9", "day": "27", "year": "2016"}, "group": "School1", "text": {"headline": "DLSU - Formal Survey", "text": "Proponents: <br> Mikko Basilio <br> Try Com2 <br> Try Com 3"} }, {"start_date": {"month": "8", "day": "10", "year": "1963"}, "group": "School1", "text": {"headline": "Try Survey 2", "text": "Proponents: <br> Try Com1 <br> Try Com2 <br> Try Com 3"} }, {"start_date": {"month": "8", "day": "15", "year": "1963"}, "text": {"headline": "Try Survey 3", "text": "Proponents: <br> Try Com1 <br> Try Com2 <br> Try Com 3"} }, {"start_date": {"month": "8", "day": "25", "year": "1963"}, "text": {"headline": "Try Survey 4", "text": "Proponents: <br> Try Com1 <br> Try Com2 <br> Try Com 3"} }]}';
+								timeline = new TL.Timeline('timeline-embed', JSON.parse(text));
+							</script>
+				   </section>
+				   
+                </article>
+             
+             
+             
+        <!-- Reference block for JS -->
+        <div class="ref" id="ref">
+            <div class="color-primary"></div>
+            <div class="chart">
+                <div class="color-primary"></div>
+                <div class="color-secondary"></div>
+            </div>
+        </div>
+          <script src="js/vendor.js"></script>
+        <script src="js/app.js"></script>
+
+    </body>
+
+</html>

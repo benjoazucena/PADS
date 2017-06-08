@@ -1,0 +1,700 @@
+<!doctype html>
+<html class="no-js" lang="en">
+
+    <head>
+    <script src='js/jquery.min.js'></script>
+    <script src='js/jquery-ui.min.js'></script>
+    <link rel="stylesheet" href="css/bootstrap.css">
+    <script src="js/bootstrap.min.js"></script>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title> PAASCU - Accreditation Schedule Manager </title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="apple-touch-icon" href="apple-touch-icon.png">
+        <!-- Place favicon.ico in the root directory -->
+        <link rel="stylesheet" href="css/vendor.css">
+        <!-- Theme initialization -->
+        <script>
+            var themeSettings = (localStorage.getItem('themeSettings')) ? JSON.parse(localStorage.getItem('themeSettings')) :
+            {};
+            var themeName = themeSettings.themeName || '';
+            if (themeName)
+            {
+                document.write('<link rel="stylesheet" id="theme-style" href="css/app-' + themeName + '.css">');
+            }
+            else
+            {
+                document.write('<link rel="stylesheet" id="theme-style" href="css/app.css">');
+            }
+        </script><link href='fullcalendar.css' rel='stylesheet' />
+        
+<link href='calendar/fullcalendar.print.css' rel='stylesheet' media='print' />
+<script src='calendar/lib/moment.min.js'></script>
+<script src='calendar/fullcalendar.min.js'></script>
+<link rel="stylesheet" type="text/css" href=" css/dataTables.bootstrap.min.css">
+	<script src="js/jquery.dataTables.min.js"></script>
+	<script src="js/dataTables.bootstrap.min.js"></script>
+	
+
+
+<script>
+
+	$(document).ready(function() {
+		$('[data-toggle="tooltip"]').tooltip(); 
+		/* initialize the external events
+		-----------------------------------------------------------------*/
+		
+	var selected = [];
+    $('#smarttable').DataTable( {
+		"fnCreatedRow": function( nRow, aData, iDataIndex ) {
+			if ( aData[3] != "Faculty")
+			{
+				$('td:eq(3)', nRow).css({"background-color": "red"});
+				if( aData[4].includes("Faculty") ){
+					$('td:eq(4)', nRow).css({"background-color": "green"});
+				}
+			}
+			if ( aData[1] == "De La Salle University" )
+			{
+				$('td:eq(1)', nRow).css({"background-color": "red"});
+			}
+		},
+		"order": [[ 4, "desc" ]],
+        initComplete: function () {
+            this.api().columns().every( function () {
+                var column = this;
+                var select = $('<select><option value=""></option></select>')
+                    .appendTo( $(column.footer()).empty() )
+                    .on( 'change', function () {
+                        var val = $.fn.dataTable.util.escapeRegex(
+                            $(this).val()
+                        );
+ 
+                        column
+                            .search( val ? '^'+val+'$' : '', true, false )
+                            .draw();
+                    } );
+ 
+                column.data().unique().sort().each( function ( d, j ) {
+                    select.append( '<option value="'+d+'">'+d+'</option>' )
+                } );
+            } );
+        }
+    } );
+	
+	 $('#smarttable tbody').on('click', 'tr', function () {
+			alert('Successfully selected an accreditor!');
+			$('#addModal').modal('toggle');
+    } );
+
+	$('#smarttable2').DataTable( {
+		
+        initComplete: function () {
+            this.api().columns().every( function () {
+                var column = this;
+                var select = $('<select><option value=""></option></select>')
+                    .appendTo( $(column.footer()).empty() )
+                    .on( 'change', function () {
+                        var val = $.fn.dataTable.util.escapeRegex(
+                            $(this).val()
+                        );
+ 
+                        column
+                            .search( val ? '^'+val+'$' : '', true, false )
+                            .draw();
+                    } );
+ 
+                column.data().unique().sort().each( function ( d, j ) {
+                    select.append( '<option value="'+d+'">'+d+'</option>' )
+                } );
+            } );
+        }
+    } );
+	
+	 $('#smarttable2 tbody').on('click', 'tr', function () {
+			alert('Successfully selected an accreditor!');
+			$('#addModal').modal('toggle');
+    } );
+	
+	$('#smarttable3').DataTable( {
+	
+        initComplete: function () {
+            this.api().columns().every( function () {
+                var column = this;
+                var select = $('<select><option value=""></option></select>')
+                    .appendTo( $(column.footer()).empty() )
+                    .on( 'change', function () {
+                        var val = $.fn.dataTable.util.escapeRegex(
+                            $(this).val()
+                        );
+ 
+                        column
+                            .search( val ? '^'+val+'$' : '', true, false )
+                            .draw();
+                    } );
+ 
+                column.data().unique().sort().each( function ( d, j ) {
+                    select.append( '<option value="'+d+'">'+d+'</option>' )
+                } );
+            } );
+        }
+    } );
+	
+	 $('#smarttable3 tbody').on('click', 'tr', function () {
+			alert('Successfully selected an accreditor!');
+			$('#addModal').modal('toggle');
+    } );
+	
+	
+	
+	});
+
+
+function addProp(){
+	$("#progBar").html("<div class='progress-bar progress-bar-success' role='progressbar' style='width:33%' id='progDetails'><i class='fa fa-file-text-o'></i> Details</div><div class='progress-bar progress-bar-success progress-bar-striped' role='progressbar' style='width:33%' id='progProponents'><i class='fa fa-university'></i> Programs/Areas </div>");
+
+}
+
+function addDet(){
+	$("#progBar").html("<div class='progress-bar progress-bar-success progress-bar-striped' role='progressbar' style='width:33%' id='progDetails'><i class='fa fa-file-text-o'></i> Details</div>");
+
+}
+
+function addSure(){
+	$("#progBar").html("<div class='progress-bar progress-bar-success' role='progressbar' style='width:33%' id='progDetails'><i class='fa fa-file-text-o'></i> Details</div><div class='progress-bar progress-bar-success' role='progressbar' style='width:33%' id='progProponents'><i class='fa fa-university'></i>  Programs/Areas </div><div class='progress-bar progress-bar-success progress-bar-striped' role='progressbar' style='width:33%' id='progProponents'> <i class='fa fa-users'></i> Accreditors </div>");
+
+}
+
+function addRep(){
+	$('#addRep').modal();
+}
+function changeDetails(){
+	$("#progProponents").className = "progress-bar progress-bar-success progress-bar-striped";
+	$("#progDetails").className = "progress-bar progress-bar-success";
+	$("#progSure").className = "progress-bar progress-bar-success";
+}
+
+function addProgram(){
+	
+	var strUser = $('#program option:selected').text();
+	var strSurvey = $('#survey option:selected').text();
+	
+	var add =  "<li class='list-group-item'><h6>" + strUser + " - " + strSurvey + "</h6><ul class='list-group'>";
+	var add2 =  "<li class='list-group-item'><h6>" + strUser + " - " + strSurvey + "</h6><ul class='list-group'>";
+	var add3 = "<h6>" + strUser + " - " + strSurvey + "</h6><div class='table-responsive' style='width: 100%;'><table class='table table-striped'><thead><tr><th>Area</th><th>Most Recent Accreditor</th><th>Controls</th></tr></thead><tbody>"
+	if(document.getElementById('fac').checked) {
+		add += "<li class='list-group-item'>" + document.getElementById('fac').value + "</li>";
+		add2 += "<li class='list-group-item'>" + document.getElementById('fac').value + "<button type='button' class='btn btn-link btn-sm' style='float:right;'> Nelson, Marcos  </button> <button type='button' class='btn btn-success btn-sm' style='float:right;' onclick=\"addAccreditor('" + document.getElementById('fac').value + "', '" + strUser + "', '" + strSurvey + "');\"> <i class='fa fa-user-plus'></i> Update </button> <button type='button' class='btn btn-success btn-sm' style='float:right;' onclick=\"addAccreditor('" + document.getElementById('fac').value + "', '" + strUser + "', '" + strSurvey + "');\"> <i class='fa fa-user-plus'></i> Add </button></li>";
+		add3 += "<tr> <td>" + document.getElementById('fac').value + "</td> <td>Nelson, Marcos</td> <td><button type='button' class='btn btn-success btn-sm' style='' onclick=\"addAccreditor('" + document.getElementById('fac').value + "', '" + strUser + "', '" + strSurvey + "');\"> <i class='fa fa-user-plus'></i> Add </button></td> </tr>";
+	}
+	if(document.getElementById('com').checked) {
+		add += "<li class='list-group-item'>" + document.getElementById('com').value + "</li>";
+		add2 += "<li class='list-group-item'>" + document.getElementById('com').value + "<button type='button' class='btn btn-link btn-sm' style='float:right;'> Nelson, Marcos  </button> <button type='button' class='btn btn-success btn-sm' style='float:right;' onclick=\"addAccreditor('" + document.getElementById('com').value + "', '" + strUser + "', '" + strSurvey + "');\"> <i class='fa fa-user-plus'></i> Update </button> <button type='button' class='btn btn-success btn-sm' style='float:right;' onclick=\"addAccreditor('" + document.getElementById('com').value + "', '" + strUser + "', '" + strSurvey + "');\"> <i class='fa fa-user-plus'></i> Add </button></li>";
+		add3 += "<tr> <td>" + document.getElementById('com').value + "</td> <td>Nelson, Marcos</td> <td><button type='button' class='btn btn-success btn-sm' style='' onclick=\"addAccreditor('" + document.getElementById('fac').value + "', '" + strUser + "', '" + strSurvey + "');\"> <i class='fa fa-user-plus'></i> Add </button></td> </tr>";
+	}
+	if(document.getElementById('ins').checked) {
+		add += "<li class='list-group-item'>" + document.getElementById('ins').value + "</li>";
+		add2 += "<li class='list-group-item'>" + document.getElementById('ins').value + "<button type='button' class='btn btn-link btn-sm' style='float:right;'> N/A </button> <button type='button' class='btn btn-success btn-sm' style='float:right;' onclick=\"addAccreditor('" + document.getElementById('ins').value + "', '" + strUser + "', '" + strSurvey + "');\"> <i class='fa fa-user-plus'></i> Add </button></li>";
+		add3 += "<tr> <td>" + document.getElementById('ins').value + "</td> <td>N/A</td> <td><button type='button' class='btn btn-success btn-sm' style='' onclick=\"addAccreditor('" + document.getElementById('fac').value + "', '" + strUser + "', '" + strSurvey + "');\"> <i class='fa fa-user-plus'></i> Add </button></td> </tr>";
+	}
+	if(document.getElementById('phy').checked) {
+		add += "<li class='list-group-item'>" + document.getElementById('phy').value + "</li>";
+		add2 += "<li class='list-group-item'>" + document.getElementById('phy').value + "<button type='button' class='btn btn-link btn-sm' style='float:right;'> Nelson, Marcos  </button> <button type='button' class='btn btn-success btn-sm' style='float:right;' onclick=\"addAccreditor('" + document.getElementById('phy').value + "', '" + strUser + "', '" + strSurvey + "');\"> <i class='fa fa-user-plus'></i> Update </button> <button type='button' class='btn btn-success btn-sm' style='float:right;' onclick=\"addAccreditor('" + document.getElementById('phy').value + "', '" + strUser + "', '" + strSurvey + "');\"> <i class='fa fa-user-plus'></i> Add </button></li>";
+		add3 += "<tr> <td>" + document.getElementById('phy').value + "</td> <td>Nelson, Marcos</td> <td><button type='button' class='btn btn-success btn-sm' style='' onclick=\"addAccreditor('" + document.getElementById('fac').value + "', '" + strUser + "', '" + strSurvey + "');\"> <i class='fa fa-user-plus'></i> Add </button></td> </tr>";
+	}
+	if(document.getElementById('lab').checked) {
+		add += "<li class='list-group-item'>" + document.getElementById('lab').value + "</li>";
+		add2 += "<li class='list-group-item'>" + document.getElementById('lab').value + "<button type='button' class='btn btn-link btn-sm' style='float:right;'> Nelson, Marcos  </button> <button type='button' class='btn btn-success btn-sm' style='float:right;' onclick=\"addAccreditor('" + document.getElementById('lab').value + "', '" + strUser + "', '" + strSurvey + "');\"> <i class='fa fa-user-plus'></i> Update </button> <button type='button' class='btn btn-success btn-sm' style='float:right;' onclick=\"addAccreditor('" + document.getElementById('lab').value + "', '" + strUser + "', '" + strSurvey + "');\"> <i class='fa fa-user-plus'></i> Add </button></li>";
+		add3 += "<tr> <td>" + document.getElementById('lab').value + "</td> <td>Nelson, Marcos</td> <td><button type='button' class='btn btn-success btn-sm' style='' onclick=\"addAccreditor('" + document.getElementById('fac').value + "', '" + strUser + "', '" + strSurvey + "');\"> <i class='fa fa-user-plus'></i> Add </button></td> </tr>";
+	}
+	if(document.getElementById('stu').checked) {
+		add += "<li class='list-group-item'>" + document.getElementById('stu').value + "</li>";
+		add2 += "<li class='list-group-item'>" + document.getElementById('stu').value + "<button type='button' class='btn btn-link btn-sm' style='float:right;'> Nelson, Marcos  </button> <button type='button' class='btn btn-success btn-sm' style='float:right;' onclick=\"addAccreditor('" + document.getElementById('stu').value + "', '" + strUser + "', '" + strSurvey + "');\"> <i class='fa fa-user-plus'></i> Update </button> <button type='button' class='btn btn-success btn-sm' style='float:right;' onclick=\"addAccreditor('" + document.getElementById('stu').value + "', '" + strUser + "', '" + strSurvey + "');\"> <i class='fa fa-user-plus'></i> Add </button></li>";
+		add3 += "<tr> <td>" + document.getElementById('stu').value + "</td> <td>Nelson, Marcos</td> <td><button type='button' class='btn btn-success btn-sm' style='' onclick=\"addAccreditor('" + document.getElementById('fac').value + "', '" + strUser + "', '" + strSurvey + "');\"> <i class='fa fa-user-plus'></i> Add </button></td> </tr>";
+	}
+	if(document.getElementById('lib').checked) {
+		add += "<li class='list-group-item'>" + document.getElementById('lib').value + "</li>";
+		add2 += "<li class='list-group-item'>" + document.getElementById('lib').value + "<button type='button' class='btn btn-link btn-sm' style='float:right;'> Nelson, Marcos  </button> <button type='button' class='btn btn-success btn-sm' style='float:right;' onclick=\"addAccreditor('" + document.getElementById('lib').value + "', '" + strUser + "', '" + strSurvey + "');\"> <i class='fa fa-user-plus'></i> Update </button> <button type='button' class='btn btn-success btn-sm' style='float:right;' onclick=\"addAccreditor('" + document.getElementById('lib').value + "', '" + strUser + "', '" + strSurvey + "');\"> <i class='fa fa-user-plus'></i> Add </button></li>";
+		add3 += "<tr> <td>" + document.getElementById('lib').value + "</td> <td>Nelson, Marcos</td> <td><button type='button' class='btn btn-success btn-sm' style='' onclick=\"addAccreditor('" + document.getElementById('fac').value + "', '" + strUser + "', '" + strSurvey + "');\"> <i class='fa fa-user-plus'></i> Add </button></td> </tr>";
+	}
+	if(document.getElementById('adm').checked) {
+		add += "<li class='list-group-item'>" + document.getElementById('adm').value + "</li>";
+		add2 += "<li class='list-group-item'>" + document.getElementById('adm').value + "<button type='button' class='btn btn-link btn-sm' style='float:right;'> Nelson, Marcos  </button> <button type='button' class='btn btn-success btn-sm' style='float:right;' onclick=\"addAccreditor('" + document.getElementById('adm').value + "', '" + strUser + "', '" + strSurvey + "');\"> <i class='fa fa-user-plus'></i> Update </button> <button type='button' class='btn btn-success btn-sm' style='float:right;' onclick=\"addAccreditor('" + document.getElementById('adm').value + "', '" + strUser + "', '" + strSurvey + "');\"> <i class='fa fa-user-plus'></i> Add </button></li>";
+		add3 += "<tr> <td>" + document.getElementById('adm').value + "</td> <td>Nelson, Marcos</td> <td><button type='button' class='btn btn-success btn-sm' style='' onclick=\"addAccreditor('" + document.getElementById('fac').value + "', '" + strUser + "', '" + strSurvey + "');\"> <i class='fa fa-user-plus'></i> Add </button></td> </tr>";
+	}
+	add += "</ul></li>";
+	add2 += "</ul></li>";
+	add3 += "</tbody></table></div>";
+	$('#addedList').append(add);
+	var lal = document.getElementById("added");
+	lal.scrollTop = lal.scrollHeight;
+	$('#addedList2').append(add3);
+	}
+
+function addAccreditor(area, program, survey){
+	var add = "";
+	$('#modalTitle').html("Adding accreditors for " + program + " - " + area);
+	add += ""
+	
+	$('#addModal').modal();
+}
+
+function selectAll(){
+	document.getElementById("fac").checked = true;
+	document.getElementById("ins").checked = true;
+	document.getElementById("lab").checked = true;
+	document.getElementById("lib").checked = true;
+	document.getElementById("com").checked = true;
+	document.getElementById("phy").checked = true;
+	document.getElementById("stu").checked = true;
+	document.getElementById("adm").checked = true;
+}
+</script>
+<style>
+
+	body {
+		
+		font-family: "Lucida Grande",Helvetica,Arial,Verdana,sans-serif;
+		font-size: 14px;
+	}
+
+	#calendar {
+		max-width: 900px;
+		margin: -35px auto;
+		padding: 10px;
+background: rgba(255,255,255,1);
+background: -moz-linear-gradient(45deg, rgba(255,255,255,1) 0%, rgba(246,246,246,1) 47%, rgba(237,237,237,1) 100%);
+background: -webkit-gradient(left bottom, right top, color-stop(0%, rgba(255,255,255,1)), color-stop(47%, rgba(246,246,246,1)), color-stop(100%, rgba(237,237,237,1)));
+background: -webkit-linear-gradient(45deg, rgba(255,255,255,1) 0%, rgba(246,246,246,1) 47%, rgba(237,237,237,1) 100%);
+background: -o-linear-gradient(45deg, rgba(255,255,255,1) 0%, rgba(246,246,246,1) 47%, rgba(237,237,237,1) 100%);
+background: -ms-linear-gradient(45deg, rgba(255,255,255,1) 0%, rgba(246,246,246,1) 47%, rgba(237,237,237,1) 100%);
+background: linear-gradient(45deg, rgba(255,255,255,1) 0%, rgba(246,246,246,1) 47%, rgba(237,237,237,1) 100%);
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#ededed', GradientType=1 );	
+	 box-shadow: 1px 2px 5px #C0C0C0;
+	}
+	
+	.fc-day-number{
+		color: black;
+	}
+	
+	#bg{
+	height: 640px;
+	position:fixed;
+	}
+
+</style>
+    </head>
+
+    <body>
+    	 
+        <div class="main-wrapper">
+      				
+        			
+      			</div>
+      			
+    		
+
+  	
+			
+            <div class="app" id="app">
+                <header class="header">
+                    <div class="header-block header-block-collapse hidden-lg-up"> <button class="collapse-btn" id="sidebar-collapse-btn">
+    			<i class="fa fa-bars"></i>
+    		</button> </div>
+                    <div class="header-block header-block-search hidden-sm-down">
+                        <form role="search">
+                            <div class="input-container"> <i class="fa fa-search"></i> <input type="search" placeholder="Search">
+                                <div class="underline"></div>
+                            </div>
+                        </form>
+                    </div>
+					 <div style="margin-left:-150px;">
+					 	
+					 		<div class="progress" style="width:500px; height:20px;" id="progBar">
+  								<div class="progress-bar progress-bar-success progress-bar-striped" role="progressbar" style="width:33%" id="progDetails">
+    								<i class='fa fa-file-text-o'></i> Details
+  								</div>
+  								
+							</div>
+  							
+						
+					 </div>
+                    
+                    <div class="header-block header-block-nav">
+                        <ul class="nav-profile">
+                            <li class="notifications new">
+                                <a href="" data-toggle="dropdown"> <i class="fa fa-bell-o"></i> <sup>
+    			      <span class="counter">1</span>
+    			    </sup> </a>
+                                <div class="dropdown-menu notifications-dropdown-menu">
+                                    <ul class="notifications-container">
+                                        <li>
+                                            <a href="" class="notification-item">
+                                                <div class="img-col">
+                                                    <div class="img" style="background-image: url('assets/faces/marcos,nelson.jpg')"></div>
+                                                </div>
+                                                <div class="body-col">
+                                                    <p> <span class="accent">Marcos, Nelson Phd</span> Achievement: <span class="accent">Completed 100th survey</span>. </p>
+                                                </div>
+                                            </a>
+                                        </li>
+                                       
+                                    </ul>
+                                    <footer>
+                                        <ul>
+                                            <li> <a href="">
+    			            View All
+    			          </a> </li>
+                                        </ul>
+                                    </footer>
+                                </div>
+                            </li>
+                            
+                        </ul>
+                    </div>
+                </header>
+                <aside class="sidebar"><img id ="bg" src="assets/bg.jpg">
+				
+                    <div class="sidebar-container">
+                    	
+                        <div class="sidebar-header">
+                            <div class="brand">
+                                <div class="logo"> <span class="l l1"></span> <span class="l l2"></span> <span class="l l3"></span> <span class="l l4"></span> <span class="l l5"></span> </div> PAASCU </div>
+                        </div>
+                        <nav class="menu">
+                            <ul class="nav metismenu" id="sidebar-menu">
+                                <li>
+                                    <a href="index.html"> <i class="fa fa-home"></i> Dashboard </a>
+                               <li>
+                                    <a href="survey.html"> <i class="fa fa-table"></i> Survey Schedule </a>
+								
+                                </li>
+								<li  class="active">
+                                    <a href="addsurvey.html"> <i class="fa fa-pencil-square-o"></i> Add New Survey </a>
+								</li>
+								<li>
+                                <a href="#demo" data-toggle="collapse"> <i class="fa fa-file-text-o"></i> Database <i class="fa arrow"></i> </a>
+                                    
+                                    <ul id="demo" class="collapse">
+                                  
+                                        <li> <a href="accreditors.html">
+    								Accreditors
+    							</a> </li>
+                                        <li> <a href="institutions.html">
+    								Institutions
+    							</a> </li>
+								 <li> <a href="schoolSystems.html">
+    							                School Systems
+    							</a> </li>
+								 <li> <a href="programs.html">
+    								Programs
+    							</a> </li>
+								 
+                                 
+                                    </ul>
+                                </li>
+                                <li><a href="#demo3" data-toggle="collapse"> <i class="fa fa-bar-chart"></i> Reports <i class="fa arrow"></i> </a><ul id="demo3" class="collapse"><li> <a href="reportGA.html">GA Awardees</a> </li><li> <a href="reportHistory.html">History</a> </li></ul></li>
+								<li>
+								    <a href="notifications.html"> <i class="fa fa-bell-o"></i> Notifications <p style="width:15px; height:17px;text-align:center; border-radius:10px; font-family: Verdana; font-size:10px;float:right; background-color:red; color:white;">10</p></a> 
+								 </li>
+                                
+                               
+                            </ul>
+                        </nav>
+                    </div>
+                    <footer class="sidebar-footer">
+            
+			
+					
+                </aside>
+				
+                <div class="sidebar-overlay" id="sidebar-overlay"></div>
+				
+                <article class="content dashboard-page">
+				 
+				 <div class="tab-content">     
+				
+				 <!-- MENU 1 -->
+				 
+				 	<div id="menu1" class="tab-pane fade in active">    
+				 	 <section class="section" id="section1">          
+				   	<form style="height:420px; overflow:scroll;">
+        			<div class="form-group">
+  						<label for="sel1">School System:</label>
+  						<select class="form-control underlined" id="systemForm" style="background: transparent;">
+							<option>DLSU</option>
+        					<option>Ateneo</option>        				
+  						</select>
+					</div>
+					
+					<div class="form-group">
+  						<label for="sel1">Institutions:</label>
+  						<select class="form-control underlined" id="institutionForm" style="background: transparent;">
+    						<option>DLSU - Manila</option>
+        					<option>DLSU - Dasma</option>
+        					<option>Ateneo - Davao</option>
+        					<option>Ateneo - Katipunan</option>
+  						</select>
+					</div>
+					
+				
+					
+					
+					
+        			</form>
+        			<hr>
+        			<button type="button" class="btn btn-success" onclick="addProp();" data-toggle="tab" href="#menu2" style="float:right;">
+  						Next Step <i class="fa fa-angle-double-right"></i>
+  					</button>	
+        			</section>
+        			</div>
+        			
+        			<!-- MENU 2 -->
+        			 
+        			<div id="menu2" class="tab-pane fade">
+        			<section class="section" id="section2"> 
+    					<form style="height:480px; overflow:scroll;">
+    					<div id="add" style="float:left; width: 40%; height: 460px;" class="card sameheight-item">
+    					<div class="card-block">
+    					<h3>Add Programs</h3>
+    					<div class="form-group">
+  						<label for="sel1">Program:</label>
+  						<select class="form-control underlined" id="program">
+  							<option>Common Areas</option>
+    						<option>Computer Science</option>
+        					<option>Computer Engineering</option>
+        					<option>Political Science</option>
+        					<option>Statistics</option>
+  						</select>
+					</div>
+					
+					<div class="form-group">
+  						<label for="sel1">Type of Survey:</label>
+  						<select class="form-control underlined" id="survey">
+							<option>Preliminary</option>
+							<option>Consultancy</option>
+							<option>Formal</option>
+							<option>Revisit</option>
+							<option>Interim</option>
+							<option>Resurvey</option>        					
+  						</select>
+					</div>
+					
+					<div class="form-group">
+  						<label for="sel1">Areas:</label> <button type="button" class="btn btn-link btn-sm" onclick="selectAll();">Select All <i class='fa fa-plus-circle'></i></button><br>
+  						<div style="width: 44%; float:left;">
+  						<label><input type="checkbox" class="checkbox rounded" value="Faculty" id="fac"><span>Faculty</span></label>
+						<label><input type="checkbox" class="checkbox rounded" value="Instruction" id="ins"><span>Instruction</span></label>
+						<label><input type="checkbox" class="checkbox rounded" value="Laboratories" id="lab"><span>Laboratories</span></label>
+						<label><input type="checkbox" class="checkbox rounded" value="Libraries" id="lib"><span>Libraries</span></label>
+						</div>
+						<div style="width: 55%; float:right;">
+						<label><input type="checkbox" class="checkbox rounded" value="Community" id="com"><span>Community</span></label>
+						<label><input type="checkbox" class="checkbox rounded" value="Physical Plant" id="phy"><span>Physical Plant</span></label>
+						<label><input type="checkbox" class="checkbox rounded" value="Student Services" id="stu"><span>Student Services</span></label>
+						<label><input type="checkbox" class="checkbox rounded" value="Administration" id="adm"><span>Administration</span></label>
+						</div>
+					</div>
+					<div class="form-group">
+						<button type="button" class="btn btn-success" onclick="addProgram()" style="float:right;">
+  						Add <i class="fa fa-plus"></i> 
+  						</button>
+  						</div>
+  						</div>
+  						</div>
+  					<div id="added" style="width: 59%; height: 460px; float:right; overflow: scroll;">
+  						<ul id="addedList" class="list-group">
+  							
+  						</ul>
+  					</div>
+  					
+  					<div id="navBut">
+					<div class="form-group">
+						
+  					</div>
+        			</form>
+        				
+        			</section>
+        			<hr>
+        			<button type="button" class="btn btn-success" onclick="addDet();" data-toggle="tab" href="#menu1" style="float:left;">
+  						<i class="fa fa-angle-double-left"></i> Back
+  						</button>
+  						<button type="button" class="btn btn-success" onclick="addSure();" data-toggle="tab" href="#menu3" style="float:right;">
+  						Next Step <i class="fa fa-angle-double-right"></i>
+  						</button>
+  					</div>
+  					
+  				
+  					
+  					
+  					<!-- MENU 3 -->
+  					  
+  					<div id="menu3" class="tab-pane fade">
+  					<section class="section" id="section3">
+  					<h3>Assign Accreditors</h3>
+    					<form style="height:380px; overflow:scroll;">
+    					
+    					<div class="form-group">
+  							<label for="sel1">&nbsp;Chairperson:</label>
+  							<button type="button" class="btn btn-link" onclick="addRep();" data-toggle="tooltip" title="This is the staff chairperson for the whole survey.">  <i class='fa fa-user-secret'></i> Add Chairperson</button>
+  						</div>
+  						
+  						<div class="form-group">
+  							<label for="sel1">PAASCU Rep:</label>
+  							<button type="button" class="btn btn-link" onclick="addRep();" data-toggle="tooltip" title="If not filled up, the survey will contain a null representative, indicating that there were no present PAASCU Rep during the Survey"> <i class='fa fa-street-view'></i> Add Representative</button> <button type="button" class="btn btn-link" onclick="addRep();" data-toggle="tooltip" title="If not filled up, the survey will contain a null representative, indicating that there were no present PAASCU Rep during the Survey"> <i class='fa fa-street-view'></i> Add Representative</button>
+  						</div>
+  						
+    					<div id="added2" class="form-group">
+  							<ul id="addedList2" class="list-group">		
+  							</ul>
+  						</div>
+  						
+			
+  					
+        				</form>
+        				<button type="button" class="btn btn-success" onclick="addProp();" data-toggle="tab" href="#menu2" style="float:left;">
+  							<i class="fa fa-angle-double-left"></i> Back
+  							</button>
+  							<button type="button" class="btn btn-info" onclick="alert('Successfully added survey!');" style="float:right;">
+  							<i class="fa fa-check"></i> Submit 
+  							</button>
+        			</section>
+        			</div>
+        			 
+				  
+             
+					
+				  
+                </article>
+             	
+       	<!-- ADD ACCREDITOR MODAL -->
+            
+             <div id="addModal" class="modal fade">
+    		<div class="modal-dialog modal-lg">
+        		<div class="modal-content">
+            	
+            		<div class="modal-header">
+                		<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span> <span class="sr-only">close</span></button>
+                		<h4 id="modalTitle" class="modal-title"></h4>
+            		</div>
+            	
+            		<div id="modalBody" class="modal-body">
+							 <div class="table-responsive" style="width:100%; float:right;" id="contenthole">
+										
+                                                <table id="smarttable" class="table table-striped table-bordered table-hover">
+												   
+                                                    <thead>
+                                                      <tr>
+                                                            <th>Full Name</th>
+															<th>Institution</th>
+                                                            <th>Discipline/Specialization</th>
+                                                            <th>Primary Survey Area</th>
+															<th>Secondary Survey Areas</th>
+															<th>Total Surveys</th>
+                                                            <th>City</th>
+                                                            <th>Controls</th>
+                                                        </tr>
+                                                    </thead>
+													
+													
+													<tbody>
+														<c:forEach items="${accreditors}" var="acc">
+														
+												        <tr>
+												        
+												          <td><c:out value="${acc.getFullName()}"/></td>
+<!-- 												          <c:if test="${acc.getInstitution()==  ***get from id of school system dropdown*** }"> -->
+												          	
+												          	<td style="background-color:red;" ><c:out value="${acc.getInstitution()}"/></td>
+												          </c:if>
+												          
+												           <c:if test="${acc.getInstitution()!==  ***get from id of school system dropdown*** }">
+												          
+												          	<td ><c:out value="${acc.getInstitution()}"/></td>
+												          </c:if>
+												          
+												          
+												         
+												         
+												          <td><c:out value="${acc.getDiscipline()}"/></td>
+                                                          
+                                                          
+                                                          <td><c:out value="${acc.getFullName()}"/></td>
+<!-- 												          <c:if test="${acc.getInstitution()==  ***get from id of school system dropdown*** }"> -->
+												          	
+												          	<td style="background-color:red;" ><c:out value="${acc.getPrimaryArea()}"/></td>
+												          </c:if>
+												          
+												           <c:if test="${acc.getInstitution()!==  ***get from id of school system dropdown*** }">
+												          
+												          <td><c:out value="${acc.getPrimaryArea()}"/></td>
+												          </c:if>
+                                                          
+                                                          
+                                                          
+												          <td><c:out value="${acc.getSecondaryArea()}"/></td>
+												          <td><c:out value="${acc.getTotalSurveys()}"/></td>
+												          <td><c:out value="${acc.getCity()}"/></td>
+												          <td>
+												          <a href="ViewAccreditor?accreditorID=<c:out value='${acc.getAccreditorID()}'/>">View</a>
+												          <a href="EditAccreditor?accreditorID=<c:out value='${acc.getAccreditorID()}'/>">Edit</a>
+												          <a href="DeleteAccreditor?accreditorID=<c:out value='${acc.getAccreditorID()}'/>">Delete</a></td>
+												        </tr>
+												        </c:forEach>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+						</div>
+            		<div class="modal-footer">
+                		<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                		
+           		 	</div>
+        		</div>
+    		</div>
+		
+		</div>
+
+		
+		
+		<!-- Modal for adding PAASCU Rep and Chair-->
+		<div id="addRep" class="modal fade">
+    		<div class="modal-dialog modal-lg">
+        		<div class="modal-content">
+            	
+            		<div class="modal-header">
+                		<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span> <span class="sr-only">close</span></button>
+                		<h4 id="modalTitle" class="modal-title">Adding a PAASCU Rep/Chair</h4>
+            		</div>
+					
+            		<div id="modalBody" class="modal-body">
+						<div class="table-responsive" style="width:100%;" id="contenthole">
+								<form role="form" class="form-inline">
+											<div class="form-group" style="width:48%; padding-right"> <label class="control-label">Name</label> <input type="text" class="form-control underlined" style="width:90%;"  placeholder="e.g. Alma"> </div>
+											<div class="form-group" style="width:48%; padding-right"> <label class="control-label">Position</label> <input type="text" class="form-control underlined" style="width:90%;"  placeholder="e.g. Board Director"> </div>
+											<div class="form-group" style="width:48%; padding-right"> <label class="control-label">Contact Number</label> <input type="text" class="form-control underlined" style="width:90%;"  placeholder="e.g. 0999-999-999"> </div>
+								</form>
+					</div>
+            		<div class="modal-footer">
+                		<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                		<button type="button" class="btn btn-success" data-dismiss="modal" onclick="alert('Successfully added Rep/Chair!');">Submit</button>
+           		 	</div>
+        		</div>
+    		</div>
+		
+		</div>
+        <!-- Reference block for JS -->
+        <div class="ref" id="ref">
+            <div class="color-primary"></div>
+            <div class="chart">
+                <div class="color-primary"></div>
+                <div class="color-secondary"></div>
+            </div>
+        </div>
+       </div></div>
+        <script src="js/app.js"></script>
+		
+		
+		</body>
+
+</html>
