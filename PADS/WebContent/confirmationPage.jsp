@@ -551,7 +551,7 @@ function consultancyConfirm(PSID, surveyID, decisionJSON) {
    
 }
 
-function changeAcc(areaID, systemID,  sProgramID, oldAccreditorID){
+function changeAcc(areaID, systemID,  PSID, oldAccreditorID){
 
 	
 
@@ -562,7 +562,8 @@ function changeAcc(areaID, systemID,  sProgramID, oldAccreditorID){
 	
 
 	$.ajax({ //CALLING ACCREDITORS WITH EXTRA CHECKING FOR AFFILIATION CONFLICTS
-		  url: "AccreditorsLoader?SPID=" + sProgramID +"&systemID=" + systemID,
+		//naming error: SPID should be PSID : ...?PSID="+PSID+...  
+		url: "AccreditorsLoader?SPID=" + PSID +"&systemID=" + systemID,
 		  dataType: 'json',
 		  async: false,
 		  success: function(data) {
@@ -624,10 +625,10 @@ function changeAcc(areaID, systemID,  sProgramID, oldAccreditorID){
 // 		obj.areas[areaCounter]['accreditorIDs'] = [];
 		var facCounter1 = areaCounter;
 		
-		$.ajax({url: "LatestAccreditor?PSID=" + programID + "&areaID=1",  async: false, success: function(result){
+		$.ajax({url: "LatestAccreditor?PSID=" + PSID + "&areaID=1",  async: false, success: function(result){
 	             var area = document.getElementById("area"+areaID).innerHTML;
 
-	       		addAccreditor(oldAccreditorID,area, "DLSU", "Preliminary", accreditors, facCounter1, programCounter, this);       		
+	       		addAccreditor(PSID,areaID,oldAccreditorID,area, "DLSU", "Preliminary", accreditors, facCounter1, programCounter, this);       		
 	      
 	    }});
 		
@@ -869,7 +870,7 @@ function changeAcc(areaID, systemID,  sProgramID, oldAccreditorID){
 }
 
 
-function addAccreditor(oldAccreditorID, area, program, survey, data, areaCounter, programCounter, btn){
+function addAccreditor(PSID,areaID, oldAccreditorID, area, program, survey, data, areaCounter, programCounter, btn){
 	var add = "";
 	//BUILDING THE ACCREDITOR TABLE SPECIFICALLY TAILORED FOR EACH INSTITUTION - PROGRAM - AREA
 // alert("wiw");
@@ -960,7 +961,7 @@ function addAccreditor(oldAccreditorID, area, program, survey, data, areaCounter
 	//ONCLICK OF ASSIGNING ACCREDITOR
 	 $('#smarttable tbody').on('click', 'tr', function () {
 			var chosenAccreditor = table.row(this).data();
-			alert("Successfully chosen " + chosenAccreditor[1]);
+			alert(PSID+"Successfully chosen " + chosenAccreditor[1] );
 			//var accIDs = surveyObject.programList[programCounter].areas[areaCounter].accreditorIDs;
 			//accIDs.push(chosenAccreditor[0]);
 			//var accCounter = accIDs.indexOf(chosenAccreditor[0]);
@@ -977,11 +978,18 @@ function addAccreditor(oldAccreditorID, area, program, survey, data, areaCounter
        		//btn.parentNode.insertBefore(accBtn, btn);
        		//btn.parentNode.innerHTML(chosenAccreditor[1]);
        		
-       		document.getElementById("accLink")
+       		document.getElementById("accLink"+areaID).innerHTML = chosenAccreditor[1];
 			
-			
+       		$.ajax({ //CHANGES ACCREDITORS IN DB
+         		  url: "ChangeAccreditor?PSID=" + PSID +"&AreaID=" + areaID+"&newAccreditorID=" + chosenAccreditor[0] + "&oldAccreditorID=" + oldAccreditorID,
+         		 
+         		  success: function() {
+         			 alert("Accreditor Successfully Changed");
+         			}
+         	});		
 			$('#addModal').modal('toggle');
     } );
+	
 	
 	$('#addModal').modal();
 }
