@@ -56,6 +56,8 @@
 
 <script>	
 $(document).ready(function() {
+ 	getDisciplines();
+ 	
 	var format = "MM dd, yyyy";
 	$('#datepicker2').datepicker({
 		format: "MM dd, yyyy",
@@ -246,6 +248,27 @@ function addEducation(){
 	$('#courseName').val("");
 }
 
+function getDisciplines(){
+	//GETS ALL DISCIPLINES FOR THE SELECT DROPDOWN
+	var obj = document.getElementById('disciplineForm');	
+	$.getJSON("DisciplineLoader", function(data){	
+		var option = document.createElement("option");
+		option.text = "";
+		option.value = 0;
+		obj.add(option);
+	
+		$.each(data, function (key, value){
+		
+			var option = document.createElement("option");
+			option.text = value.disciplineName;
+			option.value = value.disciplineID;
+			obj.add(option);
+		
+		});	
+		$('#disciplineForm').trigger("chosen:updated");
+	});
+	
+}
 
 function saveAccreditor(){
 	$.ajax({
@@ -503,8 +526,9 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
   						<input type="text" class="form-control underlined" id="surveyName" name="country">
 					</div>
     				<div class="col-xs-5">
-						<label><b>Discipline/Specialization:</b></label>
-  						<input type="text" class="form-control underlined" id="surveyName" name="discipline">
+    					<label><b>Discipline/Specialization:</b></label>
+  						<select class="form-control underlined chosen-select" data-placeholder="Choose a System..." id="disciplineForm" style="background: transparent;" name="discipline">
+						</select>
 					</div>
 					
     				

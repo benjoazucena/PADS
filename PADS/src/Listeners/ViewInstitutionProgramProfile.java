@@ -35,6 +35,7 @@ public class ViewInstitutionProgramProfile extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String programName = (String)request.getParameter("programName");
+		String instName = (String)request.getParameter("instName");
 		int SPID = Integer.parseInt((String)request.getParameter("SPID"));
 //		System.out.println("View Institution: " + institutionID);
 		
@@ -44,6 +45,7 @@ public class ViewInstitutionProgramProfile extends HttpServlet {
 		ArrayList<ProgramSurvey> hist = progUtil.getInstitutionProgramSurvey(SPID);
 		request.setAttribute("history", hist);
 		request.setAttribute("programName", programName);
+		request.setAttribute("instName", instName);
 		RequestDispatcher rd = request.getRequestDispatcher("institutionProgramProfile.jsp");
 		rd.forward(request, response);
 	}

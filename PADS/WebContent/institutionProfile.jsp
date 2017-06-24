@@ -99,7 +99,7 @@ $.fn.dataTable.ext.errMode = 'none';
             
 function goToAddProgramToInstitution(ID, Name){
 	var apoName = Name.replace("&apo;","'");
-	alert(apoName);
+	
 	document.location.href='addProgramToInst.jsp?ID=' + ID+'&Name=' + apoName;
 
 	
@@ -436,7 +436,7 @@ box-shadow: 0px 1px 7px 1px rgba(0,0,0,0.41);
                                                             <td><c:out value="${pp.getDate_addedWord()}"/></td>                                                 
                                                             <td><c:out value="${pp.getNext_survey_sched()}"/></td>
                                                               <td><c:out value="${pp.getLevel()}"/></td>
-                                                              <td><a href="ViewInstitutionProgramProfile?programName=<c:out value="${pp.getDegree_name()}"/>&SPID=<c:out value="${pp.getSPID()}"/>">View</a></td>
+                                                              <td><a href="ViewInstitutionProgramProfile?programName=<c:out value="${pp.getDegree_name()}"/>&SPID=<c:out value="${pp.getSPID()}"/>&instName=<%=inst.getName()%>">View</a></td>
                                                             
                                                         </tr>
 														

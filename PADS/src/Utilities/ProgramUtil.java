@@ -314,6 +314,29 @@ public class ProgramUtil {
 		return temp;
 	}
 	
+	public JSONArray getDisciplines(){
+		JSONArray jArray = new JSONArray();
+		JSONObject job = new JSONObject();
+		
+		try{
+			Connection conn = db.getConnection();
+			PreparedStatement ps = conn.prepareStatement("SELECT programID, name FROM `programs`  ORDER BY `name`");
+			ResultSet rs = ps.executeQuery();
+			while(rs.next()){
+				job = new JSONObject();
+				job.put("disciplineID", rs.getInt(1));
+				job.put("disciplineName", rs.getString(2));
+				jArray.put(job);
+				
+			}
+		} catch (Exception e){
+			System.out.println("Error in SchoolSystemUtil:getSystems()");
+			e.printStackTrace();
+		}
+		
+		return jArray;
+	}
+
 
 	public ArrayList<ProgramSurvey> getInstitutionProgramSurvey(int SPID){
 		ArrayList<ProgramSurvey> hist= new ArrayList();

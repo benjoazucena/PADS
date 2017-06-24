@@ -409,11 +409,16 @@ position:relative;float:left;top:20px;left:30px;color:white;
 											<%@page import="Models.ProgramSurvey" %>
 											<%@page import="java.util.*" %>
 											<% ArrayList<ProgramSurvey> hist = (ArrayList<ProgramSurvey>)request.getAttribute("history"); %>
-											<% String instName = (String)request.getAttribute("programName"); %>
+											<% String programName = (String)request.getAttribute("programName"); %>
+											<% String instName = (String)request.getAttribute("instName"); %>
 												<div class="col-md-12">
 													<h2 >
-													<%=instName %>
+													History
 													</h2>
+													<h3><small>
+													<%=instName %> : 
+													<%=programName %></small>
+													</h3>
 													
 												</div>
 												

@@ -226,10 +226,7 @@ function addAreaBoard(PSID){
 	textarea.value =  contents + select.options[select.selectedIndex].text;	
 }
 
-function revisitConfirm(PSID, surveyID) {
-	
-	
-	
+function revisitConfirm(PSID, surveyID) {	
 	var add = "";	
 	$('#modalBody2').html("<div style='width: 49%; float:left;'><h4>Revisit After Deferment</h4> Decision By: <select><option></option><option></option><option>Team</option>Commission<option>Board</option></select></div>");  
 	add += ("<form method='post' action='SurveyProgramDecision'> <div>Decision By: <select name='decisionBy'><option> </option><option selected >Team</option><option>Commission</option><option>Board</option></select></div>");
@@ -475,12 +472,12 @@ function consultancyConfirm(PSID, surveyID, decisionJSON) {
    	 $.each(decisionJSON, function (key, value){
    		
    	 if(value.decisionBy == "Team"){
-   	//  START OF TEAM TAB CONTENT	-consultancy
-   	 	add+=("<div id='team' class='tab-pane fade in active'>");
-   	   		 add += ("<div class='form-group' style='width:100%;'> <div> 	");
-   	   // Start Input unique for board decision only
-   			add += ("<div id='boardDiv'><span>Enter Board Approval Date: </span> <input type='text' id='datepicker' name='decisionDate' value='"+globalApprovalDate+"' /></div>");
-   	// End Input unique for board decision only  		
+   		//  START OF TEAM TAB CONTENT	-consultancy
+   	 	add += ("<div id='team' class='tab-pane fade in active'>");
+   	   	add += ("<div class='form-group' style='width:100%;'> <div> 	");
+   	   	// Start Input unique for board decision only
+   		add += ("<div id='boardDiv'><span>Enter Board Approval Date: </span> <input type='text' id='datepicker' name='decisionDate' value='"+globalApprovalDate+"' /></div>");
+   		// End Input unique for board decision only  		
    	   		 var opt1="",opt2="",opt3="",opt4="",opt5="",remarksArea="";
    	   		 if(value.decision == "Eligible for formal survey after six months to one year") opt1 = "checked";
    	   		 else if(value.decision == "Eligible for formal survey after one year") opt2 = "checked";

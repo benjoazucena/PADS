@@ -49,9 +49,6 @@ $(document).ready(function() {
 	var systemForm = document.getElementById('systemForm');
 	/* initialize the external events
 	-----------------------------------------------------------------*/
-
-	
-
 	$('#systemForm').chosen().change(function(){
 		document.getElementById('ssID').value= $('#systemForm').find(":selected").val();
 	
@@ -60,89 +57,6 @@ $(document).ready(function() {
  		format: "MM dd, yyyy",
  		autoclose:true,
  	});
-	$('#external-events .fc-event').each(function() {
-
-		// store data so the calendar knows to render an event upon drop
-		$(this).data('event', {
-			title: $.trim($(this).text()), // use the element's text as the event title
-			stick: true // maintain when user navigates (see docs on the renderEvent method)
-		});
-
-		// make the event draggable using jQuery UI
-		$(this).draggable({
-			zIndex: 999,
-			revert: true,      // will cause the event to go back to its
-			revertDuration: 0  //  original position after the drag
-		});
-
-	});
-
-	
-	$('#calendar').fullCalendar({
-		header: {
-			left: 'prev,next today',
-			center: 'title',
-			right: 'month,basicWeek,basicDay'
-		},
-		defaultDate: '2016-09-12',
-		navLinks: true, // can click day/week names to navigate views
-		editable: true,
-		droppable: true, // this allows things to be dropped onto the calendar
-		drop: function() {
-				$(this).remove();
-			}
-		,
-		eventDrop: function(event, delta, revertFunc) {
-	        alert(event.title + " was dropped on " + event.start.format());
-	    },
-	    eventReceive: function(event) {
-	        alert(event.title + " was dropped on " + event.start.format());
-	    },
-	    eventRender: function(event, element) {
-            element.append( "<a class='closeon'> Delete</a>" );
-            element.find(".closeon").click(function() {
-            	alert(event.title + " was removed.");
-               $('#calendar').fullCalendar('removeEvents',event._id);
-            });
-        },
-
-		eventLimit: true, // allow "more" link when too many events
-		events: [
-			{
-				title: 'All Day Event',
-				start: '2016-09-01'
-			},
-			{
-				title: 'Conference',
-				start: '2016-09-11'
-			},
-			{
-				title: 'Meeting',
-				start: '2016-09-12T10:30:00',
-				end: '2016-09-12T12:30:00'
-			},
-			{
-				title: 'Lunch',
-				start: '2016-09-12T12:00:00'
-			},
-			{
-				title: 'Meeting',
-				start: '2016-09-12T14:30:00'
-			},
-			{
-				title: 'Happy Hour',
-				start: '2016-09-12T17:30:00'
-			},
-			{
-				title: 'Dinner',
-				start: '2016-09-12T20:00:00'
-			},
-			{
-				title: 'Birthday Party',
-				start: '2016-09-13T07:00:00'
-			}
-		]
-	});
 	
 });
 
@@ -167,7 +81,16 @@ function getSystems(){
 	
 }
 
-
+function disableSS(){
+	if(document.getElementById("noSS").checked==true){
+		document.getElementById("systemForm").disabled = "true";
+		$('#systemForm').prop('disabled', true).trigger("chosen:updated");
+	}
+	else{
+		document.getElementById("systemForm").disabled = "false";
+		$('#systemForm').prop('disabled', false).trigger("chosen:updated");
+	}
+}
 
 </script>
 
@@ -200,6 +123,29 @@ function changeDetails(){
 	$("#progProponents").className = "progress-bar progress-bar-success progress-bar-striped";
 	$("#progDetails").className = "progress-bar progress-bar-success";
 	$("#progSure").className = "progress-bar progress-bar-success";
+}
+
+function validateForm() {
+    var institutionName = document.forms["addInstForm"]["institutionName"].value;
+    var institutionAcronym = document.forms["addInstForm"]["institutionAcronym"].value;
+    var membershipDate = document.forms["addInstForm"]["membershipDate"].value;
+    
+    if (institutionName == "") {
+        alert("Institution Name must be filled out");
+        return false;
+    }
+    else if (institutionAcronym == "") {
+        alert("Institution Acronym must be filled out");
+        return false;
+    }
+    else if (membershipDate == "") {
+        alert("Membership Date must be filled out");
+        return false;
+    }
+    else{
+    	alert("succesfully added institution!");
+    	location.href = 'institutions.jsp';
+        }
 }
 </script>
 
@@ -349,7 +295,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
 				
          
                 <article class="content dashboard-page">
-				<form method="post" action="AddInstitution" class="form">
+				<form name="addInstForm" onsubmit="return validateForm()" method="post" action="AddInstitution" class="form">
 				
 				 <div class="title-block">
                         <h3 class="title" style="float:left;">
@@ -368,20 +314,24 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
 							New Institutions Form
 						</h3> </div>
 											<div class="form-group">
-  						<label for="sel1">School System:</label><br>
+  						<label for="sel1">School System<b style="color:red">*</b> </label>
+  						<br>
   						<select class="form-control underlined chosen-select" data-placeholder="Choose a System..." id="systemForm" style="background: transparent;" name="ssName">
 							 				
   						</select>
+  						<br>
+  						<input  onclick="disableSS()" type="checkbox" id="noSS" name="noSS">
+  						<h7  style="position:relative;top:-3px;"><small>No School System</small></h7>
   						
   						<input type="hidden" id="ssID" name="ssID">
 					</div>
 					
 					
-											<div class="form-group" style="width:48%; padding-right"> <label class="control-label">Institution Name</label> <input type="text" class="form-control underlined" style="width:90%;"  placeholder="e.g. De La Salle University" name="institutionName"> </div>
-											<div class="form-group" style="width:48%; padding-right"> <label class="control-label">Institution Acronym</label> <input type="text" class="form-control underlined" style="width:90%;"  placeholder="e.g. DLSU-M" name="institutionAcronym"> </div>
+											<div class="form-group" style="width:48%; padding-right"> <label class="control-label">Institution Name<b style="color:red">*</b></label> <input type="text" class="form-control underlined" style="width:90%;"  placeholder="e.g. De La Salle University" name="institutionName"> </div>
+											<div class="form-group" style="width:48%; padding-right"> <label class="control-label">Institution Acronym<b style="color:red">*</b></label> <input type="text" class="form-control underlined" style="width:90%;"  placeholder="e.g. DLSU-M" name="institutionAcronym"> </div>
 								<br><br><br>	
 											<div class="form-group"  style="width:48%; padding-right"> <label class="control-label">Institution Address</label> <input type="text" class="form-control underlined" style="width:90%;" placeholder="e.g. 2401 Taft Avenue, 1004 Manila, Philippines" name="address"> </div>
-											<div class="form-group"  style="width:48%; padding-right"> <label class="control-label">Date of Membership</label> <input id="datepicker" type="text" class="form-control underlined" style="width:90%;" placeholder="" name="membershipDate"> </div>
+											<div class="form-group"  style="width:48%; padding-right"> <label class="control-label">Date of Membership<b style="color:red">*</b></label> <input id="datepicker" type="text" class="form-control underlined" style="width:90%;" placeholder="" name="membershipDate"> </div>
 											
 											<div class="form-group"  style="width:48%; padding-right"> <label class="control-label">City of Institution </label> <input type="text" class="form-control underlined" style="width:90%;" placeholder="e.g. 2401 Taft Avenue, 1004 Manila, Philippines" name="city"> </div>
 								<br><br><br>
@@ -410,7 +360,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
 <!-- 									Submit then add Programs  						 -->
 <!-- 									</button> -->
 									
-									<button type="submit" class="btn btn-info" onclick="alert('Successfully added Institutions!');location.href = 'institutions.jsp';"  style="float:right; padding-right:15px;">
+									<button type="submit" class="btn btn-info" style="float:right; padding-right:15px;">
 									Save
 									</button>
 								</div>
