@@ -37,7 +37,8 @@ public class AccreditorsLoader extends HttpServlet {
 		AccreditorUtil accUtil = new AccreditorUtil();
 		int systemID = Integer.parseInt(request.getParameter("systemID"));
 		int SPID = Integer.parseInt(request.getParameter("SPID"));
-		jArray = accUtil.getAccreditorsJSON(SPID, systemID);
+		String  area= request.getParameter("areaID");
+		jArray = accUtil.getAccreditorsJSON(SPID, systemID, area);
 		response.getWriter().write(jArray.toString());
 	}
 

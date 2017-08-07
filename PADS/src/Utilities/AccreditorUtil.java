@@ -2,9 +2,11 @@ package Utilities;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -13,6 +15,8 @@ import com.mysql.jdbc.Connection;
 
 import Models.Accreditation;
 import Models.Accreditor;
+import Models.AccreditorDeck;
+import Models.AccreditorCard;
 import Models.Degree;
 import Models.Work;
 
@@ -507,55 +511,201 @@ public class AccreditorUtil {
 		}
 	}
 	
-	public JSONArray getAccreditorsJSON(int SPID, int systemID){
+	private String getAccreditorSurveyDate(int accID){
+		String name = null;
+		try{
+			Connection conn = db.getConnection();
+			PreparedStatement ps = conn.prepareStatement("SELECT DISTINCT PSID FROM `program-area` WHERE accreditorID = ?");
+			ps.setInt(1, accID);
+			ResultSet rs = ps.executeQuery();
+			while(rs.next()){
+				int PSID = rs.getInt(1);
+				ps = conn.prepareStatement("SELECT surveyID FROM `program-survey` WHERE PSID = ?");
+				ps.setInt(1, PSID);
+				ResultSet rs2 = ps.executeQuery();
+				
+				int starter = 0;
+				String latestDate = "";		
+				while(rs2.next()){
+					int surveyID = rs.getInt(1);
+					ps = conn.prepareStatement("SELECT end_date FROM `program-survey` WHERE surveyID = ?");
+					ps.setInt(1, surveyID);
+					ResultSet rs3 = ps.executeQuery();
+					
+					
+					rs3.next();
+						String date = rs.getString(1);
+						
+						if(starter == 0) {latestDate = date; starter++;}
+						else{
+							int currDate = Integer.parseInt(latestDate.replace("-",""));
+							int newDate = Integer.parseInt(date.replace("-",""));
+							if(currDate < newDate) {latestDate = date;}
+						}
+				}
+				return latestDate;
+			}
+		} catch (Exception e){
+			System.out.println("Error in AccreditorUtil:getInstitution()");
+			e.printStackTrace();
+		}
+		
+		return name;
+	}
+	
+	private static String getCurDate(){
+		long yourmilliseconds = System.currentTimeMillis();
+		SimpleDateFormat sdf = new SimpleDateFormat("MMM dd yyyy HH:mm");    
+		Date resultdate = new Date(yourmilliseconds);	
+		return sdf.format(resultdate);
+	}
+	
+	public JSONArray getAccreditorsJSON(int SPID, int systemID, String area){
 		JSONArray jArray = new JSONArray();
 		JSONObject job = new JSONObject();
-		
+		double v1total= 0, v2total = 0, v3total= 0, v4total = 0;
+		AccreditorDeck deck = new AccreditorDeck();
+
 		try{
 			Connection conn = db.getConnection();
 			PreparedStatement ps = conn.prepareStatement("SELECT accreditorID, lastname, firstname, middlename, `num_surveys`, city, primaryAreaID, secondaryAreaID, tertiaryAreaID, discipline FROM `accreditors`");
 			ResultSet rs = ps.executeQuery();
+			AccreditorCard temp;
 			while(rs.next()){
-				job = new JSONObject();
-				job.put("accreditorName", rs.getString(2) + ", " + rs.getString(3) + " " + rs.getString(4));
+			temp = new AccreditorCard();
+			int accID = rs.getInt(1);
+			
+			//V1 = Area | V2 = SurveyDate | V3 = Total Surveys | V4 = City
+			
+			//Date Implementation
+			temp.setLastSurveyDate(getAccreditorSurveyDate(accID));	
+			
+			SimpleDateFormat myFormat = new SimpleDateFormat("dd MM yyyy");
+			double v2=0;
+			try {
+			    Date date1 = myFormat.parse(getCurDate());
+			    Date date2 = myFormat.parse(temp.getLastSurveyDate());
+			    long diff = date2.getTime() - date1.getTime();
+			    v2 = TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS);
+			} catch (ParseException e) {
+			    e.printStackTrace();
+			}
+			
+			temp.setV2(v2);
+			
+			//Affiliation Implementation
+				boolean aff = checkAffiliations(accID, systemID);
+				if(aff){deck.addCard_dump(temp); temp.setAffiliation("Has an Affiliation");continue;}
+				else{temp.setAffiliation("No Affiliation");}
+				
+			//Discipline implementaion
+				boolean disc = checkDiscipline(accID, SPID);
+				if(!disc){deck.addCard_dump(temp); continue;} 
+			//Score
 				int primaryAreaID = rs.getInt(7);
-				if(rs.wasNull()){
-					job.put("primaryArea", "None");
-				}else{
-					job.put("primaryArea", getArea(primaryAreaID));
-				}
-				
 				int secondaryAreaID = rs.getInt(8);
-				if(rs.wasNull()){
-					job.put("secondaryArea", "None");
-				}else{
-					job.put("secondaryArea", getArea(secondaryAreaID));
-				}
-				
 				int tertiaryAreaID = rs.getInt(9);
-				if(rs.wasNull()){
-					job.put("tertiaryArea", "None");
-				}else{
-					job.put("tertiaryArea", getArea(tertiaryAreaID));
-				}
-				job.put("primaryAreaID", rs.getInt(7));
-				job.put("secondaryAreaID", rs.getInt(8));
-				job.put("city", rs.getString(6));
-				job.put("discipline", rs.getString(10));
-				job.put("numberSurveys", rs.getInt(5));
-				job.put("accreditorID", rs.getInt(1));
-				job.put("hasAffiliation", checkAffiliations(rs.getInt(1), systemID));
-				jArray.put(job);
+
+				String primaryArea = getArea(primaryAreaID);
+				String secondaryArea =  getArea(secondaryAreaID);
+				String tertiaryArea =  getArea(tertiaryAreaID);
 				
+				if(primaryArea == area) temp.setV1(30); 
+				if(secondaryArea == area) temp.setV1(20); 
+				if(tertiaryArea == area) temp.setV1(10); 
+								
+			//Total Surveys
+				temp.setV3(rs.getInt(5));
+				
+			//City
+				String city = getCity(SPID);
+				if(city.equals(rs.getString(6))){temp.setV4(1);}
+				else{temp.setV4(0);}
+				
+			//All other Data
+				temp.setAccreditorID(rs.getInt(1));
+				temp.setAccreditorName(rs.getString(2) + ", " + rs.getString(3) + " " + rs.getString(4));
+				temp.setCity(rs.getString(6));
+				temp.setDiscipline(rs.getString(10));
+				temp.setPrimary(getArea(rs.getInt(7)));
+				temp.setSecondary(getArea(rs.getInt(8)));
+				temp.setTertiary(getArea(rs.getInt(9)));
+			
+			//Store to Deck
+				v1total+= temp.getV1();
+				v2total+= temp.getV2();
+				v3total+= temp.getV3();
+				v4total+= temp.getV4();
+				deck.addCard_filtered(temp);
 			}
 		} catch (Exception e){
 			System.out.println("Error in AccreditorUtil:getAccreditorsJSON()");
 			e.printStackTrace();
 		}
 		
+		
+		
+		//jArray = deck.getAccList(v1total, v2total, v3total, v4total);
 		return jArray;
 	}
 	
+	private boolean checkDiscipline(int accreditorID, int SPID){
+		boolean result = false;
+		int accDisciplineID, programID;
+		
+		try{
+			Connection conn = db.getConnection();
+			PreparedStatement ps = conn.prepareStatement("SELECT discipline FROM accreditors WHERE accreditorID = ?");
+			ps.setInt(1, accreditorID);
+			ResultSet rs = ps.executeQuery();
+			rs.next();
+			accDisciplineID = rs.getInt(1);
+			
+			ps = conn.prepareStatement("SELECT programID FROM `school-program` WHERE SPID = ?");
+			ps.setInt(1, SPID);
+			rs = ps.executeQuery();
+			rs.next();
+			programID = rs.getInt(1);
+			
+			
+			conn.close();
+			
+			if(accDisciplineID==programID) result = true;
+						
+		} catch (Exception e){
+			System.out.println("Error in AccreditorUtil:checkAffiliations()");
+			e.printStackTrace();
+		}
+		
+		
+		return result;
+	}
+	
+	private String getCity(int SPID){
+		String nice = "england is my city";
+		try{
+			Connection conn = db.getConnection();
+			PreparedStatement ps = conn.prepareStatement("SELECT institutionID FROM `school-program` WHERE SPID = ?");
+			ps.setInt(1, SPID);
+		
+			ResultSet rs = ps.executeQuery();
+			rs.next();
+			int institutionID = rs.getInt(1);
+				
+			ps = conn.prepareStatement("SELECT city FROM `institutions` WHERE institutionID = ?");
+			ps.setInt(1, institutionID);
+		
+			ResultSet rs1 = ps.executeQuery();
+			rs1.next();
+			nice = rs1.getString(1);
+			
+		} catch (Exception e){
+			System.out.println("Error in AccreditorUtil:checkAffiliations()");
+			e.printStackTrace();
+		}
+		return nice;
+				
+	}
 	private boolean checkAffiliations(int accreditorID, int systemID){
 		boolean nice = false;
 		try{
