@@ -298,6 +298,141 @@ public class SurveyUtil {
 		}
 	}
 	
+	public JSONArray getSurveysJSON(String start, String end){
+		JSONArray jArray = new JSONArray();
+		JSONObject day = new JSONObject();
+		String curDate = "";
+		JSONArray institutions = new JSONArray();
+		int i = 0;
+		try{
+			Connection conn = db.getConnection();
+			PreparedStatement ps = conn.prepareStatement("SELECT * FROM surveys WHERE `start_date` >= ? AND `start_date` <= ? ORDER BY `start_date`");
+			ps.setString(1, start);
+			ps.setString(2, end);
+			ResultSet rs = ps.executeQuery();
+
+			while(rs.next()){
+				String newDate = rs.getString(2);
+
+				if(i == 0){
+					i++;
+				}else if( (!(newDate.equalsIgnoreCase(curDate)))){
+					day = new JSONObject();
+					day.put("institutions", institutions);
+					day.put("start", curDate);
+
+					jArray.put(day);
+					
+					institutions = new JSONArray();
+				}
+				
+				String insAcr = getTitle(rs.getInt(6));
+				int surveyID = rs.getInt(1);
+				JSONObject institution = getExpanded(insAcr, surveyID);
+				institutions.put(institution);
+				
+				if(rs.isLast()){
+					day = new JSONObject();
+					day.put("start", newDate);
+					day.put("institutions", institutions);
+					jArray.put(day);
+				}
+				curDate = newDate;
+				
+			}
+		} catch (Exception e){
+			System.out.println("Error in SurveyUtil:getSurveysJSON()");
+			e.printStackTrace();
+		}
+		return jArray;
+	}
+	
+	private JSONObject getExpanded(String insAcr, int surveyID){
+		JSONObject ins = new JSONObject();
+		JSONArray programs = new JSONArray();
+		
+		JSONObject program = new JSONObject();
+		
+		try{
+			Connection conn = db.getConnection();
+			PreparedStatement ps = conn.prepareStatement("SELECT * FROM `program-survey` WHERE surveyID = ?");
+			ps.setInt(1,  surveyID);
+			ResultSet rs = ps.executeQuery();
+			while(rs.next()){
+				String surveyType = rs.getString(4);
+				int SPID = rs.getInt(3);
+				int programID = getProgramID(SPID);
+				String proAcr = getProgramAcronym(programID);
+				
+				program = new JSONObject();
+				program.put("proAcr", proAcr);
+				if(surveyType.equals("Preliminary")){
+					surveyType = "PRE";
+				}else if(surveyType.equals("Formal")){
+					surveyType = "FOR";
+				}else if(surveyType.equals("Resurvey")){
+					surveyType = "RES";
+				}else if(surveyType.equals("Consultancy")){
+					surveyType = "CON";
+				}else if(surveyType.equals("Revisit")){
+					surveyType = "REV";
+				}else if(surveyType.equals("Interim")){
+					surveyType = "INT";
+				}
+				program.put("surveyType", surveyType);
+				
+				programs.put(program);
+			}
+			
+			ins.put("insAcr", insAcr);
+			ins.put("programs", programs);
+			
+		} catch (Exception e){
+			System.out.println("Error in SurveyUtil:getExpanded()");
+			e.printStackTrace();
+		}
+		
+		return ins;
+	}
+	
+	private String getProgramAcronym(int programID){
+		String acr = "NaN";
+		
+		try{
+			Connection conn = db.getConnection();
+			PreparedStatement ps = conn.prepareStatement("SELECT * FROM `programs` WHERE programID = ?");
+			ps.setInt(1, programID);
+			ResultSet rs = ps.executeQuery();
+			rs.next();
+			if(rs.wasNull()){
+				acr = "NaN";
+			}else{
+			acr = rs.getString(3);
+			}
+		} catch (Exception e){
+			System.out.println("Error in SurveyUtil:getProgramAcronym()");
+			e.printStackTrace();
+		}
+		
+		return acr;
+	}
+	private int getProgramID(int SPID){
+		int programID = 0;
+		try{
+			Connection conn = db.getConnection();
+			PreparedStatement ps = conn.prepareStatement("SELECT * FROM `school-program` WHERE SPID = ?");
+			ps.setInt(1, SPID);
+			ResultSet rs = ps.executeQuery();
+			rs.next();
+			programID = rs.getInt(2);
+		} catch (Exception e){
+			System.out.println("Error in SurveyUtil:getProgramID()");
+			e.printStackTrace();
+		}
+		
+		return programID;
+	}
+	
 	public JSONArray getSurveys(){
 		JSONArray jArray = new JSONArray();
 		JSONObject job = new JSONObject();
@@ -426,8 +561,11 @@ public class SurveyUtil {
 			PreparedStatement ps = conn.prepareStatement("SELECT city FROM institutions WHERE institutionID = ?");
 			ps.setInt(1, institutionID);
 			ResultSet rs = ps.executeQuery();
-			rs.next();
-			name = rs.getString(1);
+			if(rs.next()){
+				name = rs.getString(1);
+			}else{
+				name = "No City";
+			}
 		} catch (Exception e){
 			System.out.println("Error in SurveyUtil:getInstitutionCity()");
 			e.printStackTrace();
@@ -443,9 +581,15 @@ public class SurveyUtil {
 			PreparedStatement ps = conn.prepareStatement("SELECT * FROM institutions WHERE institutionID = ?");
 			ps.setInt(1, institutionID);
 			ResultSet rs = ps.executeQuery();
-			rs.next();
-			name = rs.getString(3) + " - " + rs.getString(10);
-		
+			if(rs.next()){
+				if(rs.getString(10) == null){
+					name = rs.getString(3) + " - No City";
+				}else{
+					name = rs.getString(3) + " - " + rs.getString(10);
+				}
+			}else{
+				name = "None";
+			}
 		} catch (Exception e){
 			System.out.println("Error in SurveyUtil:getInstitution()");
 			e.printStackTrace();
@@ -495,7 +639,6 @@ public class SurveyUtil {
 				job.put("decisionBy", rs.getString(5));
 				rs.getString(6);
 				if(!rs.wasNull()){
-					System.out.println(rs.getString(6)+"NULL???????????");
 					job.put("boardApprovalDate", formatDate(rs.getString(6)));
 
 				}else{
@@ -683,8 +826,11 @@ public class SurveyUtil {
 			PreparedStatement ps = conn.prepareStatement("SELECT * FROM institutions WHERE institutionID = ?");
 			ps.setInt(1, institutionID);
 			ResultSet rs = ps.executeQuery();
-			rs.next();
+			if(rs.next()){
 			title = rs.getString(18);
+			}else{
+				title = "N/A";
+			}
 			System.out.println(title);
 		} catch (Exception e){
 			System.out.println("Error in SurveyUtil:getTitle()");
@@ -731,7 +877,7 @@ public JSONArray getConfirmationSurvey(int SurveyID){
 			job.put("endDate", rs.getString(3));
 			job.put("dateRequested", rs.getString(5));
 			job.put("dateApproved", rs.getString(4));
-				programSurvey = getPS(rs.getInt(1));
+			programSurvey = getPS(rs.getInt(1));
 			
 			job.put("programs", programSurvey);
 			
@@ -747,90 +893,15 @@ public JSONArray getConfirmationSurvey(int SurveyID){
 }
 
 public void confirmAttendance(int PSID,int areaID,int accID){
-	
 	try{
 		Connection conn = db.getConnection();
-		//Check if accreditor has already been previously confirmed.
-		Boolean isConfirmed = checkConfirmation(PSID,areaID,accID);
-		
-		//procedure if accreditor has been previously confirmed
-		if(isConfirmed){
-			PreparedStatement ps = conn.prepareStatement("UPDATE `program-area` SET `attendance_confirmation` = ? WHERE accreditorID=? AND PSID = ? AND areaID = ?");
-			ps.setString(1, "Unconfirmed");
-			ps.setInt(2, accID);
-			ps.setInt(3, PSID);
-			ps.setInt(4, areaID);
-			System.out.println("PSID: " + PSID + " AREA: " + areaID + " accID: " + accID);
-			ps.executeUpdate();
-			
-			//Updates accreditor's number of surveys
-			ps = conn.prepareStatement("UPDATE `accreditors` SET `num_surveys` = `num_surveys` -1 WHERE accreditorID=?");
-			ps.setInt(1, accID);
-			ps.executeUpdate();
-		}
-		//procedure if accreditor has not been confirmed.
-		else{			
-			PreparedStatement ps = conn.prepareStatement("UPDATE `program-area` SET `attendance_confirmation` = ? WHERE accreditorID=? AND PSID = ? AND areaID = ?");
-			ps.setString(1, "Confirmed");
-			ps.setInt(2, accID);
-			ps.setInt(3, PSID);
-			ps.setInt(4, areaID);
-			System.out.println("PSID: " + PSID + " AREA: " + areaID + " accID: " + accID);
-			ps.executeUpdate();
-			
-			//Updates accreditor's number of surveys
-			ps = conn.prepareStatement("UPDATE `accreditors` SET `num_surveys` = `num_surveys` +1 WHERE accreditorID=?");
-			ps.setInt(1, accID);
-			ps.executeUpdate();
-			
-			//The statements below are used in creating new notifications when appropriate.
-			ps = conn.prepareStatement("COUNT(SELECT *) FROM `program-area` WHERE attendance_confirmation = ? AND accreditorID = ?");
-			ps.setString(1, "Confirmed");
-			ps.setInt(2, accID);
-			ResultSet rs = ps.executeQuery();
-			rs.next();
-			
-			NotificationUtil notifUtil = new NotificationUtil();
-			String content = getAccreditorName(accID);
-			String type = "awards";
-		
-			if(rs.getInt(1)==100){
-				content = content+": Completed 100th Survey";
-				notifUtil.generateNotif(content,type);
-			}
-			else if(rs.getInt(1)==75){
-				content = content+": Completed 75th Survey";
-				notifUtil.generateNotif(content,type);
-			}
-			else if(rs.getInt(1)==50){
-				content = content+": Completed 50th Survey";
-				notifUtil.generateNotif(content,type);
-			}
-			else if(rs.getInt(1)==25){
-				content = content+": Completed 25th Survey";
-				notifUtil.generateNotif(content,type);
-			}
-		}				
-	} catch (Exception e){
-		System.out.println("Error in ProgramUtil:updateProgram()");	
-		e.printStackTrace();
-	}	
-}
-
-private boolean checkConfirmation(int PSID, int areaID, int accID){
-	boolean res = true;
-	try{
-		Connection conn = db.getConnection();
-		PreparedStatement ps = conn.prepareStatement("Select `attendance_confirmation` FROM program_area WHERE accreditorID=? AND PSID = ? AND areaID = ?");
-		ps.setInt(1, accID);
-		ps.setInt(2, PSID);
-		ps.setInt(3, areaID);
-		ResultSet rs = ps.executeQuery();
-		rs.next();
-		if(rs.getString(1).equals("Confirmed")){
-			res = true;
-		}
-		else res = false;
+		PreparedStatement ps = conn.prepareStatement("UPDATE `program-area` SET `attendance_confirmation` = ? WHERE accreditorID=? AND PSID = ? AND areaID = ?");
+		ps.setString(1, "Confirmed");
+		ps.setInt(2, accID);
+		ps.setInt(3, PSID);
+		ps.setInt(4, areaID);
+		System.out.println("PSID: " + PSID + " AREA: " + areaID + " accID: " + accID);
+		ps.executeUpdate();
 		
 	} catch (Exception e){
 		System.out.println("Error in ProgramUtil:updateProgram()");
@@ -838,61 +909,68 @@ private boolean checkConfirmation(int PSID, int areaID, int accID){
 		e.printStackTrace();
 	}
 	
-	return res;
-	
 }
 
-private String getAccreditorName(int accID){
-	String name = "";
+public void deleteSurvey(int surveyID){
 	try{
 		Connection conn = db.getConnection();
-		PreparedStatement ps = conn.prepareStatement("SELECT `name` FROM accreditors WHERE accreditorID=?");
-		ps.setInt(1, accID);
+		PreparedStatement ps = conn.prepareStatement("DELETE from surveys WHERE surveyID = ?");
+		ps.setInt(1, surveyID);
+		ps.executeUpdate();
+		
+		ps = conn.prepareStatement("SELECT * from `program-survey` WHERE surveyID = ?");
+		ps.setInt(1, surveyID);
 		ResultSet rs = ps.executeQuery();
-		rs.next();
-		name = rs.getString(1);
-				
+		
+		while(rs.next()){
+			ps = conn.prepareStatement("DELETE from `program-area` WHERE PSID = ?");
+			ps.setInt(1, rs.getInt(1));
+			ps.executeUpdate();
+		}
+		
+		ps = conn.prepareStatement("DELETE from `program-survey` WHERE surveyID = ?");
+		ps.setInt(1, surveyID);
+		ps.executeUpdate();
+		
 	} catch (Exception e){
-		System.out.println("Error in ProgramUtil:updateProgram()");	
+		System.out.println("Error in SurveyUtil:deleteSurvey()");
 		e.printStackTrace();
 	}
-	
-	return name;
 }
 
 private static String formatDate(String date){
-	String format = new String();
+	String format = "Date Error";
 	String month = "";
 	String day;
 	String year;
-	
-	if(date!=null&&!date.isEmpty()){
+	System.out.println("Date: " + date);
+	if((date == null) || (date.equals("")) ){}else{
+		System.out.println("pumaosk");
 	String[] parts = date.split("-");
-	System.out.println("_"+date+"DATE!!!?????");
 	if(parts[1].equals("01")){
-		month = "Jan";
+		month = "January";
 	}else if(parts[1].equals("02")){
-		month = "Feb";
+		month = "February";
 	}else if(parts[1].equals("03")){
-		month = "Mar";
+		month = "March";
 	}else if(parts[1].equals("04")){
-		month = "Apr";
+		month = "April";
 	}else if(parts[1].equals("05")){
 		month = "May";
 	}else if(parts[1].equals("06")){
-		month = "Jun";
+		month = "June";
 	}else if(parts[1].equals("07")){
-		month = "Jul";
+		month = "July";
 	}else if(parts[1].equals("08")){
-		month = "Aug";
+		month = "August";
 	}else if(parts[1].equals("09")){
-		month = "Sep";
+		month = "September";
 	}else if(parts[1].equals("10")){
-		month = "Oct";
+		month = "October";
 	}else if(parts[1].equals("11")){
-		month = "Nov";
+		month = "November";
 	}else if(parts[1].equals("12")){
-		month = "Dec";
+		month = "December";
 	}
 	year = parts[0];
 

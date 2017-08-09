@@ -130,9 +130,7 @@ public class SurveyProgramDecision extends HttpServlet {
 			String remarks_board = ""+(String)request.getParameter("remarks"+PSID+"_board");
 			System.out.println(decision_board+"DECISION OF BOARD");
 			
-			
-
-			
+					
 //			if(decision_board!="" && decision_board!=null){
 //				
 //				String[] parts = dateApproved.split("-");
@@ -169,7 +167,7 @@ System.out.println("TYPEEEE");
 		String month = "";
 		String day;
 		String year;
-		if(date!=null&&!date.isEmpty()){
+		if((date == null) || (date.equals("")) || (date.equals(" "))){
 		String[] parts = date.split(" ");
 		if(parts[0].equals("January")){
 			month = "01";

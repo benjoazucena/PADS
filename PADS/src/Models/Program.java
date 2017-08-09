@@ -8,21 +8,30 @@ public class Program {
 	private int programID;
 	private String name;
 	private int count;
-	
+	private String acronym;
 	
 	private ArrayList<SchoolProgram> sps;
 	
-	public Program(int programID, String name, int count) {
+	public Program(int programID, String name, String acronym, int count) {
 		super();
 		this.programID = programID;
 		this.name = name;
 		this.count = count;
+		this.acronym = acronym;
 	}
 	
 	public Program(){
 		
 	}
 	
+	public String getAcronym() {
+		return acronym;
+	}
+
+	public void setAcronym(String acronym) {
+		this.acronym = acronym;
+	}
+
 	public ArrayList<SchoolProgram> getSps(){
 		return sps;
 	}

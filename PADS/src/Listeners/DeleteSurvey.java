@@ -7,22 +7,19 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.json.JSONArray;
-
-import Utilities.AccreditorUtil;
-import Utilities.InstitutionUtil;
+import Utilities.SurveyUtil;
 
 /**
- * Servlet implementation class AccreditorsLoader
+ * Servlet implementation class DeleteSurvey
  */
-@WebServlet("/AccreditorsLoader")
-public class AccreditorsLoader extends HttpServlet {
+@WebServlet("/DeleteSurvey")
+public class DeleteSurvey extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public AccreditorsLoader() {
+    public DeleteSurvey() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -32,14 +29,10 @@ public class AccreditorsLoader extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
-		response.setContentType("application/json");
-		JSONArray jArray = new JSONArray();
-		AccreditorUtil accUtil = new AccreditorUtil();
-		int systemID = Integer.parseInt(request.getParameter("systemID"));
-		int SPID = Integer.parseInt(request.getParameter("SPID"));
-		String  area= request.getParameter("area");
-		jArray = accUtil.getAccreditorsJSON(SPID, systemID, area);
-		response.getWriter().write(jArray.toString());
+		int surveyID = Integer.parseInt(request.getParameter("surveyID"));
+		SurveyUtil surUtil = new SurveyUtil();
+		surUtil.deleteSurvey(surveyID);
+		
 	}
 
 	/**

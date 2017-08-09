@@ -3,32 +3,19 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix = "c" %>
 <!doctype html>
 <html class="no-js" lang="en">
-
+<%@page import="Models.ProgramSurvey" %>
+											<%@page import="java.util.*" %>
+											<% ArrayList<ProgramSurvey> hist = (ArrayList<ProgramSurvey>)request.getAttribute("history"); %>
+											<% String programName = (String)request.getAttribute("programName"); %>
+											<% String instName = (String)request.getAttribute("instName"); %>
     <head>
         <meta charset="utf-8">
         <meta http-equiv="x-ua-compatible" content="ie=edge">
         <title> PAASCU - Accreditation Schedule Manager </title>
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="apple-touch-icon" href="apple-touch-icon.png">
-		  <!-- IMPORTS -->
-<!--     <script src='js/jquery.min.js'></script> -->
-<!--     <script src='js/jquery-ui.min.js'></script> -->
-<!--     <link rel="stylesheet" href="css/bootstrap.css"> -->
-<!--     <script src="js/bootstrap.min.js"></script> -->
-<!--     <link rel="apple-touch-icon" href="apple-touch-icon.png"> -->
-<!--     <link rel="stylesheet" href="css/vendor.css"> -->
-<!--     <link href='fullcalendar.css' rel='stylesheet' /> -->
-<!--     <link href='calendar/fullcalendar.print.css' rel='stylesheet' media='print' /> -->
-<!-- 	<script src='calendar/lib/moment.min.js'></script> -->
-<!-- 	<script src='calendar/fullcalendar.min.js'></script> -->
-<!-- 	<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"> -->
-<!-- 	<link rel="stylesheet" type="text/css" href=" css/dataTables.bootstrap.min.css"> -->
-<!-- 	<script src="js/jquery.dataTables.min.js"></script> -->
-<!-- 	<script src="js/dataTables.bootstrap.min.js"></script> -->
-
-
-	
+       	 <!-- IMPORTS -->
+	<link rel="stylesheet" href="chosen/chosen.css">
     <link rel="stylesheet" href="css/bootstrap.css">
     <link rel="apple-touch-icon" href="apple-touch-icon.png">
     <link rel="stylesheet" href="css/vendor.css">
@@ -40,6 +27,8 @@
 	<link href="css/buttons.dataTables.min.css" rel="stylesheet" type="text/css" media="all" />	
 	
 	<script src='js/jquery.min.js'></script>
+	<script src="chosen/chosen.jquery.js" type="text/javascript"></script>
+	
     <script src='js/jquery-ui.min.js'></script>
     <script src="js/bootstrap.min.js"></script>
 	<script src="js/jquery.dataTables.min.js"></script>
@@ -50,53 +39,62 @@
 	<script src="js/jszip.min.js"></script>
 	<script src="js/pdfmake.min.js"></script>
 	<script src="js/buttons.html5.min.js"></script>
-	<script src="js/vfs_fonts.js"></script>	
-
-	<!-- END IMPORTS -->
+	<script src="js/vfs_fonts.js"></script>
 	
+	<!-- END IMPORTS -->	
 	<link rel="stylesheet" href="css/app.css">
         <link rel="stylesheet" href="css/vendor.css">
         <!-- Theme initialization -->
 		
 		<script>
-		$(document).ready(function() {
+$(document).ready(function() {
 
-     $('#smarttable').DataTable( {
-        dom: 'Bfrtip',
-        
-        "columnDefs":[{
-        	"width":"20%","targets": 0,1,2,3,4 }
-        }],
-    	buttons: [
-                  {
-                	  extend: 'pdfHtml5',
-                	  title: "Survey History",
-                	  download: 'open',
-                	  message: "<c:out value='${programName}'/>",
-                	  customize: function ( doc ) {
-                          alert(JSON.stringify(doc.content[1].style));
-                          var wew = { text: '<c:out value='${programName}'/>', style: '{alignment:"center", fontSize:22, bold:true}' };
-                          doc.content.push(wew);
-                          doc.content[1].style = ["message", "{alignment:'center', fontSize:22, bold:true}"];
-                          alert(JSON.stringify(doc.content[1].style));
-
-                      }
-                  },
-                  {
-                	  extend: 'excelHtml5',
-                	  title: "Survey History",
-                	  message: "Putangina"
-                  }
-                  
-        ]
-    } );
-
-
-	
-	
+		
+	  $('#smarttable').DataTable( {
+	    	dom: 'Blfrtip',
+	    	buttons: [
+	                  {
+	                	  extend: 'pdfHtml5',
+	                	  title: "Institution Program History - <%=instName%>"  ,
+	                	  download: 'open',
+	                	  exportOptions: {
+	                          columns: [ 0, 1,2,3,4]
+	                      }
+	                  },
+	                  {
+	                	  extend: 'excelHtml5',
+	                	  title: "List of Disciplines",
+	                	  exportOptions: {
+	                          columns: [ 0, 1]
+	                      }
+	                  }
+	                  
+	        ],
+	        initComplete: function () {
+	            this.api().columns().every( function () {
+	                var column = this;
+	                var select = $('<select><option value=""></option></select>')
+	                    .appendTo( $(column.footer()).empty() )
+	                    .on( 'change', function () {
+	                        var val = $.fn.dataTable.util.escapeRegex(
+	                            $(this).val()
+	                        );
+	 
+	                        column
+	                            .search( val ? '^'+val+'$' : '', true, false )
+	                            .draw();
+	                    } );
+	 
+	                column.data().unique().sort().each( function ( d, j ) {
+	                    select.append( '<option value="'+d+'">'+d+'</option>' )
+	                } );
+	            } );
+	        }
+	    } );
 		
 } );
-$.fn.dataTable.ext.errMode = 'none';
+</script>
+<script>
 
             var themeSettings = (localStorage.getItem('themeSettings')) ? JSON.parse(localStorage.getItem('themeSettings')) :
             {};
@@ -406,11 +404,7 @@ position:relative;float:left;top:20px;left:30px;color:white;
                                     <div class="card-block">
 										<section class="section">
 											<div class="row">
-											<%@page import="Models.ProgramSurvey" %>
-											<%@page import="java.util.*" %>
-											<% ArrayList<ProgramSurvey> hist = (ArrayList<ProgramSurvey>)request.getAttribute("history"); %>
-											<% String programName = (String)request.getAttribute("programName"); %>
-											<% String instName = (String)request.getAttribute("instName"); %>
+											
 												<div class="col-md-12">
 													<h2 >
 													History

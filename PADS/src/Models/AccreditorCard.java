@@ -9,12 +9,56 @@ public class AccreditorCard {
 	private String primary;
 	private String secondary;
 	private String tertiary;
+	private int primaryID;
+	private int secondaryID;
+	private int tertiaryID;
+	private int numberSurveys;
+	private String dateTrained;
+	public String getDateTrained() {
+		return dateTrained;
+	}
+
+	public void setDateTrained(String dateTrained) {
+		this.dateTrained = dateTrained;
+	}
+
+	public int getNumberSurveys() {
+		return numberSurveys;
+	}
+
+	public void setNumberSurveys(int numberSurveys) {
+		this.numberSurveys = numberSurveys;
+	}
+
+	public int getPrimaryID() {
+		return primaryID;
+	}
+
+	public void setPrimaryID(int primaryID) {
+		this.primaryID = primaryID;
+	}
+
+	public int getSecondaryID() {
+		return secondaryID;
+	}
+
+	public void setSecondaryID(int secondaryID) {
+		this.secondaryID = secondaryID;
+	}
+
+	public int getTertiaryID() {
+		return tertiaryID;
+	}
+
+	public void setTertiaryID(int tertiaryID) {
+		this.tertiaryID = tertiaryID;
+	}
 	private int totalSurveys;
 	private String city;
 	private String lastSurveyDate;
 	private double score;
-	private double v1,v2,v3,v4;
-	
+	private double v1,v2,v3;
+	private int rank;
 	public AccreditorCard(int accreditorID,String accreditorName,String affiliation,String discipline,String primary,String secondary, String tertiary, int totalSurveys){
 		
 	}
@@ -22,6 +66,16 @@ public class AccreditorCard {
 	public AccreditorCard(){
 		
 	}
+	
+	
+	public int getRank() {
+		return rank;
+	}
+
+	public void setRank(int rank) {
+		this.rank = rank;
+	}
+
 	public String getLastSurveyDate() {
 		return lastSurveyDate;
 	}
@@ -108,12 +162,7 @@ public class AccreditorCard {
 	public void setV3(double v3) {
 		this.v3 = v3;
 	}
-	public double getV4() {
-		return v4;
-	}
-	public void setV4(double v4) {
-		this.v4 = v4;
-	}
+
 	
 	
 	

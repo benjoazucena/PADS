@@ -6,7 +6,7 @@
 	
     <head>
     	 <!-- IMPORTS -->
-	
+	<link rel="stylesheet" href="chosen/chosen.css">
     <link rel="stylesheet" href="css/bootstrap.css">
     <link rel="apple-touch-icon" href="apple-touch-icon.png">
     <link rel="stylesheet" href="css/vendor.css">
@@ -18,6 +18,8 @@
 	<link href="css/buttons.dataTables.min.css" rel="stylesheet" type="text/css" media="all" />	
 	
 	<script src='js/jquery.min.js'></script>
+	<script src="chosen/chosen.jquery.js" type="text/javascript"></script>
+	
     <script src='js/jquery-ui.min.js'></script>
     <script src="js/bootstrap.min.js"></script>
 	<script src="js/jquery.dataTables.min.js"></script>
@@ -59,27 +61,58 @@
 	
 <script>
 $(document).ready(function() {
-
+	getDisciplines();
+	var discForm = document.getElementById('discForm');
+	
+	$('#discForm').chosen().change(function(){
+		var discID = $('#discForm').find(":selected").val();
+// 		$.ajax({url: "AccreditorsByDisc?disciplineID=" + discID, success: function(result){
+// 	        alert(result);
+// 	    }});
+		window.location.href = "AccreditorsByDisc?disciplineID=" + discID;
+	});
     $('#smarttable').DataTable( {
-    	dom: 'Bfrtip',
+    	
     	buttons: [
-                  {
-                	  extend: 'pdfHtml5',
-                	  title: "List of Accreditors",
-                	  download: 'open',
-                	  exportOptions: {
-                          columns: [ 0, 1, 2, 3 ]
-                      }
-                  },
-                  {
-                	  extend: 'excelHtml5',
-                	  title: "List of Accreditors",
-                	  exportOptions: {
-                          columns: [ 0, 1, 2, 3 ]
-                      }
-                  }
-                  
-        ]
+            {
+          	  extend: 'pdfHtml5',
+          	  title: "List of Accreditors",
+          	  download: 'open',
+          	  exportOptions: {
+                    columns: [ 0, 1, 2, 3 ]
+                }
+            },
+            {
+          	  extend: 'excelHtml5',
+          	  title: "List of Accreditors",
+          	  exportOptions: {
+                    columns: [ 0, 1, 2, 3 ]
+                }
+            }
+            
+ 		],
+    	dom: 'Blfrtip',
+    	
+        initComplete: function () {
+            this.api().columns().every( function () {
+                var column = this;
+                var select = $('<select><option value=""></option></select>')
+                    .appendTo( $(column.footer()).empty() )
+                    .on( 'change', function () {
+                        var val = $.fn.dataTable.util.escapeRegex(
+                            $(this).val()
+                        );
+ 
+                        column
+                            .search( val ? '^'+val+'$' : '', true, false )
+                            .draw();
+                    } );
+ 
+                column.data().unique().sort().each( function ( d, j ) {
+                    select.append( '<option value="'+d+'">'+d+'</option>' )
+                } );
+            } );
+        }
     } );
 
 	
@@ -88,6 +121,27 @@ $(document).ready(function() {
 		
 } );
 $.fn.dataTable.ext.errMode = 'none';
+
+function getDisciplines(){
+	//GETS ALL SYSTEMS FOR THE SELECT DROPDOWN
+	var obj = document.getElementById('discForm');
+	
+	$.getJSON("DisciplineLoader", function(data){
+		var option = document.createElement("option");
+		option.text = "";
+		option.value = 0;
+		obj.add(option);
+		$.each(data, function (key, value){
+			var option = document.createElement("option");
+			option.text = value.disciplineName;
+			option.value = value.disciplineID;
+			obj.add(option);
+			
+		});	
+		$('#discForm').trigger("chosen:updated");
+	});
+	
+}
 </script>
 
 <style>
@@ -346,7 +400,8 @@ $.fn.dataTable.ext.errMode = 'none';
                       
 					
 					
-						
+						 <select class="form-control underlined chosen-select" data-placeholder="Filter by discpline..." id="discForm" style="background: transparent;" name="ssName"></select>
+						<br>
 					
                                             <div class="table-responsive" style="width:100%; float:right;" id="contenthole">
 										

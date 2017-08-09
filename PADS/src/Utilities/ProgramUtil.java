@@ -19,6 +19,28 @@ public class ProgramUtil {
 		db = new DBUtil();
 	}
 	
+	public JSONArray getDisciplines(){
+		JSONArray jArray = new JSONArray();
+		JSONObject job = new JSONObject();
+		try{
+			Connection conn = db.getConnection();
+			PreparedStatement ps = conn.prepareStatement("SELECT programID, name FROM `programs`ORDER BY `name`");
+			ResultSet rs = ps.executeQuery();
+			while(rs.next()){
+				job = new JSONObject();
+				job.put("disciplineID", rs.getInt(1));
+				job.put("disciplineName", rs.getString(2));
+				jArray.put(job);
+				
+			}
+		} catch (Exception e){
+			System.out.println("Error in ProgramUtil:getDisciplines()");
+			e.printStackTrace();
+		}
+
+		return jArray;
+	}
+	
 	public JSONArray getProgramsJSON(int institutionID){
 		JSONArray jArray = new JSONArray();
 		JSONObject job = new JSONObject();
@@ -56,7 +78,7 @@ public class ProgramUtil {
 				// String secondaryArea, int totalSurveys, String city)
 				//db returns accreditorID, lastname, firstname, midlename, honorifics, 
 				//email, num_surveys, date_trained, contact, address, city, country, venue_trained
-				temp = new Program(rs.getInt(1), rs.getString(2), getCount(rs.getInt(1)));
+				temp = new Program(rs.getInt(1), rs.getString(2), rs.getString(3), getCount(rs.getInt(1)));
 				System.out.println(rs.getString(2));
 				programs.add(temp);
 			}
@@ -126,7 +148,7 @@ public class ProgramUtil {
 			ps.setInt(1, programID);
 			ResultSet rs = ps.executeQuery();
 			rs.next();
-			temp = new Program(rs.getInt(1), rs.getString(2), getCount(rs.getInt(1)));
+			temp = new Program(rs.getInt(1), rs.getString(2), rs.getString(3), getCount(rs.getInt(1)));
 			temp.setSps(getSps(programID));
 		} catch (Exception e){
 			System.out.println("Error in ProgramUtil:getProgram()");
@@ -187,11 +209,12 @@ public class ProgramUtil {
 		}
 		return count;
 	}
-	public void addProgram(String programName){
+	public void addProgram(String programName, String acronym){
 		try{
 			Connection conn = db.getConnection();
-			PreparedStatement ps = conn.prepareStatement("INSERT INTO programs (name) VALUES (?)");
+			PreparedStatement ps = conn.prepareStatement("INSERT INTO programs (name, acronym) VALUES (?, ?)");
 			ps.setString(1, programName);
+			ps.setString(2, acronym);
 			ps.executeUpdate();
 		} catch (Exception e){
 			System.out.println("Error in ProgramUtil:addProgram()");
@@ -199,13 +222,18 @@ public class ProgramUtil {
 		}
 	}
 	
-	public void editProgram(int programID, String name){
+	public void editProgram(int programID, String name, String acronym){
 		try{
 			Connection conn = db.getConnection();
 			PreparedStatement ps = conn.prepareStatement("UPDATE programs SET name = ? WHERE programID = ?");
 			ps.setString(1, name);
 			ps.setInt(2, programID);
 			ps.executeUpdate();
+			ps = conn.prepareStatement("UPDATE programs SET acronym = ? WHERE programID = ?");
+			ps.setString(1, acronym);
+			ps.setInt(2, programID);
+			ps.executeUpdate();
+
 		} catch (Exception e){
 			System.out.println("Error in ProgramUtil:editProgram()");
 			e.printStackTrace();
@@ -237,7 +265,11 @@ public class ProgramUtil {
 				ps.setInt(2, PSID);
 				ResultSet rs = ps.executeQuery();
 				if(rs.next()){
-					temp = getAccreditorName(rs.getInt(3));
+					try{
+						temp = getAccreditorName(rs.getInt(3));
+					}catch(Exception e){
+						temp = "No Data";
+					}
 				}else{
 					System.out.println("No data for areaID: " + areaID + " - PSID: " + PSID);
 					temp = "No Data";
@@ -250,7 +282,7 @@ public class ProgramUtil {
 		}
 		return temp;
 	}
-	
+
 	public String getLatestAccreditorPSID(int PSID, int areaID){
 		String temp = "";
 		
@@ -276,19 +308,30 @@ public class ProgramUtil {
 		
 		return temp;
 	}
-	
 	private String getAccreditorName(int accreditorID){
 		String temp = "";
 		try{
 			Connection conn = db.getConnection();
 			PreparedStatement ps = conn.prepareStatement("SELECT * FROM `accreditors` WHERE accreditorID = ?");
 			ps.setInt(1, accreditorID);
+			System.out.println("Debug getAccreditorName: " + accreditorID);
+
 			ResultSet rs = ps.executeQuery();
-			rs.next();
-			temp = rs.getString(2) + ", " + rs.getString(3) + " " + rs.getString(4);
+			
+			if(!rs.next()){
+				temp = "Accreditor has been removed";
+			}else{
+				System.out.println("Debug getAccreditorName: " + rs.getString(4));
+			if(rs.getString(4) == null){
+				temp = rs.getString(2) + ", " + rs.getString(3);
+			}else{
+				temp = rs.getString(2) + ", " + rs.getString(3) + " " + rs.getString(4);
+
+			}
+			}
 		
 		} catch (Exception e){
-			System.out.println("Error in ProgramUtil:getInstitution()");
+			System.out.println("Error in ProgramUtil:getAccreditorName()");
 			e.printStackTrace();
 		}
 		return temp;
@@ -314,29 +357,6 @@ public class ProgramUtil {
 		return temp;
 	}
 	
-	public JSONArray getDisciplines(){
-		JSONArray jArray = new JSONArray();
-		JSONObject job = new JSONObject();
-		
-		try{
-			Connection conn = db.getConnection();
-			PreparedStatement ps = conn.prepareStatement("SELECT programID, name FROM `programs`  ORDER BY `name`");
-			ResultSet rs = ps.executeQuery();
-			while(rs.next()){
-				job = new JSONObject();
-				job.put("disciplineID", rs.getInt(1));
-				job.put("disciplineName", rs.getString(2));
-				jArray.put(job);
-				
-			}
-		} catch (Exception e){
-			System.out.println("Error in SchoolSystemUtil:getSystems()");
-			e.printStackTrace();
-		}
-		
-		return jArray;
-	}
-
 
 	public ArrayList<ProgramSurvey> getInstitutionProgramSurvey(int SPID){
 		ArrayList<ProgramSurvey> hist= new ArrayList();
@@ -419,29 +439,29 @@ public class ProgramUtil {
 		String year;
 		String[] parts = date.split("-");
 		if(parts[1].equals("01")){
-			month = "Jan";
+			month = "January";
 		}else if(parts[1].equals("02")){
-			month = "Feb";
+			month = "February";
 		}else if(parts[1].equals("03")){
-			month = "Mar";
+			month = "March";
 		}else if(parts[1].equals("04")){
-			month = "Apr";
+			month = "April";
 		}else if(parts[1].equals("05")){
 			month = "May";
 		}else if(parts[1].equals("06")){
-			month = "Jun";
+			month = "June";
 		}else if(parts[1].equals("07")){
-			month = "Jul";
+			month = "July";
 		}else if(parts[1].equals("08")){
-			month = "Aug";
+			month = "August";
 		}else if(parts[1].equals("09")){
-			month = "Sep";
+			month = "September";
 		}else if(parts[1].equals("10")){
-			month = "Oct";
+			month = "October";
 		}else if(parts[1].equals("11")){
-			month = "Nov";
+			month = "November";
 		}else if(parts[1].equals("12")){
-			month = "Dec";
+			month = "December";
 		}
 		year = parts[0];
 

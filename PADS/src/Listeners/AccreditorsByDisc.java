@@ -1,28 +1,29 @@
 package Listeners;
 
 import java.io.IOException;
+import java.util.ArrayList;
+
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.json.JSONArray;
-
+import Models.Accreditor;
 import Utilities.AccreditorUtil;
-import Utilities.InstitutionUtil;
 
 /**
- * Servlet implementation class AccreditorsLoader
+ * Servlet implementation class AccreditorsByDisc
  */
-@WebServlet("/AccreditorsLoader")
-public class AccreditorsLoader extends HttpServlet {
+@WebServlet("/AccreditorsByDisc")
+public class AccreditorsByDisc extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public AccreditorsLoader() {
+    public AccreditorsByDisc() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -32,14 +33,13 @@ public class AccreditorsLoader extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
-		response.setContentType("application/json");
-		JSONArray jArray = new JSONArray();
+		int discplineID = Integer.parseInt(request.getParameter("disciplineID"));
+		ArrayList<Accreditor> accreditors = new ArrayList<Accreditor>();
 		AccreditorUtil accUtil = new AccreditorUtil();
-		int systemID = Integer.parseInt(request.getParameter("systemID"));
-		int SPID = Integer.parseInt(request.getParameter("SPID"));
-		String  area= request.getParameter("area");
-		jArray = accUtil.getAccreditorsJSON(SPID, systemID, area);
-		response.getWriter().write(jArray.toString());
+		accreditors = accUtil.getAccreditorsByDisc(discplineID);
+		request.setAttribute("accreditors", accreditors);
+		RequestDispatcher rd = request.getRequestDispatcher("accreditors.jsp");
+		rd.forward(request, response);
 	}
 
 	/**

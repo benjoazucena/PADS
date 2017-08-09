@@ -131,7 +131,7 @@ $.ajax({
 			for(var j = 0; j < value.programs[i].areas.length; j++){
 			var checked = checkAttendance(value.programs[i].areas[j].confirmation)			    	 
 			    		add += ("<tr > ");
-			    		add += ("<td><a id='accLink"+value.programs[i].areas[j].areaID +"' href='ViewAccreditor?accreditorID=" + value.programs[i].areas[j].accreditorID + "' data-toggle='tooltip' title='This will take you to the accreditor page.'>"+ value.programs[i].areas[j].accreditor + "</a></td><td id='area"+value.programs[i].areas[j].areaID +"'>" + value.programs[i].areas[j].area + "</td>"); alert(value.programs[i].PSID+"gg");
+			    		add += ("<td><a id='accLink"+value.programs[i].areas[j].areaID +"' href='ViewAccreditor?accreditorID=" + value.programs[i].areas[j].accreditorID + "' data-toggle='tooltip' title='This will take you to the accreditor page.'>"+ value.programs[i].areas[j].accreditor + "</a></td><td id='area"+value.programs[i].areas[j].areaID +"'>" + value.programs[i].areas[j].area + "</td>"); 
 			    			add += ("<td><label><input type='checkbox' "+ checked +" onclick='confirmAccreditor(" + value.programs[i].PSID + "," + value.programs[i].areas[j].areaID + "," + value.programs[i].areas[j].accreditorID + ")' class='checkbox rounded' value='Confirm Attendance' id='checkbox_confirm"+value.programs[i].areas[j].accreditorID+"'><span>Confirm</span></label> <button class='btn btn-link btn-sm' onclick='changeAcc(" + value.programs[i].areas[j].areaID + ","+value.systemID+","+value.programs[i].PSID+","+ value.programs[i].areas[j].accreditorID+" )' id='changedbutton"+value.programs[i].areas[j].accreditorID+"'><i class='fa fa-pencil'></i>Changed</button></td>");
 			 				add += ("</tr> ");
 			}
@@ -958,7 +958,7 @@ function addAccreditor(PSID,areaID, oldAccreditorID, area, program, survey, data
 	//ONCLICK OF ASSIGNING ACCREDITOR
 	 $('#smarttable tbody').on('click', 'tr', function () {
 			var chosenAccreditor = table.row(this).data();
-			alert(PSID+"Successfully chosen " + chosenAccreditor[1] );
+// 			alert(PSID+"Successfully chosen " + chosenAccreditor[1] );
 			//var accIDs = surveyObject.programList[programCounter].areas[areaCounter].accreditorIDs;
 			//accIDs.push(chosenAccreditor[0]);
 			//var accCounter = accIDs.indexOf(chosenAccreditor[0]);

@@ -208,7 +208,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
 				
 				 <div class="title-block">
                         <h3 class="title" style="float:left;">
-							<a href="Programs"> List of Disciplines </a> > Add New Program
+							<a href="Programs"> List of Programs </a> > Add New Program
 						</h3>
 			     </div>
 				
@@ -217,14 +217,17 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
 									<div class="card card-block sameheight-item" style="height:320px;">
 										<div class="title-block">
 											<h3 class="title">
-							New Program Form
+							Edit Program Form
 						</h3> </div>
-							<form method="post" action="AddProgram" class="form">
+							<form method="post" action="SaveProgram" class="form">
+							<c:set var="pro" scope="session" value="${program}"/>
+								
 								<div class="form-group" style="width:48%; padding-right"> 
+								<input type="hidden" value="${ pro.getProgramID() }" name="programID" 	/>
 								<label class="control-label">Program Name</label> 
-								<input type="text" class="form-control underlined" style="width:90%;"  placeholder="e.g. BS-Biology" name="programName"> 
+								<input type="text" class="form-control underlined" style="width:90%;"  placeholder="e.g. BS-Biology" name="programName" value="${pro.getName()}" /> 
 								<label class="control-label">Acronym</label> 
-								<input type="text" class="form-control underlined" style="width:90%;"  placeholder="e.g. BIO" name="acronym"> 
+								<input type="text" class="form-control underlined" style="width:90%;"  placeholder="e.g. BIO" name="acronym" value="${pro.getAcronym()}" /> 
 								
 								</div>	
 							<br>

@@ -27,7 +27,7 @@ public class DBUtil {
 	}
 	
 	public Connection getConnection(){
-		if(conn != null) System.out.println("Connection Established.");
+
 		return this.conn;
 	}
 	

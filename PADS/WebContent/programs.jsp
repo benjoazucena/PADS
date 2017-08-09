@@ -8,23 +8,31 @@
 
     <head>
       	 <!-- IMPORTS -->
-    <script src='js/jquery.min.js'></script>
-	
-    <script src='js/jquery-ui.min.js'></script>
+	<link rel="stylesheet" href="chosen/chosen.css">
     <link rel="stylesheet" href="css/bootstrap.css">
-    <script src="js/bootstrap.min.js"></script>
     <link rel="apple-touch-icon" href="apple-touch-icon.png">
     <link rel="stylesheet" href="css/vendor.css">
-    <link href='fullcalendar.css' rel='stylesheet' />
-    <link href='calendar/fullcalendar.print.css' rel='stylesheet' media='print' />
-	<script src='calendar/lib/moment.min.js'></script>
-	<script src='calendar/fullcalendar.min.js'></script>
 	<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
 	<link rel="stylesheet" type="text/css" href=" css/dataTables.bootstrap.min.css">
+	<link href="css/jquery-ui.css" rel="stylesheet" type="text/css" media="all" />	
+	<link href="css/dataTables.jqueryui.min.css" rel="stylesheet" type="text/css" media="all" />	
+	<link href="css/jquery.dataTables.min.css" rel="stylesheet" type="text/css" media="all" />	
+	<link href="css/buttons.dataTables.min.css" rel="stylesheet" type="text/css" media="all" />	
+	
+	<script src='js/jquery.min.js'></script>
+	<script src="chosen/chosen.jquery.js" type="text/javascript"></script>
+	
+    <script src='js/jquery-ui.min.js'></script>
+    <script src="js/bootstrap.min.js"></script>
 	<script src="js/jquery.dataTables.min.js"></script>
 	<script src="js/dataTables.bootstrap.min.js"></script>
-	
- 	<link title="timeline-styles" rel="stylesheet" href="css/timeline.css">
+	<script src="js/dataTables.buttons.min.js"></script>
+	<script src="js/dataTables.jqueryui.min.js"></script>
+	<script src="js/buttons.print.min.js"></script>
+	<script src="js/jszip.min.js"></script>
+	<script src="js/pdfmake.min.js"></script>
+	<script src="js/buttons.html5.min.js"></script>
+	<script src="js/vfs_fonts.js"></script>
 	
 	<!-- END IMPORTS -->
     	
@@ -56,34 +64,49 @@
 <script>
 $(document).ready(function() {
 
- 
 
-    $('#smarttable').DataTable( {
-	
-        initComplete: function () {
-            this.api().columns().every( function () {
-                var column = this;
-                var select = $('<select><option value=""></option></select>')
-                    .appendTo( $(column.footer()).empty() )
-                    .on( 'change', function () {
-                        var val = $.fn.dataTable.util.escapeRegex(
-                            $(this).val()
-                        );
- 
-                        column
-                            .search( val ? '^'+val+'$' : '', true, false )
-                            .draw();
-                    } );
- 
-                column.data().unique().sort().each( function ( d, j ) {
-                    select.append( '<option value="'+d+'">'+d+'</option>' )
-                } );
-            } );
-        }
-    } );
-		$("#smarttable").colResizable({
-			liveDrag:true
-		});
+	  $('#smarttable').DataTable( {
+	    	dom: 'Blfrtip',
+	    	buttons: [
+	                  {
+	                	  extend: 'pdfHtml5',
+	                	  title: "List of Disciplines",
+	                	  download: 'open',
+	                	  exportOptions: {
+	                          columns: [ 0, 1]
+	                      }
+	                  },
+	                  {
+	                	  extend: 'excelHtml5',
+	                	  title: "List of Disciplines",
+	                	  exportOptions: {
+	                          columns: [ 0, 1]
+	                      }
+	                  }
+	                  
+	        ],
+	        initComplete: function () {
+	            this.api().columns().every( function () {
+	                var column = this;
+	                var select = $('<select><option value=""></option></select>')
+	                    .appendTo( $(column.footer()).empty() )
+	                    .on( 'change', function () {
+	                        var val = $.fn.dataTable.util.escapeRegex(
+	                            $(this).val()
+	                        );
+	 
+	                        column
+	                            .search( val ? '^'+val+'$' : '', true, false )
+	                            .draw();
+	                    } );
+	 
+	                column.data().unique().sort().each( function ( d, j ) {
+	                    select.append( '<option value="'+d+'">'+d+'</option>' )
+	                } );
+	            } );
+	        }
+	    } );
+		
 } );
 </script>
 
@@ -105,7 +128,7 @@ $(document).ready(function() {
 		white-space: nowrap;	}
 		
 	#smarttable th{
-	
+		background-color:#85CE36; !important
 		color:#3c4731;
 		font-size:110%;		}
 
@@ -118,6 +141,22 @@ $(document).ready(function() {
 
 	#smarttable tr:nth-child(even){
 		background-color:#e6f2da;}
+		
+	#smarttable tr:hover {
+		background: rgba(255,255,255,1);
+		background: -moz-linear-gradient(top, rgba(255,255,255,1) 0%, rgba(246,246,246,1) 47%, rgba(237,237,237,1) 100%);
+		background: -webkit-gradient(left top, left bottom, color-stop(0%, rgba(255,255,255,1)), color-stop(47%, rgba(246,246,246,1)), color-stop(100%, rgba(237,237,237,1)));
+		background: -webkit-linear-gradient(top, rgba(255,255,255,1) 0%, rgba(246,246,246,1) 47%, rgba(237,237,237,1) 100%);
+		background: -o-linear-gradient(top, rgba(255,255,255,1) 0%, rgba(246,246,246,1) 47%, rgba(237,237,237,1) 100%);
+		background: -ms-linear-gradient(top, rgba(255,255,255,1) 0%, rgba(246,246,246,1) 47%, rgba(237,237,237,1) 100%);
+		background: linear-gradient(to bottom, rgba(255,255,255,1) 0%, rgba(246,246,246,1) 47%, rgba(237,237,237,1) 100%);
+		filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#ededed', GradientType=0 );
+
+		-webkit-box-shadow: inset 0px 1px 5px 0px rgba(0,0,0,0.49);
+		-moz-box-shadow: inset 0px 1px 5px 0px rgba(0,0,0,0.49);
+		box-shadow: inset 0px 1px 5px 0px rgba(0,0,0,0.49);
+		cursor: pointer;}
+	
 	
 	.container{
 		width: 125%;

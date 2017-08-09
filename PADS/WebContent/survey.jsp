@@ -72,8 +72,14 @@
 	function UpdateConfirmation(con, id, psid, area, obj){
 		if (con == "Not Available"){
 			obj.parentNode.parentNode.className="danger";
+			obj.className = "btn btn-pill-left btn-danger btn-sm";
+			obj.nextSibling.className = "btn btn-pill-right btn-secondary btn-sm";
 		}else if (con == "Confirmed"){
 			obj.parentNode.parentNode.className="success";
+			obj.className = "btn btn-pill-right btn-success btn-sm";
+			obj.previousSibling.className = "btn btn-pill-left btn-secondary btn-sm";
+
+
 
 		}
 		$.ajax({url: "UpdateConfirmation?accreditorID=" + id + "&confirmation=" + con + "&PSID=" + psid + "&areaID=" + area, success: function(result){
@@ -264,10 +270,21 @@
 			            	add += ("<tr class='success'>");
 		            	}
 		            	if(event.programs[i].areas[j].accreditorID == 0){
-			            	add += ("<td>" + event.programs[i].areas[j].accreditor + "</td><td>" + event.programs[i].areas[j].area + "</td><td><button class='btn btn-link btn-sm' onclick='UpdateConfirmation(\"Not Available\", " + event.programs[i].areas[j].accreditorID + ", " + PSID + ", " + event.programs[i].areas[j].areaID + ", this)'><i class='fa fa-thumbs-o-down'></i> Not Available</button><button class='btn btn-link btn-sm' onclick='UpdateConfirmation(\"Confirmed\", " + event.programs[i].areas[j].accreditorID + ", " + PSID + ", " + event.programs[i].areas[j].areaID + ", this)'><i class='fa fa-thumbs-o-up'></i> Available</button></td></tr>");
-
+		            		if(event.programs[i].areas[j].confirmation == "Not Available"){
+			            		add += ("<td>" + event.programs[i].areas[j].accreditor + "</td><td>" + event.programs[i].areas[j].area + "</td><td><button class='btn btn-pill-left btn-sm btn-danger' onclick='UpdateConfirmation(\"Not Available\", " + event.programs[i].areas[j].accreditorID + ", " + PSID + ", " + event.programs[i].areas[j].areaID + ", this)'><i class='fa fa-thumbs-o-down'></i> Not Available</button><button class='btn btn-link btn-sm btn-secondary btn-pill-right' onclick='UpdateConfirmation(\"Confirmed\", " + event.programs[i].areas[j].accreditorID + ", " + PSID + ", " + event.programs[i].areas[j].areaID + ", this)'><i class='fa fa-thumbs-o-up'></i> Available</button></td></tr>");
+		            		}else if(event.programs[i].areas[j].confirmation == "Confirmed"){
+			            		add += ("<td>" + event.programs[i].areas[j].accreditor + "</td><td>" + event.programs[i].areas[j].area + "</td><td><button class='btn btn-pill-left btn-sm btn-secondary' onclick='UpdateConfirmation(\"Not Available\", " + event.programs[i].areas[j].accreditorID + ", " + PSID + ", " + event.programs[i].areas[j].areaID + ", this)'><i class='fa fa-thumbs-o-down'></i> Not Available</button><button class='btn btn-link btn-sm btn-success btn-pill-right' onclick='UpdateConfirmation(\"Confirmed\", " + event.programs[i].areas[j].accreditorID + ", " + PSID + ", " + event.programs[i].areas[j].areaID + ", this)'><i class='fa fa-thumbs-o-up'></i> Available</button></td></tr>");
+		            		}else{
+			            		add += ("<td>" + event.programs[i].areas[j].accreditor + "</td><td>" + event.programs[i].areas[j].area + "</td><td><button class='btn btn-pill-left btn-sm btn-secondary' onclick='UpdateConfirmation(\"Not Available\", " + event.programs[i].areas[j].accreditorID + ", " + PSID + ", " + event.programs[i].areas[j].areaID + ", this)'><i class='fa fa-thumbs-o-down'></i> Not Available</button><button class='btn btn-link btn-sm btn-secondary btn-pill-right' onclick='UpdateConfirmation(\"Confirmed\", " + event.programs[i].areas[j].accreditorID + ", " + PSID + ", " + event.programs[i].areas[j].areaID + ", this)'><i class='fa fa-thumbs-o-up'></i> Available</button></td></tr>");
+		            		}
 		            	}else{
-			            	add += ("<td><a href='ViewAccreditor?accreditorID=" + event.programs[i].areas[j].accreditorID + "' data-toggle='tooltip' title='This will take you to the accreditor page.'>" + event.programs[i].areas[j].accreditor + "</a></td><td>" + event.programs[i].areas[j].area + "</td><td><button class='btn btn-link btn-sm' onclick='UpdateConfirmation(\"Not Available\", " + event.programs[i].areas[j].accreditorID + ", " + PSID + ", " + event.programs[i].areas[j].areaID + ", this)'><i class='fa fa-thumbs-o-down'></i> Not Available</button><button class='btn btn-link btn-sm' onclick='UpdateConfirmation(\"Confirmed\", " + event.programs[i].areas[j].accreditorID + ", " + PSID + ", " + event.programs[i].areas[j].areaID + ", this)'><i class='fa fa-thumbs-o-up'></i> Available</button></td></tr>");
+		            		if(event.programs[i].areas[j].confirmation == "Not Available"){
+				            	add += ("<td><a href='ViewAccreditor?accreditorID=" + event.programs[i].areas[j].accreditorID + "' data-toggle='tooltip' title='This will take you to the accreditor page.'>" + event.programs[i].areas[j].accreditor + "</a></td><td>" + event.programs[i].areas[j].area + "</td><td><button class='btn btn-link btn-sm btn-pill-left btn-danger' onclick='UpdateConfirmation(\"Not Available\", " + event.programs[i].areas[j].accreditorID + ", " + PSID + ", " + event.programs[i].areas[j].areaID + ", this)'><i class='fa fa-thumbs-o-down'></i> Not Available</button><button class='btn btn-link btn-sm btn-pill-right btn-secondary' onclick='UpdateConfirmation(\"Confirmed\", " + event.programs[i].areas[j].accreditorID + ", " + PSID + ", " + event.programs[i].areas[j].areaID + ", this)'><i class='fa fa-thumbs-o-up'></i> Available</button></td></tr>");
+		            		}else if(event.programs[i].areas[j].confirmation == "Confirmed"){
+				            	add += ("<td><a href='ViewAccreditor?accreditorID=" + event.programs[i].areas[j].accreditorID + "' data-toggle='tooltip' title='This will take you to the accreditor page.'>" + event.programs[i].areas[j].accreditor + "</a></td><td>" + event.programs[i].areas[j].area + "</td><td><button class='btn btn-link btn-sm btn-pill-left btn-secondary' onclick='UpdateConfirmation(\"Not Available\", " + event.programs[i].areas[j].accreditorID + ", " + PSID + ", " + event.programs[i].areas[j].areaID + ", this)'><i class='fa fa-thumbs-o-down'></i> Not Available</button><button class='btn btn-link btn-sm btn-pill-right btn-success' onclick='UpdateConfirmation(\"Confirmed\", " + event.programs[i].areas[j].accreditorID + ", " + PSID + ", " + event.programs[i].areas[j].areaID + ", this)'><i class='fa fa-thumbs-o-up'></i> Available</button></td></tr>");
+		            		}else{
+				            	add += ("<td><a href='ViewAccreditor?accreditorID=" + event.programs[i].areas[j].accreditorID + "' data-toggle='tooltip' title='This will take you to the accreditor page.'>" + event.programs[i].areas[j].accreditor + "</a></td><td>" + event.programs[i].areas[j].area + "</td><td><button class='btn btn-link btn-sm btn-pill-left btn-secondary' onclick='UpdateConfirmation(\"Not Available\", " + event.programs[i].areas[j].accreditorID + ", " + PSID + ", " + event.programs[i].areas[j].areaID + ", this)'><i class='fa fa-thumbs-o-down'></i> Not Available</button><button class='btn btn-link btn-sm btn-pill-right btn-secondary' onclick='UpdateConfirmation(\"Confirmed\", " + event.programs[i].areas[j].accreditorID + ", " + PSID + ", " + event.programs[i].areas[j].areaID + ", this)'><i class='fa fa-thumbs-o-up'></i> Available</button></td></tr>");
+		            		}
 		            
 		            	}
 		            }
@@ -313,8 +330,193 @@
 
     ]
 		});
+	
+	var btnExpanded = $('#expanded');
+	btnExpanded.click(function(){
+		//java
+
+		var curDate = $('#calendar').fullCalendar('getView').start;
+		var lasDate = $('#calendar').fullCalendar('getView').end;
 		
+		//javascript
+		var canvas = document.getElementById('canvas');
+		var ctx = canvas.getContext('2d');
+		ctx.clearRect(0, 0, canvas.width, canvas.height);
+		ctx.fillStyle = '#fff';
+		  ctx.fillRect(0, 0, canvas.width, canvas.height);
+		  ctx.beginPath();
+		  var ptr = 0;
+		  
+		  //drawing grid
+		  for(var x=0; x<=7; x++){
+			if(x==1){
+				ctx.moveTo(0, 40*x+1);
+				ctx.lineTo(1125, 40*x+1);
+				ptr = 60;
+			}else if(x>1){
+				ctx.moveTo(0, 100*(x-1)+1 +40);
+				ctx.lineTo(1125, 100*(x-1)+1 + 40);
+				ptr += 100;
+			}
+			else{
+				ctx.moveTo(0, 100*x+1);
+				ctx.lineTo(1125, 100*x+1);
+			}
+		  }
+		  
+		  for(var y=0; y<=7; y++){
+			ctx.moveTo(187*y+1,0);
+			ctx.lineTo(187*y+1, 756-115);
+		  }
+		  var date1 = curDate.format();
+		  var date2 = lasDate.format();
+		  
+		  var date1a = date1.split("-");
+		  var date2a = date2.split("-");
+		  
+		  var date1year = date1a[0]; var date1month = date1a[1]; var date1day = date1a[2];
+		  var date2year = date2a[0]; var date2month = date2a[1]; var date2day = date2a[2];
+		  var maindatemonth = parseInt(date1month) + 1; var maindateyear = 0;
+		  
+		  if(date1month == 12){
+			maindateyear = date1year + 1;
+		  }else{
+		  	maindateyear = date1year;
+		  }
+		  
+		  var month1length; var month2length; var mainmonthlength;
+		  
+		  if(date1month=="06" || date1month=="04" || date1month=="09" || date1month== "11"){
+			month1length = 31 - date1day;
+		  }else if(date1month == "02"){
+			if(date1year % 4 == 0){
+				month1length = 30 - date1day;
+			}else{
+				month1length = 29 - date1day;
+			}
+		  }else{
+			month1length = 32 - date1day;
+		  }
+		  if(maindatemonth==6 || maindatemonth==4 || maindatemonth== 9 || maindatemonth== 11){
+			mainmonthlength = 30;
+		  }else if(maindatemonth == 2){
+			if(date1year % 4 == 0){
+				mainmonthlength = 29;
+			}else{
+				mainmonthlength = 28;
+			}
+		  }else{
+			mainmonthlength = 31;
+		  }
+		  
+		  month2length = 36 - (month1length + mainmonthlength);
+		  
+		  var includedDays = [];
+		  
+		  var ptr = 0;
+		  
+		  ctx.strokeStyle = 'black';
+		  ctx.stroke();
+		  ctx.fillStyle = '#000';
+		  ctx.font = 'bold 16px serif';
+		  
+		  var days = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday']
+		  for(var i=0; i < 6; i++){	  	
+			    ctx.fillText(days[i], (187*(i%6))+57, (Math.floor(i/6)*100)+25);   
+		  }
+
+		  var date1ptr = 0; var maindateptr = 0; var date2ptr = 0;
+		  var dayCounter = 0; var j = 0;
+		  
+		  do{
+		  	if(dayCounter == 6){
+		  		dayCounter = 0;
+		  		if(date1ptr < month1length){
+					date1ptr++;
+				}else if(maindateptr < mainmonthlength){
+					maindateptr++;
+				}else{
+					date2ptr++;
+				}
+		  	}else{
+				if(date1ptr < month1length){
+					ctx.font = 'bold 12px serif';
+					ctx.fillText(parseInt(date1day) + date1ptr, (187*(j%6))+8, (Math.floor(j/6)*100)+60);
+					date1ptr++;
+				}else if(maindateptr < mainmonthlength){
+					ctx.font = 'bold 12px serif';
+					ctx.fillText(maindateptr + 1, (187*(j%6))+8, (Math.floor(j/6)*100)+60);
+					maindateptr++;
+				}else{
+					ctx.font = 'bold 12px serif';
+					ctx.fillText(date2ptr + 1, (187*(j%6))+8, (Math.floor(j/6)*100)+60);
+					date2ptr++;
+				}
+				dayCounter++; j++;
+		  	}
+		  }while(j < 36);
+			ctx.font = 'bold 20px serif';
+
+			ctx.fillText(date1 + " to " + date2, 900,700);
+			ctx.font = 'bold 12px serif';
+
+
+		  
+		  $.ajax({ //CALLING ACCREDITORS WITH EXTRA CHECKING FOR AFFILIATION CONFLICTS
+			  url: "SurveyJSONLoader?startDate=" + date1 + "&endDate=" + date2,
+			  dataType: 'json',
+			  async: false,
+			  success: function(data) {
+
+				$.each(data, function(key, val) {
+					var curDate;
+					var pos = 0;
+					curDate = val.start;
+					var curDateDis = curDate.split("-");
+					var curDateDay = parseInt(curDateDis[2]); var curDateMonth = parseInt(curDateDis[1]); var curDateYear = parseInt(curDateDis[0]);
+					
+					if (curDateMonth == date1month){
+						pos = curDateDay - date1day;
+					}else if(curDateMonth == maindatemonth){
+						pos = curDateDay + month1length - Math.floor((curDateDay + month1length) / 7);
+					}else if(curDateMonth == date2month){
+						pos = curDateDay + month1length + mainmonthlength - Math.floor((curDateDay + month1length + mainmonthlength) / 7);
+					}
+					pos--;
+					var hPtr = 0;
+					$.each(val.institutions, function(key1,val1){
+						ctx.font = 'bold 12px serif';
+						ctx.fillText(val1.insAcr + " : ", (187*(pos%6))+10, (Math.floor(pos/6)*100) + 75 + (hPtr * 15));
+						
+						var tPtr = 0;
+						
+						$.each(val1.programs, function(key2, val2){
+							ctx.font = '12px serif';
+							if(tPtr == 1){
+								tPtr=0;
+								ctx.fillText(val2.proAcr + " - " + val2.surveyType, (187*(pos%6)) + 130, (Math.floor(pos/6)*100) + 75 + (15 * hPtr));
+								hPtr++;
+							}else{
+								tPtr++;
+								ctx.fillText(val2.proAcr + " - " + val2.surveyType, (187*(pos%6)) + 70, (Math.floor(pos/6)*100) + 75 + (15 * hPtr));
+							}
+						});
+					});
+					
+					
+					} );
+			  }
+			});
+		  var base64 = canvas.toDataURL();
+		  document.getElementById('base64').href = base64;
+		  document.getElementById('base64').download = date1 + " to " + date2;
+		  $('#expModal').modal("show");
+		  $('#expmodalTitle').html("Showing Expanded Calendar for " + date1 + " to " + date2);
 	});
+		
+	loadPendings();
+});
+
 $('[data-toggle="tooltip"]').tooltip(); 
 function addAlert(){
 	$('#section').append('<div class="alert alert-success"><a class="close" data-dismiss="alert" aria-label="close">&times;</a><strong>Success!</strong> Successfully added survey called: '+asd +'.</div> <br>');
@@ -327,7 +529,16 @@ function deleteSurvey(surveyID){
 		$('#calendar').fullCalendar('removeEvents',surveyID);
 		
 	}
+	
+	$.ajax({ //CALLING ACCREDITORS WITH EXTRA CHECKING FOR AFFILIATION CONFLICTS
+		  url: "DeleteSurvey?surveyID=" + surveyID,
+		  async: false,
+		  success: function(data) {
+				alert("Successfully deleted survey!");
+				} 
+	});
 }
+
 function loadPendings(){
 	
 	$.getJSON("PendingSurveyLoader", function(data){
@@ -417,6 +628,8 @@ function addSurvey(){
 
 
 function generateTeam(program, institution, institutionCity,  date, chairpersonName, chairpersonInstitution, chairpersonPosition, chairpersonCity, paascu1Name, paascu1Position, paascu2Name, paascu2Position){
+	var indent = 80;
+	
 	var pdf = new jsPDF('p', 'mm', 'a4');
 	pdf.setFontSize(12);
     pdf.align("SURVEY TEAM",{align: "center"},0,20);
@@ -437,15 +650,15 @@ function generateTeam(program, institution, institutionCity,  date, chairpersonN
     y+=10;
     pdf.text("Staff Chair Person", 30, y);
     pdf.setFontType("bold");
-    pdf.text(": " + chairpersonName, 120, y);
+    pdf.text(": " + chairpersonName, indent, y);
     pdf.setFontType("normal");
     if(chairpersonName != "None"){
     	y+=5;
-        pdf.text(": " + chairpersonPosition, 120, y);
+        pdf.text(": " + chairpersonPosition, indent, y);
         y+=5;
-        pdf.text(": " + chairpersonInstitution, 120, y)
+        pdf.text(": " + chairpersonInstitution, indent, y)
         y+=5;
-        pdf.text(": " + chairpersonCity, 120, y)
+        pdf.text(": " + chairpersonCity, indent, y)
     }
     
     y+=10;
@@ -462,14 +675,14 @@ function generateTeam(program, institution, institutionCity,  date, chairpersonN
 			pdf.setFontType("normal");
 		    pdf.text(program[i].areas[j].area, 30, y);
 		    pdf.setFontType("bold");
-		    pdf.text(": " + program[i].areas[j].accreditor, 120, y);
+		    pdf.text(": " + program[i].areas[j].accreditor, indent, y);
 		    if(program[i].areas[j].accreditor != "None"){
 			    y+=5;
-			    pdf.text(": " + program[i].areas[j].accreditorPosition, 120, y);
+			    pdf.text(": " + program[i].areas[j].accreditorPosition, indent, y);
 			    y+=5;
-			    pdf.text(": " + program[i].areas[j].accreditorInstitution, 120, y);
+			    pdf.text(": " + program[i].areas[j].accreditorInstitution, indent, y);
 			    y+=5;
-			    pdf.text(": " + program[i].areas[j].accreditorCity, 120, y);
+			    pdf.text(": " + program[i].areas[j].accreditorCity, indent, y);
 		    }
 		    y+=10;
 		}
@@ -480,25 +693,96 @@ function generateTeam(program, institution, institutionCity,  date, chairpersonN
     
     pdf.text("PAASCU Representative: ", 30, y);
     pdf.setFontType("bold");
-    pdf.text(": " + paascu1Name, 120, y);
+    pdf.text(": " + paascu1Name, indent, y);
     if(paascu1Name != null){
     	y+=5;
-        pdf.text(": " + paascu1Position, 120, y);
+        pdf.text(": " + paascu1Position, indent, y);
     }
     
     if(paascu2Name != null){
     	y+=10;
-        pdf.text(": " + paascu2Name, 120, y);
+        pdf.text(": " + paascu2Name, indent, y);
         y+=5;
-        pdf.text(": " + paascu2Position, 120, y);
+        pdf.text(": " + paascu2Position, indent, y);
 
     }
-    pdf.save('Team l	ine up.pdf');
+    pdf.save('Team line up.pdf');
 }
 
 </script>
 
 <style>
+#expModal {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  overflow: hidden;
+}
+
+.expDialog {
+  position: fixed;
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+}
+
+.expContent {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  border: 2px solid #3c7dcf;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.expHeader {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 35px;
+  padding: 5px;
+  padding-left:20px;
+  background: #6598d9;
+  border: 0;
+}
+
+.expmodalTitle {
+  font-weight: 300;
+  font-size: 2em;
+  color: #fff;
+  line-height: 25px;
+}
+
+.expBody{
+  position: absolute;
+  top: 30px;
+  bottom: 60px;
+  width: 100%;
+  font-weight: 300;
+  overflow: auto;
+}
+
+.expFooter {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 60px;
+  padding: 10px;
+  background: #f1f3f5;
+}
+
+
+
+
+
+
 	.my-legend .legend-title {
     text-align: left;
     margin-bottom: 5px;
@@ -783,6 +1067,23 @@ top:83px;
 box-shadow: 0px 1px 7px 1px rgba(0,0,0,0.41);
 
 }
+
+#expanded{
+position:relative;
+top:80px;
+left:17%;
+-webkit-box-shadow: 0px 4px 7px 1px rgba(0,0,0,0.41);
+-moz-box-shadow: 0px 4px 7px 1px rgba(0,0,0,0.41);
+box-shadow: 0px 4px 7px 1px rgba(0,0,0,0.41);
+}
+#expanded:hover{
+
+top:83px;
+-webkit-box-shadow: 0px 1px 7px 1px rgba(0,0,0,0.41);
+-moz-box-shadow: 0px 1px 7px 1px rgba(0,0,0,0.41);
+box-shadow: 0px 1px 7px 1px rgba(0,0,0,0.41);
+
+}
 #cPending{
 position:relative;
 top:75px;
@@ -812,7 +1113,7 @@ left:5px;
                         <nav class="menu">
                             <ul class="nav metismenu" id="sidebar-menu">
                                 <li>
-                                    <a href="Notifications"> <i class="fa fa-home"></i> Dashboard </a>
+                                    <a href="index.html"> <i class="fa fa-home"></i> Dashboard </a>
                                <li class="active">
                                     <a href="survey.jsp"> <i class="fa fa-table"></i> Survey Schedule </a>
 								
@@ -841,7 +1142,10 @@ left:5px;
                                  
                                     </ul>
                                     
-                               
+                                    
+                                </li>
+                                 
+                                
                                
                             </ul>
                         </nav>
@@ -855,9 +1159,7 @@ left:5px;
 				
                     <div class="sidebar-container">
 					
-						
-						<button id="bPending" type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#myModal"><i class="fa fa-plus"></i> Add Event</button><br><br>
-					
+						<button id="expanded" type="button" class="btn btn-info btn-sm"><i class="fa fa-plus"></i> Expanded View</button><br><br>					
 
                             <div id="cPending" class="col-xl-12">
                                 <div class="card card-default" style="height:460px;-webkit-box-shadow: 0px 2px 5px 0px rgba(0,0,0,0.31);-moz-box-shadow: 0px 2px 5px 0px rgba(0,0,0,0.31);box-shadow: 0px 2px 5px 0px rgba(0,0,0,0.31);" >
@@ -919,8 +1221,37 @@ left:5px;
 				
 				
 				
-				
-				
+		<!-- EXPANDED MODAL -->
+		<div id="expModal" class="modal animated bounceIn">
+    		<div class="modal-dialog expDialog">
+        		<div class="modal-content expContent">
+            	
+            		<div class="modal-header expHeader">
+                		<button type="button" class="close" data-dismiss="modal" style="padding-right: 10px;"><span aria-hidden="true">×</span> <span class="sr-only">close</span></button>
+                		<h6 id="expmodalTitle" class="modal-title"></h6>
+            		</div>
+            	
+            		<div id="expmodalBody" class="modal-body expBody">
+            		<center>
+            		<canvas id='canvas' width='1125' height='756'></canvas>
+						</center>
+            		</div>
+            		<div id="expmodalfooter" class="modal-footer expFooter">
+                	<a class='btn btn-link' href='' id='base64'>Download</a>
+           		 	</div>
+        		</div>
+    		</div>
+		
+		</div>
+        <!-- Reference block for JS -->
+        <div class="ref" id="ref">
+            <div class="color-primary"></div>
+            <div class="chart">
+                <div class="color-primary"></div>
+                <div class="color-secondary"></div>
+            </div>
+        </div>
+       </div></div>
 				
 				
 				
@@ -964,7 +1295,7 @@ left:5px;
 			
         <!-- EVENT MODAL -->
        	<div id="fullCalModal" class="modal fade">
-    		<div class="modal-dialog modal-lg" style="width:70%;">
+    		<div class="modal-dialog modal-lg style="width:70%;"">
         		<div class="modal-content">
             	
             		<div class="modal-header">
@@ -972,7 +1303,9 @@ left:5px;
                 		<h4 id="modalTitle" class="modal-title"></h4>
             		</div>
             	
-            		<div id="modalBody" class="modal-body"></div>
+            		<div id="modalBody" class="modal-body">
+            			
+            		</div>
             		<div id="modalfooter" class="modal-footer">
                 	
            		 	</div>
@@ -991,7 +1324,6 @@ left:5px;
        </div></div>
         <script src="js/app.js"></script>
 		
-		<script>loadPendings();</script>
 		</body>
 
 </html>

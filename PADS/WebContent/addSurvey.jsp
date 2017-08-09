@@ -234,28 +234,30 @@ var surveyObject = {
 };
 
 //CHECKER FOR AFFILIATION AND PROGRAM
-function checkAffiliations(SPID, systemID){
+function checkAffiliations(SPID, systemID,area){
 	var obj = [];
 	var counter = 0;
 	
 	$.ajax({
-		  url: "AccreditorsLoader?SPID=" + SPID +"&systemID=" + systemID,
+		  url: "AccreditorsLoader?SPID=" + SPID +"&systemID=" + systemID+"&area="+ area,
 		  dataType: 'json',
 		  async: false,
 		  success: function(data) {
 			  $.each(data, function (key, value){
-					obj.push({});
-					
+					obj.push({});					
 					obj[counter]['accreditorName'] = value.accreditorName;
 					obj[counter]['primaryArea'] = value.primaryArea;
 					obj[counter]['secondaryArea'] = value.secondaryArea;
+					obj[counter]['tertiaryArea'] = value.tertiaryArea;
 					obj[counter]['primaryAreaID'] = value.primaryAreaID;
 					obj[counter]['secondaryAreaID'] =  value.secondaryAreaID;
+					obj[counter]['tertiaryAreaID'] = value.tertiaryAreaID;
 					obj[counter]['city'] = value.city;
 					obj[counter]['discipline'] = value.discipline;
 					obj[counter]['numberSurveys'] = value.numberSurveys;	
 					obj[counter]['accreditorID'] = value.accreditorID;
-					obj[counter]['hasAffiliation'] = value.hasAffiliation;
+					obj[counter]['rank'] = value.rank;
+					obj[counter]['score'] = value.score;
 					counter++;
 					});					
 				return obj;
@@ -276,35 +278,8 @@ function addProgram(){
 	obj.surveyType = strSurvey;
 	obj.areas = [];
 	var areaCounter = 0;
-	
-	var accreditors = [];
 	var counter = 0;
 	
-	
-	$.ajax({ //CALLING ACCREDITORS WITH EXTRA CHECKING FOR AFFILIATION CONFLICTS
-		  url: "AccreditorsLoader?SPID=" + programID +"&systemID=" + systemID,
-		  dataType: 'json',
-		  async: false,
-		  success: function(data) {
-			  $.each(data, function (key, value){
-				  	accreditors.push({});
-					accreditors[counter]['accreditorName'] = value.accreditorName;
-					accreditors[counter]['primaryArea'] = value.primaryArea;
-					accreditors[counter]['secondaryArea'] = value.secondaryArea;
-					accreditors[counter]['primaryAreaID'] = value.primaryAreaID;
-					accreditors[counter]['secondaryAreaID'] =  value.secondaryAreaID;
-					accreditors[counter]['tertiaryArea'] = value.tertiaryArea;
-					accreditors[counter]['tertiaryAreaID'] =  value.tertiaryAreaID;
-					accreditors[counter]['city'] = value.city;
-					accreditors[counter]['discipline'] = value.discipline;
-					accreditors[counter]['numberSurveys'] = value.numberSurveys;	
-					accreditors[counter]['accreditorID'] = value.accreditorID;
-					accreditors[counter]['hasAffiliation'] = value.hasAffiliation;
-					counter++;
-					});					
-				
-		  }
-		});
 	var add =  "<li class='list-group-item'><h6>" + strUser + " - " + strSurvey + "</h6><ul class='list-group'>";
 	
 	
@@ -351,7 +326,7 @@ function addProgram(){
 	       	var btnTemp = document.createElement('BUTTON');
 	       	btnTemp.appendChild(document.createTextNode('Add'));
 	       	btnTemp.onclick = function(){
-	       		addAccreditor(document.getElementById('fac').value, strUser, strSurvey, accreditors, facCounter1, programCounter, this);       		
+	       		addAccreditor(document.getElementById('fac').value, programID, strSurvey, facCounter1, programCounter, this);       		
 
 	       	};
 	       	rowTemp.insertCell(2).appendChild(btnTemp);
@@ -374,7 +349,7 @@ function addProgram(){
 	       	var btnTemp = document.createElement('BUTTON');
 	       	btnTemp.appendChild(document.createTextNode('Add'));
 	       	btnTemp.onclick = function(){
-	       		addAccreditor(document.getElementById('ins').value, strUser, strSurvey, accreditors,  facCounter2, programCounter, this);       		
+	       		addAccreditor(document.getElementById('ins').value, programID, strSurvey,  facCounter2, programCounter, this);       		
 
 	       	};	       	
 	       	rowTemp.insertCell(2).appendChild(btnTemp);
@@ -397,7 +372,7 @@ function addProgram(){
 	       	var btnTemp = document.createElement('BUTTON');
 	       	btnTemp.appendChild(document.createTextNode('Add'));
 	       	btnTemp.onclick = function(){
-	       		addAccreditor(document.getElementById('lab').value, strUser, strSurvey, accreditors,  facCounter3, programCounter, this);       		
+	       		addAccreditor(document.getElementById('lab').value, programID, strSurvey,  facCounter3, programCounter, this);       		
  	
 	       		};	       	
 	       		rowTemp.insertCell(2).appendChild(btnTemp);
@@ -420,7 +395,7 @@ function addProgram(){
 	       	var btnTemp = document.createElement('BUTTON');
 	       	btnTemp.appendChild(document.createTextNode('Add'));
 	       	btnTemp.onclick = function(){
-	       		addAccreditor(document.getElementById('lib').value, strUser, strSurvey, accreditors,  facCounter4, programCounter, this);       		
+	       		addAccreditor(document.getElementById('lib').value, programID, strSurvey,  facCounter4, programCounter, this);       		
       	
 	       		};	       	
 	       		rowTemp.insertCell(2).appendChild(btnTemp);
@@ -443,7 +418,7 @@ function addProgram(){
 	       	var btnTemp = document.createElement('BUTTON');
 	       	btnTemp.appendChild(document.createTextNode('Add'));
 	       	btnTemp.onclick = function(){
-	       		addAccreditor(document.getElementById('com').value, strUser, strSurvey, accreditors,  facCounter5, programCounter, this);       		
+	       		addAccreditor(document.getElementById('com').value, programID, strSurvey,  facCounter5, programCounter, this);       		
  	
 	       		};	       	
 	       		rowTemp.insertCell(2).appendChild(btnTemp);
@@ -466,7 +441,7 @@ function addProgram(){
 	       	var btnTemp = document.createElement('BUTTON');
 	       	btnTemp.appendChild(document.createTextNode('Add'));
 	       	btnTemp.onclick = function(){
-	       		addAccreditor(document.getElementById('phy').value, strUser, strSurvey, accreditors,  facCounter6, programCounter, this);       		
+	       		addAccreditor(document.getElementById('phy').value, programID, strSurvey,  facCounter6, programCounter, this);       		
 
 	       		};	       	
 	       		rowTemp.insertCell(2).appendChild(btnTemp);
@@ -489,7 +464,7 @@ function addProgram(){
 	       	var btnTemp = document.createElement('BUTTON');
 	       	btnTemp.appendChild(document.createTextNode('Add'));
 	       	btnTemp.onclick = function(){
-	       		addAccreditor(document.getElementById('stu').value, strUser, strSurvey, accreditors,  facCounter7, programCounter, this);       		
+	       		addAccreditor(document.getElementById('stu').value, programID, strSurvey,  facCounter7, programCounter, this);       		
     	
 	       		};	       	
 	       		rowTemp.insertCell(2).appendChild(btnTemp);
@@ -512,7 +487,7 @@ function addProgram(){
 	       	var btnTemp = document.createElement('BUTTON');
 	       	btnTemp.appendChild(document.createTextNode('Add'));
 	       	btnTemp.onclick = function(){
-	       		addAccreditor(document.getElementById('adm').value, strUser, strSurvey, accreditors,  facCounter8, programCounter, this);       		
+	       		addAccreditor(document.getElementById('adm').value, programID, strSurvey,  facCounter8, programCounter, this);       		
    	
 	       		};	       	
 	       		rowTemp.insertCell(2).appendChild(btnTemp);
@@ -535,7 +510,7 @@ function addProgram(){
 	       	var btnTemp = document.createElement('BUTTON');
 	       	btnTemp.appendChild(document.createTextNode('Add'));
 	       	btnTemp.onclick = function(){
-	       		addAccreditor(document.getElementById('res').value, strUser, strSurvey, accreditors,  facCounter9, programCounter,  this);       		
+	       		addAccreditor(document.getElementById('res').value, programID, strSurvey,  facCounter9, programCounter,  this);       		
       	
 	       		};	       	
 	       		rowTemp.insertCell(2).appendChild(btnTemp);
@@ -559,7 +534,7 @@ function addProgram(){
 	       	var btnTemp = document.createElement('BUTTON');
 	       	btnTemp.appendChild(document.createTextNode('Add'));
 	       	btnTemp.onclick = function(){
-	       		addAccreditor(document.getElementById('cli').value, strUser, strSurvey, accreditors,  facCounter10, programCounter, this);       		     	
+	       		addAccreditor(document.getElementById('cli').value, programID, strSurvey,  facCounter10, programCounter, this);       		     	
 	       		};	       	
 	       		rowTemp.insertCell(2).appendChild(btnTemp);
 	    }});
@@ -581,7 +556,7 @@ function addProgram(){
 	       	var btnTemp = document.createElement('BUTTON');
 	       	btnTemp.appendChild(document.createTextNode('Add'));
 	       	btnTemp.onclick = function(){
-	       		addAccreditor(document.getElementById('oth').value, strUser, strSurvey, accreditors,  facCounter11, programCounter, this);       		
+	       		addAccreditor(document.getElementById('oth').value, programID, strSurvey,  facCounter11, programCounter, this);       		
 	       	};	       	
 	       	rowTemp.insertCell(2).appendChild(btnTemp);
 
@@ -666,52 +641,63 @@ function addChairperson(btn){
 	
 	$('#addModal').modal();
 }
-function addAccreditor(area, program, survey, data, areaCounter, programCounter, btn){
+function addAccreditor(area, program, survey, areaCounter, programCounter, btn){
+	alert(program);
+	alert(area);
 	var add = "";
 	//BUILDING THE ACCREDITOR TABLE SPECIFICALLY TAILORED FOR EACH INSTITUTION - PROGRAM - AREA
-
+	var accreditors = [];
+	var obj = {};
+	var systemID = $('#systemForm option:selected').val();
+	var counter = 0;
+	$.ajax({ //CALLING ACCREDITORS WITH EXTRA CHECKING FOR AFFILIATION CONFLICTS
+		  
+		
+		url: "AccreditorsLoader?SPID=" + program +"&systemID=" + systemID +"&area=" + area,
+		  dataType: 'json',
+		  async: false,
+		  success: function(data) {
+			  accreditors = data; 			
+		  }
+		});
+	
 	$('#modalTitle').html('<span class="sr-only">close</span></button><h4 id="modalTitle" class="modal-title"> Adding accreditor for ' + program + " - " + area + '</h4>');
-	add += "*Accreditor table is sorted in seniority by default."
+	add += " *Affiliated accreditors and those of different disciplines are hidden in the table.";
 	add += "<hr>";
 	add += '<div class="table-responsive" style="width:100%; float:right;" id="contenthole">';
 	add += '<table id="smarttable" class="table table-striped table-bordered table-hover">';
-	add += '<thead><tr><th>ID</th><th>Full Name</th><th>Affiliation</th> <th>Discipline</th><th>Primary Survey Area</th><th>Secondary Survey Area</th><th>Tertiary Survey Area</th><th>Total Surveys</th><th>City</th> </tr></thead>';
+	add += '<thead><tr><th>ID</th><th>Rank</th><th>Full Name</th><th>Affiliation</th> <th>Discipline</th><th>Primary Survey Area</th><th>Secondary Survey Area</th><th>Tertiary Survey Area</th><th>Total Surveys</th><th>Last Survey Date</th><th>City</th> </tr></thead>';
 	add += '<tbody>';
 	
 	var removes = [];
 	//VALIDATOR AND STYLE CHANGER
-	for(var i = 0; i < data.length; i++){
-		
-		if(data[i].hasAffiliation ==  true ||  (data[i].primaryArea != area && data[i].secondaryArea != area && data[i].tertiaryArea != area) ){
-			removes.push(data[i]);
-		}else{
-			add += '<tr>';
-			add += '<td>' + data[i].accreditorID + '</td>';
-			add += '<td>' + data[i].accreditorName + '</td>';
-			if(data[i].hasAffiliation == true){
-				add += '<td style="background-color:red;" >Has an Affiliation Conflict</td>';
-			}else{
-				add += '<td>Has no Affiliation Conflict</td>';
-			}
-			add += '<td>' + data[i].discipline + '</td>';
-			
-			if(data[i].primaryArea != area && data[i].secondaryArea != area && data[i].tertiaryArea != area){
-				add += '<td style="background-color:red;" >' + data[i].primaryArea + '</td>';
-				add += '<td style="background-color:red;" >' + data[i].secondaryArea + '</td>';
-				add += '<td style="background-color:red;" >' + data[i].tertiaryArea + '</td>';
-			}else{
-				add += '<td>' + data[i].primaryArea + '</td>';
-				add += '<td>' + data[i].secondaryArea + '</td>';
-				add += '<td>' + data[i].tertiaryArea + '</td>';
-			}
-			
+	var removal = accreditors[accreditors.length - 1].rank;
 	
-			add += '<td>' + data[i].numberSurveys + '</td>';
-			add += '<td>' + data[i].city + '</td>';
+	for(var i = 0; i < accreditors.length; i++){
+		if(accreditors[i].rank == removal){
+			removes.push(accreditors[i]);
+		}else{
+			add+="<tr>";
+			add += '<td>' + accreditors[i].accreditorID + '</td>';
+			add += '<td>' + accreditors[i].rank + '</td>';
+			add += '<td>' + accreditors[i].accreditorName + '</td>';
+			add += '<td>' + accreditors[i].affiliation + '</td>';
+			add += '<td>' + accreditors[i].discipline + '</td>';
+			add += '<td>' + accreditors[i].primaryArea + '</td>';
+			add += '<td>' + accreditors[i].secondaryArea + '</td>';
+			add += '<td>' + accreditors[i].tertiaryArea + '</td>';
+			add += '<td>' + accreditors[i].numberSurveys + '</td>';
+			add += '<td>' + accreditors[i].lastSurveyDate + '</td>';
+			add += '<td>' + accreditors[i].city + '</td>';
 			add += '</tr>';
+
 		}
+		
 	}
 	add += '</tbody></table></div>';
+
+
+
 	$('#modalBody').html(add);
 	var table = $('#modalBody').find("table").DataTable({
 		"columnDefs": [
@@ -720,7 +706,8 @@ function addAccreditor(area, program, survey, data, areaCounter, programCounter,
                 "visible": false,
                 "searchable": false
             }
-        ]
+        ],
+        "order": [[ 1, "asc" ]]
 	});
 	
 	
@@ -730,19 +717,16 @@ function addAccreditor(area, program, survey, data, areaCounter, programCounter,
 		removesButton.parentNode.removeChild(removesButton);
 		var aff;
 		for(var j = 0; j < removes.length; j++){
-			if(removes[j].hasAffiliation == true){
-				aff = "Has an Affiliation Conflict";
-			}else{
-				aff = "Has no Affiliation Conflict";
-			}
 			var t = table.row.add([
 				removes[j].accreditorID,
+				removes[j].rank,
 				removes[j].accreditorName,
-				aff,
+				removes[j].affiliation,
 				removes[j].discipline,
 				removes[j].primaryArea,
 				removes[j].secondaryArea,
 				removes[j].tertiaryArea,
+				removes[j].lastSurveyDate,
 				removes[j].numberSurveys,
 				removes[j].city
 			]).draw(false);
@@ -764,7 +748,7 @@ function addAccreditor(area, program, survey, data, areaCounter, programCounter,
 		
 
        		var accBtn = document.createElement("BUTTON");
-       		accBtn.innerHTML = "<i class='fa fa-times-circle' aria-hidden='true' ></i> "+ chosenAccreditor[1] + " ";
+       		accBtn.innerHTML = "<i class='fa fa-times-circle' aria-hidden='true' ></i> "+ chosenAccreditor[2] + " ";
        		accBtn.onclick = function() { 
        			accBtn.parentNode.removeChild(accBtn);
        			accIDs.splice(accCounter, 1);

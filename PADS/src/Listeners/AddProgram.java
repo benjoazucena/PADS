@@ -34,8 +34,10 @@ public class AddProgram extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		String programName = request.getParameter("programName");
+		String acronym = request.getParameter("acronym");
+
 		ProgramUtil progUtil = new ProgramUtil();
-		progUtil.addProgram(programName);		
+		progUtil.addProgram(programName, acronym);		
 		RequestDispatcher rd = request.getRequestDispatcher("Programs");
 		rd.forward(request, response);
 	}
