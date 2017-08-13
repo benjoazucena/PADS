@@ -11,10 +11,10 @@
     <script src="js/bootstrap.min.js"></script>
     <link rel="apple-touch-icon" href="apple-touch-icon.png">
     <link rel="stylesheet" href="css/vendor.css">
-    <link href='fullcalendar.css' rel='stylesheet' />
-    <link href='calendar/fullcalendar.print.css' rel='stylesheet' media='print' />
-	<script src='calendar/lib/moment.min.js'></script>
-	<script src='calendar/fullcalendar.min.js'></script>
+<!--     <link href='fullcalendar.css' rel='stylesheet' /> -->
+<!--     <link href='calendar/fullcalendar.print.css' rel='stylesheet' media='print' /> -->
+<!-- 	<script src='calendar/lib/moment.min.js'></script> -->
+<!-- 	<script src='calendar/fullcalendar.min.js'></script> -->
 	<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
 	<link rel="stylesheet" type="text/css" href=" css/dataTables.bootstrap.min.css">
 	<script src="js/jquery.dataTables.min.js"></script>
@@ -33,11 +33,8 @@
             {
                 document.write('<link rel="stylesheet" id="theme-style" href="css/app.css">');
             }
-        </script><link href='fullcalendar.css' rel='stylesheet' />
-        
-<link href='calendar/fullcalendar.print.css' rel='stylesheet' media='print' />
-<script src='calendar/lib/moment.min.js'></script>
-<script src='calendar/fullcalendar.min.js'></script>
+        </script>
+
 <link rel="stylesheet" type="text/css" href=" css/dataTables.bootstrap.min.css">
 	<script src="js/jquery.dataTables.min.js"></script>
 	<script src="js/dataTables.bootstrap.min.js"></script>
@@ -51,7 +48,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="apple-touch-icon" href="apple-touch-icon.png">
         <!-- Place favicon.ico in the root directory -->
-        <link rel="stylesheet" href="css/vendor.css">
+<!--         <link rel="stylesheet" href="css/vendor.css"> -->
         <link rel="stylesheet" id="theme-style" href="css/app.css">
 
 		
@@ -147,7 +144,8 @@ $.ajax({
 var globalApprovalDate;
 //This function checks what type of survey then returns appropriate modal function 
 function getLink(type,i,ID,decisionJSON,boardApprovalDate){
-
+alert(boardApprovalDate);
+if(boardApprovalDate=="Date Error"){boardApprovalDate="Please Select a Date"}
 globalApprovalDate = boardApprovalDate
 	if(type=="Formal"){return "'formalConfirm("+i+","+ID+","+decisionJSON+")'"};
 	if(type=="Consultancy"){return "'consultancyConfirm("+i+","+ID+","+decisionJSON+")'"};

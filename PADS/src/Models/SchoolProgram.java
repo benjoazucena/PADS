@@ -97,7 +97,8 @@ public class SchoolProgram {
 		String day;
 		String year;
 		System.out.println(date+"DAAAAAAAAAAAAAAAAAAATEEEEEEEEEEEEEEEEEEEEEEE!!!!!!!!!!!!!!!@");
-		if(date!=null&&date!=""){
+		if(date==null||date.equals("")||date.equals(" ")){}
+		else{
 		String[] parts = date.split("-");
 		System.out.println("pogiako"+ date);
 		if(parts[1].equals("01")){

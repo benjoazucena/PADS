@@ -437,6 +437,8 @@ public class ProgramUtil {
 		String month = "";
 		String day;
 		String year;
+		if(date==null||date.equals("")||date.equals(" ")){}
+		else{
 		String[] parts = date.split("-");
 		if(parts[1].equals("01")){
 			month = "January";
@@ -469,6 +471,7 @@ public class ProgramUtil {
 		day = parts[2];
 		
 		format = month + " " + day + ", "+ year;
+		}
 		return format;
 	}
 

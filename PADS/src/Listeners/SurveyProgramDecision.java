@@ -35,7 +35,7 @@ public class SurveyProgramDecision extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
-		System.out.println("TYPEEEE");
+//		System.out.println("TYPEEEE");
 	}
 
 	/**
@@ -98,7 +98,7 @@ public class SurveyProgramDecision extends HttpServlet {
 			int surveyID = Integer.parseInt((String)request.getParameter("surveyID"));
 			String decision = (String)request.getParameter("opt");
 			
-			System.out.println("PSID of specified REVIST:" + PSID);
+//			System.out.println("PSID of specified REVIST:" + PSID);
 			
 			RequestDispatcher rd = request.getRequestDispatcher("ConfirmationPage?surveyID="+surveyID);
 			rd.forward(request, response);	
@@ -128,7 +128,7 @@ public class SurveyProgramDecision extends HttpServlet {
 			String remarks_team = ""+(String)request.getParameter("remarks"+PSID+"_team");
 			String remarks_commission = ""+(String)request.getParameter("remarks"+PSID+"_commission");
 			String remarks_board = ""+(String)request.getParameter("remarks"+PSID+"_board");
-			System.out.println(decision_board+"DECISION OF BOARD");
+//			System.out.println(decision_board+"DECISION OF BOARD");
 			
 					
 //			if(decision_board!="" && decision_board!=null){
@@ -144,7 +144,7 @@ public class SurveyProgramDecision extends HttpServlet {
 //					fc = valid_thru;
 //				}
 //			}
-						
+//						
 			
 			
 			ConfirmationUtil cUtil = new ConfirmationUtil();

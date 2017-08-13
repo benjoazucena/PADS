@@ -60,7 +60,7 @@
 
 <script>
 
-	$(document).ready(function() {
+	$(document).ready(function() {}
 		
 		/* initialize the external events
 		-----------------------------------------------------------------*/
@@ -208,7 +208,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
 				
 				 <div class="title-block">
                         <h3 class="title" style="float:left;">
-							<a href="Programs"> List of Disciplines </a> > Add New Program
+							<a href="Programs"> List of Disciplines </a> > Add New Discipline
 						</h3>
 			     </div>
 				
@@ -217,13 +217,13 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
 									<div class="card card-block sameheight-item" style="height:320px;">
 										<div class="title-block">
 											<h3 class="title">
-							New Program Form
+							New Discipline Form
 						</h3> </div>
 							<form method="post" action="AddProgram" class="form">
 								<div class="form-group" style="width:48%; padding-right"> 
-								<label class="control-label">Program Name</label> 
-								<input type="text" class="form-control underlined" style="width:90%;"  placeholder="e.g. BS-Biology" name="programName"> 
-								<label class="control-label">Acronym</label> 
+								<label class="control-label">Discipline Name</label> 
+								<input type="text" class="form-control underlined" style="width:90%;"  placeholder="e.g. Biology" name="programName"> 
+								<label class="control-label">Acronym of the Discipline</label> 
 								<input type="text" class="form-control underlined" style="width:90%;"  placeholder="e.g. BIO" name="acronym"> 
 								
 								</div>	

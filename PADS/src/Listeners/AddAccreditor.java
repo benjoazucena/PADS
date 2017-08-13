@@ -38,7 +38,7 @@ public class AddAccreditor extends HttpServlet {
 		String honorifics = request.getParameter("honorifics");
 		String firstName = request.getParameter("firstName");
 		String lastName = request.getParameter("lastName");
-		String middleName = request.getParameter("middleName");
+		String middleName = request.getParameter("middleName")+" ";
 		String email = request.getParameter("email");
 
 		String discipline = request.getParameter("discipline");

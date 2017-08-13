@@ -944,7 +944,7 @@ private static String formatDate(String date){
 	String day;
 	String year;
 	System.out.println("Date: " + date);
-	if((date == null) || (date.equals("")) ){}else{
+	if((date == null) || (date.equals(""))||(date.equals(" ")) ){}else{
 		System.out.println("pumaosk");
 	String[] parts = date.split("-");
 	if(parts[1].equals("01")){

@@ -271,7 +271,8 @@ public class InstitutionUtil {
 		String month = "";
 		String day;
 		String year;
-		if(date!=null&&date!=""){
+		if(date==null||date.equals("")||date.equals(" ")){}
+		else{
 		String[] parts = date.split(" ");
 		if(parts[0].equals("Jan")){
 			month = "01";

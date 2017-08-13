@@ -225,6 +225,8 @@ public class Institution {
 		String month = "";
 		String day;
 		String year;
+		if(date==null||date.equals("")||date.equals(" ")){}
+		else{
 		String[] parts = date.split("-");
 		if(parts[1].equals("01")){
 			month = "January";
@@ -257,6 +259,7 @@ public class Institution {
 		day = parts[2];
 		
 		format = month + " " + day + ", "+ year;
+		}
 		return format;
 	}
 	
@@ -265,6 +268,8 @@ public class Institution {
 		String month = "";
 		String day;
 		String year;
+		if(date==null||date.equals("")||date.equals(" ")){}
+		else{
 		String[] parts = date.split("-");
 		if(parts[1].equals("01")){
 			month = "Jan";
@@ -297,6 +302,7 @@ public class Institution {
 		day = parts[2];
 		
 		format = year + " " + month + " "+ day;
+		}
 		return format;
 	}
 	

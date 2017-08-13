@@ -420,6 +420,8 @@ public class AccreditorUtil {
 		String month = "";
 		String day;
 		String year;
+		if(date==null||date.equals("")||date.equals(" ")){}
+		else{
 		String[] parts = date.split(" ");
 		if(parts[0].equals("January")){
 			month = "01";
@@ -452,6 +454,7 @@ public class AccreditorUtil {
 		day = parts[0];
 		
 		format = year + "-" + month + "-"+ day;
+		}
 		return format;
 	}
 	public void addAccreditor(Accreditor acc, JSONObject affObject){
