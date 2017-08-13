@@ -100,6 +100,7 @@ public class ProgramUtil {
 			ResultSet rs = ps.executeQuery();
 			while(rs.next()){
 				sp = new SchoolProgram(rs.getInt(1), getInstitution(rs.getInt(3)), rs.getString(4), rs.getString(5), rs.getString(6), rs.getString(7), rs.getString(8), rs.getString(9));
+				sp.setLastSurveyDate(getLastSurveyDate(rs.getInt(3)));
 				sps.add(sp);
 			}
 		
@@ -108,6 +109,34 @@ public class ProgramUtil {
 			e.printStackTrace();
 		}
 		return sps;
+	}
+	
+	private String getLastSurveyDate(int instID){
+		String last="";
+		int latestDate = 0;
+		try{
+			Connection conn = db.getConnection();
+			PreparedStatement ps = conn.prepareStatement("SELECT `end_date` FROM `surveys` WHERE institutionID=?");
+			ps.setInt(1, instID);
+			ResultSet rs = ps.executeQuery();
+			while(rs.next()){
+				System.out.println("0 ---- "+rs.getString(1));
+				if(latestDate<Integer.parseInt(rs.getString(1).replace("-",""))){
+					latestDate = Integer.parseInt(rs.getString(1).replace("-",""));
+					last = rs.getString(1);
+				}
+			}
+		
+			if(latestDate == 0){
+				last ="NA";
+			}
+			
+		} catch (Exception e){
+			System.out.println("Error in ProgramUtil:getSps()");
+			e.printStackTrace();
+		}
+		
+		return last;
 	}
 	public ArrayList<SchoolProgram> getDisciplines(int programID){
 		ArrayList<SchoolProgram> sps = new ArrayList<SchoolProgram>();

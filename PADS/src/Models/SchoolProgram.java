@@ -33,7 +33,16 @@ public class SchoolProgram {
 	private String lapseDate;
 	private String currentDecision;
 	private String decisionBy;
+	private String lastSurveyDate;
 	
+	public String getLastSurveyDate() {
+		return lastSurveyDate;
+	}
+
+	public void setLastSurveyDate(String lastSurveyDate) {
+		this.lastSurveyDate = formatDate(lastSurveyDate);
+	}
+
 	public String getDate_addedWord() {
 		return date_addedWord;
 	}
@@ -92,12 +101,13 @@ public class SchoolProgram {
 	}
 	
 	private static String formatDate(String date){
-		String format = new String();
+		String format = "NA";
 		String month = "";
 		String day;
 		String year;
-		System.out.println(date+"DAAAAAAAAAAAAAAAAAAATEEEEEEEEEEEEEEEEEEEEEEE!!!!!!!!!!!!!!!@");
-		if(date==null||date.equals("")||date.equals(" ")){}
+		System.out.println(date+"date of next sruv sched");
+
+		if(date==null||date.equals("NA")||date.equals(" ")||date.equals("")){}
 		else{
 		String[] parts = date.split("-");
 		System.out.println("pogiako"+ date);

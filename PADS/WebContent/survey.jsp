@@ -1102,18 +1102,19 @@ left:5px;
         <div class="main-wrapper">
             <div class="app" id="app">
                
-                <aside class="sidebar"><img id ="bg" src="assets/bg.jpg">
+                <aside class="sidebar" style="position:fixed"><img id ="bg" src="assets/bg.jpg">
 				
                     <div class="sidebar-container">
                     	
-                        <div class="sidebar-header">
-                            <div class="brand">
-                                <div class="logo"> <span class="l l1"></span> <span class="l l2"></span> <span class="l l3"></span> <span class="l l4"></span> <span class="l l5"></span> </div> PAASCU </div>
-                        </div>
+                       <div class="sidebar-header" >
+                            <div class="brand" style="background-color:#1c252e;position:relative;left:-17%;width:150%;box-shadow: 10px 9px 24px 0px rgba(1,1,1,1);"  >
+                                 <div class="logo" id="logoDiv" style="width:100%;"> <img src="assets/logoicon.png" style="width:52%;height:185%; top:-40%;left:9%; opacity:1"> </div>
+                       
+                        </div><br>
                         <nav class="menu">
                             <ul class="nav metismenu" id="sidebar-menu">
                                 <li>
-                                    <a href="index.html"> <i class="fa fa-home"></i> Dashboard </a>
+                                    <a href="Notifications"> <i class="fa fa-home"></i> Dashboard </a>
                                <li class="active">
                                     <a href="survey.jsp"> <i class="fa fa-table"></i> Survey Schedule </a>
 								

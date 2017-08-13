@@ -14,6 +14,7 @@ import com.mysql.jdbc.Connection;
 
 import Models.Accreditor;
 import Models.Notification;
+import Models.Survey;
 
 public class NotificationUtil {
 	private DBUtil db;
@@ -120,7 +121,7 @@ public class NotificationUtil {
 				String date_created = rs.getString(3);
 				String status = rs.getString(4);
 				String type = rs.getString(5);
-				
+								
 				temp = new Notification(notificationID, content, date_created, status, type);
 				notifs.add(temp);
 			}
@@ -132,7 +133,31 @@ public class NotificationUtil {
 	    return notifs;
 	}
 	
+	private boolean validContent(String content){
+		boolean res = true;
+		try{
+			Connection conn = db.getConnection();
+			PreparedStatement ps = conn.prepareStatement("SELECT content FROM notifications");
+			ResultSet rs = ps.executeQuery();
+			while(rs.next()){
+			if(rs.getString(1).equals(content)){
+				res=false;
+				System.out.println("FOUND A DUPLICATE FOR : "+content);
+				 break;
+			}
+			
+			}
+		} catch (Exception e){
+			System.out.println("Error in SurveyUtil:getInstitutionCity()");
+			e.printStackTrace();
+		}
+		 return res;
+		
+	}
+	
 	public void generateNotif(String content, String type){
+		
+		if(validContent(content)){
 		try{
 		Connection conn = db.getConnection();
 		PreparedStatement ps = conn.prepareStatement("INSERT INTO `notifications` (`content`,`date_created`,`status`,`type`)"
@@ -144,10 +169,10 @@ public class NotificationUtil {
 		ps.executeUpdate();
 		
 		} catch (Exception e){
-			System.out.println("Error in AccreditorUtil:getAccreditors()");
-			e.printStackTrace();
+			System.out.println("Error in generateNotif due to DUPLICATE ! ! !");
+//			e.printStackTrace();
 		}
-		
+		}
 	}
 	
 	public void checkExpiredAccreditations(){
@@ -184,79 +209,96 @@ System.out.println("EXPIRATION NOTIFS CREATED");
 //		System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@!");
 		for(int i = 0; i<expiredList.size(); i++){
 			String content = getContentNames(expiredList.get(i)) + " : Valid Until "+ validityList.get(i);
-			System.out.println(content+" CONTENT OF EXPIRATION NOTIF");
+//			System.out.println(content+" CONTENT OF EXPIRATION NOTIF");
 			generateNotif(content,"Expirations");
 		}
 	}
 
 	
-	public void checkUnconfirmedSurveys(){
+	private void getUnconfirmedSurveyList(ArrayList<Integer> filteredSurveyID){
 		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 		Date date = new Date();
 		int curDate = Integer.parseInt(dateFormat.format(date).toString().replace("-", ""));
+		ArrayList<Survey> surveyList = new ArrayList<Survey>();
 		
 		try{
 			Connection conn = db.getConnection();
 			//SQL statement that checks if the current date is greater than the date of validity of a program's latest accreditation
-			PreparedStatement ps = conn.prepareStatement("SELECT `surveyID` , `end_date` FROM `surveys");
+			PreparedStatement ps = conn.prepareStatement("SELECT `surveyID` , `end_date`,`institutionID` FROM `surveys");
 			ResultSet rs = ps.executeQuery();
-			ArrayList<Integer> surveyIDList = new ArrayList<Integer>();
-			ArrayList<String> endDateList = new ArrayList<String>();
+				
 			while(rs.next()){
+				Survey survTemp = new Survey();
 				int end_dateINT = Integer.parseInt(rs.getString(2).replace("-",""));
-				if(curDate-end_dateINT > 0){
-					surveyIDList.add(rs.getInt(1));
-					endDateList.add(rs.getString(2));
+				for(int i = 0; i<filteredSurveyID.size();i++){
+					if(curDate-end_dateINT > 0 && filteredSurveyID.get(i) == rs.getInt(1)){
+						survTemp.setSurveyID(rs.getInt(1));
+						survTemp.setEnd_date(rs.getString(2));
+						survTemp.setInstitutionID(rs.getInt(3));
+						survTemp.setInstitutionName(getInstName(rs.getInt(3)));
+						System.out.println(i+" - "+survTemp.getEnd_date()+" | "+survTemp.getInstitutionName());
+						surveyList.add(survTemp);
+					}
+				
 				}
+			
 			}
-			generateUnconfirmedNotifs(surveyIDList, endDateList);
+			generateUnconfirmedNotifs(surveyList);
 			
 		} catch (Exception e){
 				System.out.println("DUplicate Copy of Notification");
 			}
 	}
 	
-	private ArrayList<Integer> filterUnconfirmedSurveys(ArrayList<Integer> surveyIDList, ArrayList<String> endDateList){
-		ArrayList<Integer> filteredSurveys = new ArrayList<Integer>();
-		 
+	private String getInstName(int institutionID){
+	String name = "";
+			try{
+			Connection conn = db.getConnection();
+			PreparedStatement ps = conn.prepareStatement("SELECT name FROM institutions WHERE institutionID = ?");
+			ps.setInt(1, institutionID);
+			ResultSet rs = ps.executeQuery();
+			if(rs.next()){
+				name = rs.getString(1);
+			}
+		} catch (Exception e){
+			System.out.println("Error in SurveyUtil:getInstitutionCity()");
+			e.printStackTrace();
+		}
+	return name;
+	}
+	
+	public void checkUnconfirmedSurveys(){
+		System.out.println("ENTRY IN CHECK UNCONFIRMED NOTIF");
+		ArrayList<Integer> filteredSurveyID = new ArrayList<Integer>();
+	
 		try{
 			Connection conn = db.getConnection();
 			//SQL statement that checks if the current date is greater than the date of validity of a program's latest accreditation
-			PreparedStatement ps = conn.prepareStatement("SELECT `surveyID`,`SPID` ,`survey_type` FROM `program_survey` WHERE `currentDecisionBy` = ?");
+			PreparedStatement ps = conn.prepareStatement("SELECT DISTINCT `surveyID`FROM `program-survey` WHERE `currentDecisionBy` = ?");
 			ps.setString(1,"None" );
 			ResultSet rs = ps.executeQuery();
 			while(rs.next()){
-				for(int i = 0; i<surveyIDList.size(); i++){
-					if(rs.getInt(1)==surveyIDList.get(i)){
-						
-					}
-				}
+			filteredSurveyID.add(rs.getInt(1));
 			}
 			
-//			name = rs.getString(1);
-//			institutionID = rs.getInt(2);
-//			
-//			ps = conn.prepareStatement("SELECT `name` FROM `institutions` WHERE `institutionID` = ?");
-//			ps.setInt(1, institutionID);
-//			rs = ps.executeQuery();
-//			rs.next();
-//			name = name + " - " + rs.getString(1);
-//			
+			getUnconfirmedSurveyList(filteredSurveyID);
+		
 		} catch (Exception e){
-				System.out.println("Error in AccreditorUtil:getAccreditors()");
+				System.out.println("Error in NotificationUtil:filterUnconfirmedSurveys()");
 				e.printStackTrace();
 			}
 		
-		return filteredSurveys;
+
 		
 	}
+
 	
-	private void generateUnconfirmedNotifs(ArrayList<Integer> surveyIDList, ArrayList<String> endDateList){
-		filterUnconfirmedSurveys(surveyIDList, endDateList);
-		for(int i = 0; i<surveyIDList.size(); i++){
-//			String content = getContentNames(surveyID.get(i)) + " : Valid Until "+ validityList.get(i);
-//			System.out.println(content+" CONTENT OF EXPIRATION NOTIF");
-//			generateNotif(content,"Expirations");
+	private void generateUnconfirmedNotifs(ArrayList<Survey> surveyList){
+		
+		for(int i = 0; i<surveyList.size(); i++){			
+			String content = surveyList.get(i).getInstitutionName() + "'s Survey last '"+ formatDate(surveyList.get(i).getEnd_date()) + "' is Unconfirmed";
+			System.out.println(content+" CONTENT OF Unconfirmation NOTIF");
+			generateNotif(content,"UnconfirmedSurveys");
 		}
 	}
 
@@ -278,7 +320,7 @@ System.out.println("EXPIRATION NOTIFS CREATED");
 			ps.setInt(1, institutionID);
 			rs = ps.executeQuery();
 			rs.next();
-			name = name + " - " + rs.getString(1);
+			name =rs.getString(1) + " - " + name ;
 			
 		} catch (Exception e){
 				System.out.println("Error in AccreditorUtil:getAccreditors()");
@@ -292,6 +334,50 @@ private static String formatNotifDate(){
 	SimpleDateFormat sdf = new SimpleDateFormat("MMM dd yyyy HH:mm");    
 	Date resultdate = new Date(yourmilliseconds);	
 	return sdf.format(resultdate);
+}
+
+private static String formatDate(String date){
+	String format = "Date Error";
+	String month = "";
+	String day;
+	String year;
+	System.out.println("Date: " + date);
+	if((date == null) || (date.equals(""))||(date.equals(" ")) ){}else{
+		System.out.println("pumaosk");
+	String[] parts = date.split("-");
+	if(parts[1].equals("01")){
+		month = "Jan";
+	}else if(parts[1].equals("02")){
+		month = "Feb";
+	}else if(parts[1].equals("03")){
+		month = "Mar";
+	}else if(parts[1].equals("04")){
+		month = "Apr";
+	}else if(parts[1].equals("05")){
+		month = "May";
+	}else if(parts[1].equals("06")){
+		month = "Jun";
+	}else if(parts[1].equals("07")){
+		month = "Jul";
+	}else if(parts[1].equals("08")){
+		month = "Aug";
+	}else if(parts[1].equals("09")){
+		month = "Sep";
+	}else if(parts[1].equals("10")){
+		month = "Oct";
+	}else if(parts[1].equals("11")){
+		month = "Nov";
+	}else if(parts[1].equals("12")){
+		month = "Dec";
+	}
+	year = parts[0];
+
+//	parts = parts[1].split(",");
+	day = parts[2];
+	
+	format = month + " " + day + ", "+ year;
+	}
+	return format;
 }
 
 	

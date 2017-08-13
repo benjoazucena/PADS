@@ -246,52 +246,17 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
 			
             <div class="app" id="app">
                 <header class="header">
-                    <div class="header-block header-block-collapse hidden-lg-up"> <button class="collapse-btn" id="sidebar-collapse-btn">
-    			<i class="fa fa-bars"></i>
-    		</button> </div>
-                    
-                    
-                    <div class="header-block header-block-nav">
-                        <ul class="nav-profile">
-                            <li class="notifications new">
-                                <a href="" data-toggle="dropdown"> <i class="fa fa-bell-o"></i> <sup>
-    			      <span class="counter">1</span>
-    			    </sup> </a>
-                                <div class="dropdown-menu notifications-dropdown-menu">
-                                    <ul class="notifications-container">
-                                        <li>
-                                            <a href="" class="notification-item">
-                                                <div class="img-col">
-                                                    <div class="img" style="background-image: url('assets/faces/marcos,nelson.jpg')"></div>
-                                                </div>
-                                                <div class="body-col">
-                                                    <p> <span class="accent">Marcos, Nelson Phd</span> Achievement: <span class="accent">Completed 100th survey</span>. </p>
-                                                </div>
-                                            </a>
-                                        </li>
-                                       
-                                    </ul>
-                                    <footer>
-                                        <ul>
-                                            <li> <a href="">
-    			            View All
-    			          </a> </li>
-                                        </ul>
-                                    </footer>
-                                </div>
-                            </li>
-                            
-                        </ul>
-                    </div>
+             
                 </header>
-                <aside class="sidebar">
-				
+                <aside class="sidebar" style="position:fixed"><img id ="bg" src="assets/bg.jpg">
+				<img id="bg" src="assets/bg.jpg">
                     <div class="sidebar-container">
                     	
-                        <div class="sidebar-header">
-                            <div class="brand">
-                                <div class="logo"style="width:100%"> <img src="assets/logoicon.png" style="width:90%;height:170%; top:-5%;left:-5%; opacity:1"> </div>
-                        </div>
+                        <div class="sidebar-header" >
+                            <div class="brand" style="background-color:#1c252e;position:relative;left:-17%;width:150%;box-shadow: 10px 9px 24px 0px rgba(1,1,1,1);"  >
+                                 <div class="logo" id="logoDiv" style="width:100%;"> <img src="assets/logoicon.png" style="width:52%;height:185%; top:-40%;left:9%; opacity:1"> </div>
+                       
+                        </div><br>
                         <nav class="menu">
                             <ul class="nav metismenu" id="sidebar-menu">
                                 <li>
@@ -322,10 +287,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
                                  
                                     </ul>
                                 </li>
-                                <li><a href="#demo3" data-toggle="collapse"> <i class="fa fa-bar-chart"></i> Reports <i class="fa arrow"></i> </a><ul id="demo3" class="collapse"><li> <a href="reportGA.html">GA Awardees</a> </li><li> <a href="reportHistory.html">History</a> </li></ul></li>
-								<li>
-								   
-								 </li>
+                              
                                 
                                
                             </ul>
@@ -345,7 +307,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
 				
 				 <div class="title-block">
                         <h3 class="title" style="float:left;">
-							<a href="Institutions"> List of Institutions </a> > Add New Institutions
+							<a href="Institutions"> List of Institutions </a> > Edit Institutions
 						</h3>
 			     </div>
 				
@@ -393,6 +355,10 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
 											<div class="form-group"  style="width:48%; padding-right"> <label class="control-label">Position of the Contact Person</label> <input type="text" class="form-control underlined" style="width:90%;" placeholder="e.g. Chairman" name="contactPosition" value="<%=inst.getContact_position() %>"> </div>
 											<div class="form-group"  style="width:48%; padding-right"> <label class="control-label">Email of Contact Person</label> <input type="text" class="form-control underlined" style="width:90%;" placeholder="e.g. person@email.com" name="contactEmail" value="<%=inst.getContact_email() %>"> </div>
 									</div>
+									
+										<button type="submit" class="btn btn-info" onclick="alert('Successfully added Institutions!');location.href = 'institutions.jsp';"  style="float:right; padding-right:15px;">
+									Save
+									</button>
 								</div>
 
 							
@@ -403,9 +369,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
 <!-- 									Submit then add Programs  						 -->
 <!-- 									</button> -->
 									
-									<button type="submit" class="btn btn-info" onclick="alert('Successfully added Institutions!');location.href = 'institutions.jsp';"  style="float:right; padding-right:15px;">
-									Submit Only
-									</button>
+								
 								</div>
 						</div>
         			</div>

@@ -150,13 +150,10 @@ function getDisciplines(){
 		-webkit-box-shadow: 0px 4px 13px -4px rgba(0,0,0,0.5);
 		-moz-box-shadow: 0px 4px 13px -4px rgba(0,0,0,0.5);
 		box-shadow: 0px 4px 13px -4px rgba(0,0,0,0.5);
-		padding:15px;
+		padding:10px;
 		background-color: #f8f8f8;
-		
-
 	}
 
-	
 	#smarttable th, #smarttable td {		
 		text-align: left;
 		overflow: hidden;
@@ -177,14 +174,6 @@ function getDisciplines(){
 
 	#smarttable tr:nth-child(even){
 		background-color:#e6f2da;}
-	
-	.container{
-		width: 125%;
-		overflow:hidden;
-		display:block;
-		height: 130px;
-		z-index:-1;
-		margin-left:-15px;}
 		
 	#smarttable tr:hover {
 		background: rgba(255,255,255,1);
@@ -200,6 +189,16 @@ function getDisciplines(){
 		-moz-box-shadow: inset 0px 1px 5px 0px rgba(0,0,0,0.49);
 		box-shadow: inset 0px 1px 5px 0px rgba(0,0,0,0.49);
 		cursor: pointer;}
+	
+	.container{
+		width: 125%;
+		overflow:hidden;
+		display:block;
+		height: 130px;
+		z-index:-1;
+		margin-left:-15px;}
+		
+
 
 	#bgvid{
 		position:relative;
@@ -316,25 +315,34 @@ function getDisciplines(){
 		-moz-box-shadow: 0px 9px 24px 0px rgba(0,0,0,0.75);
 		box-shadow: 0px 9px 24px 0px rgba(0,0,0,0.75);	}
 		
+		#LogoDiv{
+			-webkit-box-shadow: 20px 9px 24px 20px rgba(0,0,0,0.75);
+		-
+		
+		background-color:#444444;
+		}
+		
 </style>
     </head>
 
     <body>
 	
-        <div class="main-wrapper" style="z-index:1;">
+        <div class="main-wrapper">
             <div class="app" id="app">
 				   
                <aside class="sidebar">
 				<img id="bg" src="assets/bg.jpg">
                     <div class="sidebar-container">
-                         <div class="sidebar-header">
-                            <div class="brand">
-                                <div class="logo"> <span class="l l1"></span> <span class="l l2"></span> <span class="l l3"></span> <span class="l l4"></span> <span class="l l5"></span> </div> PAASCU </div>
+                         <div class="sidebar-header" >
+                            <div class="brand" style="background-color:#1c252e;position:relative;left:-17%;width:150%;box-shadow: 10px 9px 24px 0px rgba(1,1,1,1);"  >
+                                 <div class="logo" id="logoDiv" style="width:100%;"> <img src="assets/logoicon.png" style="width:52%;height:185%; top:-40%;left:9%; opacity:1"> </div>
+                       
                         </div>
+                <br><br>
                         <nav class="menu">
                             <ul class="nav metismenu" id="sidebar-menu">
                                 <li>
-                                    <a href="index.html"> <i class="fa fa-home"></i> Dashboard </a>
+                                    <a href="Notifications"> <i class="fa fa-home"></i> Dashboard </a>
                                 </li>
 								<li>
                                     <a href="survey.jsp"> <i class="fa fa-table"></i> Survey Schedule </a>
@@ -362,9 +370,7 @@ function getDisciplines(){
 								 
                                  
                                     </ul>
-                                </li>
-                                <li><a href="#demo3" data-toggle="collapse"> <i class="fa fa-bar-chart"></i> Reports <i class="fa arrow"></i> </a><ul id="demo3" class="collapse"><li> <a href="reportGA.html">GA Awardees</a> </li><li> <a href="reportHistory.html">History</a> </li></ul></li>
-								<li>
+                            
 								   
 								 </li>
                                 

@@ -37,13 +37,17 @@ public class Notifications extends HttpServlet {
 		ArrayList<Notification> all = new ArrayList<Notification>();
 		ArrayList<Notification> awards = new ArrayList<Notification>();
 		ArrayList<Notification> expirations = new ArrayList<Notification>();
+		ArrayList<Notification> expirations2 = new ArrayList<Notification>();
 		ArrayList<Notification> unconfirmedSurveys = new ArrayList<Notification>();
 		NotificationUtil notifUtil = new NotificationUtil();
 		notifUtil.checkExpiredAccreditations();
+		notifUtil.checkUnconfirmedSurveys();
 		all = notifUtil.getAllNotifications();
 		awards = notifUtil.getAwardNotifications();
 		expirations = notifUtil.getExpirationNotifications();
-		unconfirmedSurveys = notifUtil.getUnconfirmedNotifications();
+		expirations2 = notifUtil.getUnconfirmedNotifications();
+		System.out.println(expirations2.get(0).getContent()+"ggggg");
+//		unconfirmedSurveys = notifUtil.getExpirationNotifications();
 		
 	
 		
@@ -53,7 +57,8 @@ public class Notifications extends HttpServlet {
 		request.setAttribute("all", all);
 		request.setAttribute("awards", awards);
 		request.setAttribute("expirations", expirations);
-		request.setAttribute("unconfirmedSurveys", unconfirmedSurveys);
+		request.setAttribute("unconfirmedSurveys", expirations2);
+//		request.setAttribute("unconfirmedSurveys", unconfirmedSurveys);
 		RequestDispatcher rd = request.getRequestDispatcher("dashboard.jsp");
 		rd.forward(request, response);
 }

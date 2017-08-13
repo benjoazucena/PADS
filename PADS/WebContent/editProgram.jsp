@@ -149,14 +149,15 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
                         </ul>
                     </div>
                 </header>
-                <aside class="sidebar">
-				
+                 <aside class="sidebar" style="position:fixed"><img id ="bg" src="assets/bg.jpg">
+				<img id="bg" src="assets/bg.jpg">
                     <div class="sidebar-container">
                     	
-                        <div class="sidebar-header">
-                            <div class="brand">
-                                <div class="logo"style="width:100%"> <img src="assets/logoicon.png" style="width:90%;height:170%; top:-5%;left:-5%; opacity:1"> </div>
-                        </div>
+                        <div class="sidebar-header" >
+                            <div class="brand" style="background-color:#1c252e;position:relative;left:-17%;width:150%;box-shadow: 10px 9px 24px 0px rgba(1,1,1,1);"  >
+                                 <div class="logo" id="logoDiv" style="width:100%;"> <img src="assets/logoicon.png" style="width:52%;height:185%; top:-40%;left:9%; opacity:1"> </div>
+                       
+                        </div><br>
                         <nav class="menu">
                             <ul class="nav metismenu" id="sidebar-menu">
                                 <li>
@@ -187,10 +188,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
                                  
                                     </ul>
                                 </li>
-                                <li><a href="#demo3" data-toggle="collapse"> <i class="fa fa-bar-chart"></i> Reports <i class="fa arrow"></i> </a><ul id="demo3" class="collapse"><li> <a href="reportGA.html">GA Awardees</a> </li><li> <a href="reportHistory.html">History</a> </li></ul></li>
-								<li>
-								   
-								 </li>
+                              
                                 
                                
                             </ul>

@@ -78,6 +78,9 @@ function buildHome(){
 	    else if(type =="Expirations"){	
 	    	add += " <div class='item-col fixed item-col-img md'> <i class='fa fa-exclamation fa-2x'></i></div>";
 	    }
+	    else if(type =="UnconfirmedSurveys"){	
+	    	add += " <div class='item-col fixed item-col-img md'> <i class='fa fa-warning fa-2x'></i></div>";
+	    }
 	   
 	    		add += "<div class='item-col fixed pull-left item-col-title'>";
 	    		add += " <div>   <b><c:out value='${all.getContent()}'/></b> <div><c:out value='${all.getType()}'/></div></div></div>";
@@ -101,13 +104,13 @@ function buildAwards(){
 	
 	add += "<ul class='item-list striped' id='g' >";
 	
-	<c:forEach items="${awards}" var="all">
+	<c:forEach items="${awards}" var="awards">
 		add += "<li class='item'  >";
 		add += "<div class='item-row' id='awardNotif'> ";
 	    add += "<div class='item-col fixed item-col-check'> <label class='item-check' id='select-all-items'><span></span></label> </div>";
 	    	add += " <div class='item-col fixed item-col-img md'><i class='fa fa-trophy fa-2x'></i></div>";
 	    		add += "<div class='item-col fixed pull-left item-col-title'>";
-	    		add += " <div>   <c:out value='${all.getContent()}'/> <div>Award</div></div></div>";
+	    		add += " <div>   <c:out value='${awards.getContent()}'/> <div>Award</div></div></div>";
 	    		add += "<div class='item-col item-col-date'>";           
 	         	add += "    <div class='no-overflow'> <c:out value='${all.getDateCreated()}'/> </div>";
 	         	add += "<div class='col-md-1' > <i class='fa fa-times' id='deleteNotif'></i> </div></div>";
@@ -133,7 +136,7 @@ function buildExpirations(){
 	    add += "<div class='item-col fixed item-col-check'> <label class='item-check' id='select-expirations.-items'><span></span></label> </div>";
 	    	add += " <div class='item-col fixed item-col-img md'><i class='fa fa-exclamation fa-2x'></i></div>";
 	    		add += "<div class='item-col fixed pull-left item-col-title'>";
-	    		add += " <div>   <c:out value='${expirations.getContent()}'/> <div>Award</div></div></div>";
+	    		add += " <div>   <c:out value='${expirations.getContent()}'/> <div>Expirations</div></div></div>";
 	    		add += "<div class='item-col item-col-date'>";           
 	         	add += "    <div class='no-overflow'> <c:out value='${expirations.getDateCreated()}'/> </div>";
 	         	add += "<div class='col-md-1' > <i class='fa fa-times' id='deleteNotif'></i> </div></div>";
@@ -154,15 +157,15 @@ function buildUnconfirmedSurveys(){
 	
 	add += "<ul class='item-list striped' id='g' >";
 	
-	<c:forEach items="${unconfirmedSurveys}" var="all">
+	<c:forEach items="${unconfirmedSurveys}" var="unconfirmedSurveys">
 		add += "<li class='item'  >";
 		add += "<div class='item-row' id='awardNotif'> ";
-	    add += "<div class='item-col fixed item-col-check'> <label class='item-check' id='select-all-items'><span></span></label> </div>";
-	    	add += " <div class='item-col fixed item-col-img md'> <i class='fa fa-warning fa-2x'></i></i></div>";
+	    add += "<div class='item-col fixed item-col-check'> <label class='item-check' id='select-'><span></span></label> </div>";
+	    	add += " <div class='item-col fixed item-col-img md'> <i class='fa fa-warning fa-2x'></i></div>";
 	    		add += "<div class='item-col fixed pull-left item-col-title'>";
-	    		add += " <div>   <c:out value='${all.getContent()}'/> <div>Award</div></div></div>";
+	    		add += " <div>   <c:out value='${unconfirmedSurveys.getContent()}'/> <div>Unconfirmed Survey</div></div></div>";
 	    		add += "<div class='item-col item-col-date'>";           
-	         	add += "    <div class='no-overflow'> <c:out value='${all.getDateCreated()}'/> </div>";
+	         	add += "    <div class='no-overflow'> <c:out value='${unconfirmedSurveys.getDateCreated()}'/> </div>";
 	         	add += "<div class='col-md-1' > <i class='fa fa-times' id='deleteNotif'></i> </div></div>";
 	        add += "</div>";
 	    add += "</li>";    
@@ -427,18 +430,19 @@ function buildUnconfirmedSurveys(){
 
     <body>
 	
-        <div class="main-wrapper" style="z-index:1;">
+        <div class="main-wrapper" >
             <div class="app" id="app">
 				   
-                <aside class="sidebar"><img id ="bg" src="assets/bg.jpg">
+                <aside class="sidebar" style="" ><img id ="bg" src="assets/bg.jpg">
                 
                     <div class="sidebar-container">
                     				
                     
-                        <div class="sidebar-header">
-                            <div class="brand">
-                                <div class="logo"> <span class="l l1"></span> <span class="l l2"></span> <span class="l l3"></span> <span class="l l4"></span> <span class="l l5"></span> </div> PAASCU </div>
-                        </div>
+                          <div class="sidebar-header" >
+                            <div class="brand" style="background-color:#1c252e;position:relative;left:-17%;width:150%;box-shadow: 10px 9px 24px 0px rgba(1,1,1,1);"  >
+                                 <div class="logo" id="logoDiv" style="width:100%;"> <img src="assets/logoicon.png" style="width:52%;height:185%; top:0%;left:9%; opacity:1"> </div>
+                       
+                        </div><br>
                         <nav class="menu">
                             <ul class="nav metismenu" id="sidebar-menu">
                                 <li class="active">
@@ -539,6 +543,7 @@ box-shadow:         0px 2px 11px 2px rgba(50, 50, 50, 0.58); ">
                         </ul>
                     </div>
                 </header>
+                
                 <article class="content dashboard-page" >
                     <section class="section" style="position: relative; top:-130px;">
                       
@@ -688,6 +693,8 @@ box-shadow:         0px 2px 11px 2px rgba(50, 50, 50, 0.58); ">
                     </nav>
                     </section>
                 </article>
+                
+                </div></div>
              
              
              
