@@ -272,8 +272,11 @@ function checkAffiliations(SPID, systemID,area){
 	
 }
 
+var globalPrograms = 0;
 //HANDLER FOR EACH ADD OF PROGRAM IN PROCESS 2
 function addProgram(){
+	globalPrograms++;
+
 	var strUser = $('#programForm option:selected').text();
 	var strSurvey = $('#surveyForm option:selected').text();
 	var programID = $('#programForm option:selected').val();
@@ -282,10 +285,11 @@ function addProgram(){
 	obj.SPID = programID;
 	obj.surveyType = strSurvey;
 	obj.areas = [];
+	obj.id = globalPrograms;
 	var areaCounter = 0;
 	var counter = 0;
 	
-	var add =  "<li class='list-group-item'><h6>" + strUser + " - " + strSurvey + "</h6><ul class='list-group'>";
+	var add =  "<li class='list-group-item' id='programLi"+ globalPrograms +"'><h6>" + strUser + " - " + strSurvey + "</h6> <ul class='list-group'>";
 	
 	
 	//BUILDING DYNAMIC TABLE FOR ASSIGNING ACCREDITORS FOR EACH PROGRAM
@@ -571,8 +575,31 @@ function addProgram(){
 	}
 	
 	surveyObject.programList.push(obj);
+	
+	
+   	//appendChild(btnX);
 	add += "</ul></li>";
-	$('#addedList').append(add);
+	var try1 = $('#addedList').append(add);
+	var lel = globalPrograms;
+	
+	var closer = document.createElement("i");
+	closer.className="fa fa-times";
+	closer.style ="top:-10px; position:relative;";
+	
+	var btnX = document.createElement('BUTTON');
+	btnX.type="button";
+	btnX.className = "btn btn-s btn-link";
+	btnX.style="float:right;";
+	btnX.appendChild(closer);
+	btnX.onclick = function(){
+		$("#programLi"+lel).remove();
+		surveyObject.programList = surveyObject.programList.filter(function(item){
+			return item.id !== lel;
+		});
+   	};	      
+   	
+   	$("#programLi"+lel).find("h6").append(btnX);
+   	
 	var lal = document.getElementById("added");
 	lal.scrollTop = lal.scrollHeight;
 	

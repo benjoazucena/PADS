@@ -132,20 +132,20 @@ public class SurveyProgramDecision extends HttpServlet {
 //			System.out.println(decision_board+"DECISION OF BOARD");
 			
 					
-//			if(decision_board!="" && decision_board!=null){
-//				
-//				String[] parts = dateApproved.split("-");
-//				System.out.println(parts[0]+"PARTS 1");
-//				int year = Integer.parseInt(parts[0]);
-//				year += 1;
-//				valid_thru = Integer.toString(year) +"-"+parts[1]+"-"+ parts[2];
-//				
-//				if(decision_board.contains("Consultancy")){
-//					String[] parts2 = dateApproved.split("-");
-//					fc = valid_thru;
-//				}
-//			}
-//						
+			if(decision_board !="" && decision_board!=null){
+				
+				String[] parts = dateApproved.split("-");
+				System.out.println(parts[0]+"PARTS 1");
+				int year = Integer.parseInt(parts[0]);
+				year += 1;
+				valid_thru = Integer.toString(year) +"-"+parts[1]+"-"+ parts[2];
+				
+				if(decision_board.contains("Consultancy")){
+					String[] parts2 = dateApproved.split("-");
+					fc = valid_thru;
+				}
+			}
+						
 			
 			
 			ConfirmationUtil cUtil = new ConfirmationUtil();

@@ -264,36 +264,22 @@ function resurveyConfirm(PSID, surveyID, decisionJSON) {
 
  	 $.each(decisionJSON, function (key, value){
  		
- 	var opt1="",opt2="",opt3="",opt4="",opt5="",remarksArea="";		
+ 		var opt1="",opt2="",opt3="",opt4="",opt5="",remarksArea="";		
  		 
   if(value.decisionBy == "Team"){ 
  	 var opt1="",opt2="",remarksArea="";
- //  START OF TEAM TAB CONTENT	-PRELIMINARY
-	 //rsOpt1: yearRsOpt1
-	 //rsOpt2: yearRsOpt2, areasRsOpt2, year2RsOpt2
-	 //rsOpt3:yearRsOpt3, areasRsOpt3, year2RsOpt3
-	 //rsOpt4: reasonRsOpt4
-	 	 
  	add+=("<div id='team' class='tab-pane fade in active'>");
-   	add += ("<div class='form-group' style='width:100%;'> <div>"); 
- 	add +=("<input type='hidden'  name='optionID_team' id='optionID_team'><input type='hidden' name='PSID' value='"+PSID+"'><input type='hidden' name='surveyID' value='"+surveyID+"'><input type='hidden' name='type'value='Resurvey'>");
+   	 add += ("<div class='form-group' style='width:100%;'> <div>"); 
+
 		 var opt1="",opt2="",opt3="",remarksArea="";
 		 if(value.decision == "Initial accreditation for three (3) years") opt1 = "checked";
 		 else if(value.decision == "Accreditation not granted") {opt2 = "checked";remarksArea = value.remarks}
 		
-   		 add += ("<label class='control-label' style='width:100%;'><br><input "+opt1+" onclick='updateOptionID(\"rsOpt1\")' name='opt_team' class='radio ' type='radio'>	<span>Re-accreditation for a period of <select name='yearSelect"'><option>Two</option><option>Three</option><option>Four</option><option selected='selected'>Five</option><option>Six</option><option>Seven</option></select> years</span>  <br> <hr></label>");
-   		 add += ("<label><input "+opt2+"  name='opt_team'class='radio' type='radio' value='Re-accreditation for five years with a written progress report on the'>  <span>Re-accreditation for five years with a WRITTEN PROGRESS REPORT on the</span><select name='year2RsOpt1'><option>1st</option><option>2nd</option><option>3rd</option><option>4th</option><option>5th</option></select>");
+   		 add += ("<label class='control-label' style='width:100%;'><br><input "+opt1+" name='opt_team' class='radio ' type='radio' value='Re-accreditation for a period of five years'>	<span>Re-accreditation for a period of <select name='yearSelect"+PSID+"'><option>Two</option><option>Three</option><option>Four</option><option selected='selected'>Five</option><option>Six</option><option>Seven</option></select> years</span>  <br> <hr></label>");
+   		 add += ("<label><input "+opt2+"  name='opt_team'class='radio' type='radio' value='Re-accreditation for five years with a written progress report on the'>  <span>Re-accreditation for five years with a WRITTEN PROGRESS REPORT on the</span><select name='yearSelect"+PSID+"_team'><option>1st</option><option>2nd</option><option>3rd</option><option>4th</option><option>5th</option></select>");
    		 add += ("<span> year for the following areas:</label> <br>");      	
    		 add += ("<div class='form-group'> <label class='control-label'><select id='areaSelect"+PSID+"'><option></option><option>Faculty</option><option>Curriculum and Instructions</option><option>Laboratories</option><option>Libraries</option><option>Community</option></option>Physical Facilities</option><option>Student Services</option><option>Administration</option><option>Research</option><option>Clinical Training</option><option>Other Resources</option></select> <em id='addicon' class='fa fa-plus' onclick='addArea("+PSID+")'></em> </label> <br> <textarea id='remarks"+PSID+"' name='remarks' rows='3'  class='form-control' style='width:100%;'>	</textarea> </div> <br> <hr>");
      		
-   		 add += ("<label><input "+opt2+" name='opt_team'class='radio' type='radio' >   <span>Re-accreditation after five years with a WRITTEN PROGRESS REPORT on the <select name='year2RsOpt1'><option>1st</option><option>2nd</option><option>3rd</option><option>4th</option><option>5th</option></select> year on the following areas:</span> <select id='areaSelect"+PSID+"_team'><option></option><option>Faculty</option><option>Curriculum and Instructions</option><option>Laboratories</option><option>Libraries</option><option>Community</option></option>Physical Facilities</option><option>Student Services</option><option>Administration</option><option>Research</option><option>Clinical Training</option><option>Other Resources</option></select> <em id='addicon' style='margin-left:5px;' class='fa fa-plus' onclick='addAreaTeam("+PSID+")'></em> <em id='addicon' style='margin-left:5px;'class='fa fa-undo' onclick='resetAreaTeam("+PSID+")'></em> </label> <br>");
-  		 add += ("<div class='form-group'> <label class='control-label'>Areas</label> <br> <textarea id='remarks"+PSID+"_team' name='remarks"+PSID+"_team' rows='3'  class='form-control' style='width:100%;'>"+remarksArea+"</textarea> </div>");
-   		 
-   		 
-  		 add += ("<label> <input type='hidden' name='PSID' value='"+PSID+"'><input type='hidden' name='surveyID' value='"+surveyID+"'> <input type='hidden' name='type'value='Preliminary'> <input "+opt5+" name='opt_team'class='radio' type='radio' value='Consultancy Visit after one year for the following areas:'>   <span>Another Consultancy Visit for the following areas:</span> <select id='areaSelect"+PSID+"_team'><option></option><option>Faculty</option><option>Curriculum and Instructions</option><option>Laboratories</option><option>Libraries</option><option>Community</option></option>Physical Facilities</option><option>Student Services</option><option>Administration</option><option>Research</option><option>Clinical Training</option><option>Other Resources</option></select> <em id='addicon' style='margin-left:5px;' class='fa fa-plus' onclick='addAreaTeam("+PSID+")'></em> <em id='addicon' style='margin-left:5px;'class='fa fa-undo' onclick='resetAreaTeam("+PSID+")'></em> </label> <br>");
- 		 add += ("<div class='form-group'> <label class='control-label'>Areas</label> <br> <textarea id='remarks"+PSID+"_team' name='remarks"+PSID+"_team' rows='3'  class='form-control' style='width:100%;'>"+remarksArea+"</textarea> </div>");
-  		 
-  		 
    		 add += ("<label><input "+opt3+" name='opt_team'class='radio' type='radio' value='Re-accreditation for five years with a written progress report on the'>  <span>Re-accreditation for five years with a INTERIM VISIT on the</span><select name='yearSelect"+PSID+"'><option>1st</option><option>2nd</option><option>3rd</option><option>4th</option><option>5th</option></select>");
   		 add += ("<span> year for the following areas:</label> <br>");      	
   		 add += ("<div class='form-group'> <label class='control-label'><select id='areaSelect"+PSID+"'><option></option><option>Faculty</option><option>Curriculum and Instructions</option><option>Laboratories</option><option>Libraries</option><option>Community</option></option>Physical Facilities</option><option>Student Services</option><option>Administration</option><option>Research</option><option>Clinical Training</option><option>Other Resources</option></select> <em id='addicon' class='fa fa-plus' onclick='addArea("+PSID+")'></em> </label> <br> <textarea id='remarks"+PSID+"' name='remarks' rows='3'  class='form-control' style='width:100%;'></textarea> </div> <br> <hr>");
@@ -376,13 +362,6 @@ function formalConfirm(PSID, surveyID, decisionJSON) {
     $('[data-toggle="tooltip"]').tooltip();    
 }
 
-function updateOptionID(id){
-	alert(id);
-
-	document.getElementById("optionID").value = id;
-	alert(document.getElementById("optionID").value);
-}
-
 function preliminaryConfirm(PSID, surveyID, decisionJSON) {
 	var add = "";
 	
@@ -409,8 +388,7 @@ $('#modalBody2').html("<div style='width: 49%; float:left;'><h4>Preliminary Surv
    		 else if(value.decision== "Consultancy visit after one year to determine readiness for formal survey") opt3 = "checked";
    		 else if(value.decision=="Second preliminary survey") opt4 = "checked";
    		 else if(value.decision =="Consultancy Visit after one year for the following areas:") {opt5 = "checked"; remarksArea = value.remarks}
-   		
-   		 	 add += ("<label class='control-label' style='width:100%;'> <br><input "+opt1+" name='opt_team' class='radio ' type='radio'  value='Eligible for formal survey after six months to one year'>	<span>Eligible for formal survey after six months to one year </span> <br> <hr></label>");
+   			 add += ("<label class='control-label' style='width:100%;'> <br><input "+opt1+" name='opt_team' onclick=/'alert('alerted onclick')' class='radio ' type='radio' value='Eligible for formal survey after six months to one year'>	<span>Eligible for formal survey after six months to one year </span> <br> <hr></label>");
    			 add += ("<label class='control-label' style='width:100%;'> <input "+opt2+" name='opt_team' class='radio ' type='radio' value='Eligible for formal survey after one year'>	<span>Eligible for formal survey after one year </span> <br> <hr></label>");
    			 add += ("<label class='control-label' style='width:100%;'> <input "+opt3+" name='opt_team' class='radio ' type='radio' value='Consultancy visit after one year to determine readiness for formal survey'>	<span>Consultancy visit after one year to determine readiness for formal survey</span> <br> <hr></label>");
    			 add += ("<label class='control-label' style='width:100%;'> <input "+opt4+" name='opt_team' class='radio ' type='radio' value='Second preliminary survey'>	<span>Second preliminary survey</span> <br> <hr></label>");
@@ -451,7 +429,7 @@ else if(value.decisionBy=="Board"){
 		 var opt1="",opt2="",opt3="",opt4="",opt5="",remarksArea="";
    		 if(value.decision == "Eligible for formal survey after six months to one year") opt1 = "checked";
    		 else if(value.decision == "Eligible for formal survey after one year") opt2 = "checked";
-   		 else if(value.decision== "Consul	tancy visit after one year to determine readiness for formal survey") opt3 = "checked";
+   		 else if(value.decision== "Consultancy visit after one year to determine readiness for formal survey") opt3 = "checked";
    		 else if(value.decision=="Second preliminary survey") opt4 = "checked";
    		 else if(value.decision =="Consultancy Visit after one year for the following areas:") {opt5 = "checked"; remarksArea = value.remarks}
    			 add += ("<label class='control-label' style='width:100%;'> <br><input "+opt1+" name='opt_board' class='radio ' type='radio' value='Eligible for formal survey after six months to one year'>	<span>Eligible for formal survey after six months to one year </span> <br> <hr></label>");

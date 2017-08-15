@@ -233,6 +233,26 @@ function addAffiliation(){
 
 }
 
+function validateAccreditor(){
+	var hasMatch ="none";
+    var accEmail = document.getElementById("email").value;
+    alert(accEmail);
+	$.getJSON("AccreditorEmailLoader", function(data){
+		alert(JSON.stringify(data));
+		$.each(data, function (key, value){
+			if(value.email == accEmail){alert("This accreditor already exists in the database."); hasMatch="true"}
+			
+			
+			
+		});	
+		
+	});
+	
+	if(!hasMatch){saveAccreditor();}
+	
+	
+}
+
 function addEducation(){
 	var course = $('#courseName').val();
 	var univ = $('#institutionFormEdu').find(":selected").text();
@@ -457,12 +477,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
 								 
                                  
                                     </ul>
-                                </li>
-                                <li><a href="#demo3" data-toggle="collapse"> <i class="fa fa-bar-chart"></i> Reports <i class="fa arrow"></i> </a><ul id="demo3" class="collapse"><li> <a href="reportGA.html">GA Awardees</a> </li><li> <a href="reportHistory.html">History</a> </li></ul></li>
-								<li>
-								  <a href="settings.html"> <i class="fa fa-cog"></i> Settings </a>
-								 </li>
-                                
+                              
                                
                             </ul>
                         </nav>
@@ -734,7 +749,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
   						
 						
   						
-  						<button type="button" class="btn btn-success" onclick="saveAccreditor();"style="float:right; ">
+  						<button type="button" class="btn btn-success" onclick="validateAccreditor()" style="float:right;">
   						Submit
   						</button>
   						

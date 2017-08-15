@@ -166,7 +166,7 @@ public class AccreditorUtil {
 		Accreditor temp = new Accreditor();
 		try{
 			Connection conn = db.getConnection();
-			PreparedStatement ps = conn.prepareStatement("SELECT * FROM accreditors");
+			PreparedStatement ps = conn.prepareStatement("SELECT * FROM accreditors where status = 'Active'");
 			ResultSet rs = ps.executeQuery();
 			while(rs.next()){
 				
@@ -212,7 +212,7 @@ public class AccreditorUtil {
 		Accreditor temp = new Accreditor();
 		try{
 			Connection conn = db.getConnection();
-			PreparedStatement ps = conn.prepareStatement("SELECT * FROM accreditors WHERE `discipline` = ?");
+			PreparedStatement ps = conn.prepareStatement("SELECT * FROM accreditors WHERE `discipline` = ? AND `status` = 'Active'");
 			ps.setInt(1, disciplineID);
 			ResultSet rs = ps.executeQuery();
 			while(rs.next()){
@@ -618,13 +618,37 @@ public class AccreditorUtil {
 	public void deleteAccreditor(int accreditorID){
 		try{
 			Connection conn = db.getConnection();
-			PreparedStatement ps = conn.prepareStatement("DELETE from accreditors WHERE accreditorID = ?");
+			PreparedStatement ps = conn.prepareStatement("Update accreditors Set `status` = 'Inactive' WHERE accreditorID = ?");
 			ps.setInt(1, accreditorID);
 			ps.executeUpdate();
 		} catch (Exception e){
 			System.out.println("Error in AccreditorUtil:deleteAccreditor()");
 			e.printStackTrace();
 		}
+	}
+	
+	public JSONArray getAccreditorEmailsJSON(){
+		
+		JSONArray jArray = new JSONArray();
+		JSONObject job = new JSONObject();
+		
+		try{
+			Connection conn = db.getConnection();
+			PreparedStatement ps = conn.prepareStatement("SELECT email FROM `accreditors`");
+			ResultSet rs = ps.executeQuery();
+			while(rs.next()){
+				job = new JSONObject();
+				job.put("email", rs.getString(1));
+				
+				jArray.put(job);
+				
+			}
+		} catch (Exception e){
+			System.out.println("Error in AccreditorUtil:getAccreditorEmailsJSON()");
+			e.printStackTrace();
+		}
+		
+		return jArray;
 	}
 	
 	private String getAccreditorSurveyDate(int accID, String dateTrained){
@@ -696,7 +720,7 @@ public class AccreditorUtil {
 
 		try{
 			Connection conn = db.getConnection();
-			PreparedStatement ps = conn.prepareStatement("SELECT accreditorID, lastname, firstname, middlename, `num_surveys`, city, primaryAreaID, secondaryAreaID, tertiaryAreaID, discipline , date_trained FROM `accreditors`");
+			PreparedStatement ps = conn.prepareStatement("SELECT accreditorID, lastname, firstname, middlename, `num_surveys`, city, primaryAreaID, secondaryAreaID, tertiaryAreaID, discipline , date_trained FROM `accreditors` where `status` = 'Active'");
 			ResultSet rs = ps.executeQuery();
 			AccreditorCard temp;
 			while(rs.next()){
@@ -772,7 +796,7 @@ public class AccreditorUtil {
 			//Total Surveys
 				temp.setV3(rs.getInt(5));
 
-					//Store to Deck
+			//Store to Deck
 				v1total+= temp.getV1();
 				v2total+= temp.getV2();
 				v3total+= temp.getV3();
@@ -864,6 +888,7 @@ public class AccreditorUtil {
 			ps.setInt(1, accreditorID);
 			ps.setInt(2, systemID);
 			ResultSet rs = ps.executeQuery();
+		
 			if(rs.next()){
 				nice = true;
 			}else{

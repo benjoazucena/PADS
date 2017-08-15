@@ -698,7 +698,7 @@ public class SurveyUtil {
 		JSONObject job = new JSONObject();
 		try{
 			Connection conn = db.getConnection();
-			PreparedStatement ps = conn.prepareStatement("SELECT `decisionID`, `decisionBy`, `decision`, `valid_thru`, `remarks`, `for_interim`, `for_consultation`, `for_progressReport` , `PSID` FROM `decisions` WHERE PSID = ?");
+			PreparedStatement ps = conn.prepareStatement("SELECT `decisionID`, `decisionBy`, `decision`, `valid_thru`, `remarks`, `for_interim`, `for_consultation`, `for_progressReport` , `PSID`, `optionID` FROM `decisions` WHERE PSID = ?");
 			ps.setInt(1, PSID);
 			ResultSet rs = ps.executeQuery();
 			while(rs.next()){
@@ -711,7 +711,8 @@ public class SurveyUtil {
 				job.put("for_interim", rs.getString(6));
 				job.put("for_consultation", rs.getString(7));
 				job.put("for_progressReport", rs.getString(8));
-				job.put("decisionID", rs.getInt(9));
+				job.put("PSID", rs.getInt(9));
+				job.put("optionID",rs.getString(10));
 				
 				decisionJSON.put(job);
 			}
