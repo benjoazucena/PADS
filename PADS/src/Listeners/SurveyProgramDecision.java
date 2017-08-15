@@ -50,6 +50,7 @@ public class SurveyProgramDecision extends HttpServlet {
 		String fc ="";
 		String fp ="";
 		System.out.println("'"+(String)request.getParameter("decisionDate")+"'DECISION DATE%%%%%%%%");
+		
 		String dateApproved= ""+formatDate((String)request.getParameter("decisionDate"));
 		
 		
@@ -167,7 +168,8 @@ System.out.println("TYPEEEE");
 		String month = "";
 		String day;
 		String year;
-		if((date == null) || (date.equals("")) || (date.equals(" "))){
+		if((date == null) || (date.equals("")) || (date.equals(" "))){}
+		else{
 		String[] parts = date.split(" ");
 		if(parts[0].equals("January")){
 			month = "01";

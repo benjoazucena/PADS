@@ -24,12 +24,14 @@ public class NotificationUtil {
 	}
 	
 	
-	public ArrayList<Notification> getAllNotifications (){
+	public ArrayList<Notification> getNotifications (String notifType){
 		ArrayList<Notification> notifs = new ArrayList<Notification>();
 		Notification temp = new Notification();
+		String queryAppend = "";
 		try{
 			Connection conn = db.getConnection();
-			PreparedStatement ps = conn.prepareStatement("SELECT * FROM notifications");
+			if(!notifType.equals("all")){queryAppend = " Where type = '"+notifType+"'";}
+			PreparedStatement ps = conn.prepareStatement("SELECT * FROM notifications" + queryAppend + " Order by notificationID DESC");
 			ResultSet rs = ps.executeQuery();
 			while(rs.next()){
 								
@@ -46,94 +48,10 @@ public class NotificationUtil {
 			System.out.println("Error in AccreditorUtil:getAccreditors()");
 			e.printStackTrace();
 		}
-		
-	    return notifs;
+		    return notifs;
 	}
 	
-	public ArrayList<Notification> getAwardNotifications (){
-		ArrayList<Notification> notifs = new ArrayList<Notification>();
-		Notification temp = new Notification();
-		try{
-			Connection conn = db.getConnection();
-			PreparedStatement ps = conn.prepareStatement("SELECT * FROM notifications where type = ?");
-			ps.setString(1,"Awards");
-			ResultSet rs = ps.executeQuery();
-			while(rs.next()){
-								
-				int notificationID = rs.getInt(1);
-				String content = rs.getString(2);
-				String date_created = rs.getString(3);
-				String status = rs.getString(4);
-				String type = rs.getString(5);
-				
-				temp = new Notification(notificationID, content, date_created, status, type);
-				notifs.add(temp);
-			}
-		} catch (Exception e){
-			System.out.println("Error in AccreditorUtil:getAccreditors()");
-			e.printStackTrace();
-		}
-		
-	    return notifs;
-	}
-
-	
-	public ArrayList<Notification> getExpirationNotifications (){
-		ArrayList<Notification> notifs = new ArrayList<Notification>();
-		Notification temp = new Notification();
-		try{
-			Connection conn = db.getConnection();
-			PreparedStatement ps = conn.prepareStatement("SELECT * FROM notifications where type = ?");
-			ps.setString(1,"Expirations");
-			ResultSet rs = ps.executeQuery();
-			while(rs.next()){
-								
-				int notificationID = rs.getInt(1);
-				String content = rs.getString(2);
-				String date_created = rs.getString(3);
-				String status = rs.getString(4);
-				String type = rs.getString(5);
-				
-				temp = new Notification(notificationID, content, date_created, status, type);
-				notifs.add(temp);
-			}
-		} catch (Exception e){
-			System.out.println("Error in AccreditorUtil:getAccreditors()");
-			e.printStackTrace();
-		}
-		
-	    return notifs;
-	}
-
-	
-	public ArrayList<Notification> getUnconfirmedNotifications (){
-		ArrayList<Notification> notifs = new ArrayList<Notification>();
-		Notification temp = new Notification();
-		try{
-			Connection conn = db.getConnection();
-			PreparedStatement ps = conn.prepareStatement("SELECT * FROM notifications where type = ?");
-			ps.setString(1,"UnconfirmedSurveys");
-			ResultSet rs = ps.executeQuery();
-			while(rs.next()){
-								
-				int notificationID = rs.getInt(1);
-				String content = rs.getString(2);
-				String date_created = rs.getString(3);
-				String status = rs.getString(4);
-				String type = rs.getString(5);
-								
-				temp = new Notification(notificationID, content, date_created, status, type);
-				notifs.add(temp);
-			}
-		} catch (Exception e){
-			System.out.println("Error in AccreditorUtil:getAccreditors()");
-			e.printStackTrace();
-		}
-		
-	    return notifs;
-	}
-	
-	private boolean validContent(String content){
+	private boolean isValidContent(String content){
 		boolean res = true;
 		try{
 			Connection conn = db.getConnection();
@@ -157,7 +75,7 @@ public class NotificationUtil {
 	
 	public void generateNotif(String content, String type){
 		
-		if(validContent(content)){
+		if(isValidContent(content)){
 		try{
 		Connection conn = db.getConnection();
 		PreparedStatement ps = conn.prepareStatement("INSERT INTO `notifications` (`content`,`date_created`,`status`,`type`)"

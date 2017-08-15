@@ -57,7 +57,7 @@
 
 <script>	
 $(document).ready(function() {
-	
+	getDisciplines();
 	$('#datepicker2').datepicker({
 		format: 'yyyy-mm-dd'
 	});
@@ -162,6 +162,29 @@ $(document).ready(function() {
 		lal.scrollTop = lal.scrollHeight;
 	</c:forEach>
 });
+
+function getDisciplines(){
+	//GETS ALL DISCIPLINES FOR THE SELECT DROPDOWN
+	var obj = document.getElementById('disciplineForm');	
+	$.getJSON("DisciplineLoader", function(data){	
+		var option = document.createElement("option");
+		option.text = "";
+		option.value = 0;
+		obj.add(option);
+	
+		$.each(data, function (key, value){
+		
+			var option = document.createElement("option");
+			option.text = value.disciplineName;
+			option.value = value.disciplineID;
+			obj.add(option);
+		
+		});	
+		$('#disciplineForm').trigger("chosen:updated");
+	});
+	
+}
+
 function getSystems(){
 	//GETS ALL SYSTEMS FOR THE SELECT DROPDOWN
 	var obj1 = document.getElementById('systemFormEdu');
@@ -406,15 +429,14 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
                         </ul>
                     </div>
                 </header>
-                <aside class="sidebar" style="position:fixed"><img id ="bg" src="assets/bg.jpg">
-				<img id="bg" src="assets/bg.jpg">
+                <aside class="sidebar"><img id ="bg" src="assets/bg.jpg">
+				
                     <div class="sidebar-container">
                     	
-                        <div class="sidebar-header" >
-                            <div class="brand" style="background-color:#1c252e;position:relative;left:-17%;width:150%;box-shadow: 10px 9px 24px 0px rgba(1,1,1,1);"  >
-                                 <div class="logo" id="logoDiv" style="width:100%;"> <img src="assets/logoicon.png" style="width:52%;height:185%; top:-40%;left:9%; opacity:1"> </div>
-                       
-                        </div><br>
+                        <div class="sidebar-header">
+                            <div class="brand">
+                                <div class="logo"style="width:100%"> <img src="assets/logoicon.png" style="width:90%;height:170%; top:-5%;left:-5%; opacity:1"> </div>
+                        </div>
                         <nav class="menu">
                             <ul class="nav metismenu" id="sidebar-menu">
                                 <li>
@@ -538,7 +560,8 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
 					</div>
     				<div class="col-xs-5">
 						<label><b>Discipline/Specialization:</b></label>
-  						<input type="text" class="form-control underlined" id="surveyName" name="discipline" value="${acc.getDiscipline()}">
+  						<select class="form-control underlined chosen-select" data-placeholder="Choose a Discipline..." id="disciplineForm" style="background: transparent;" name="discipline" value="${acc.getDiscipline()}">
+						</select>
 					</div>
 					
     				
@@ -562,7 +585,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
 					<div class="form-group row">
 						<div class="col-xs-12">
 							<label>Primary Survey Area:</label>
-    					<select class="form-control underlined" name="primaryArea">
+    					<select class="form-control underlined" name="primaryArea" value="${acc.getPrimaryArea()}">
     						<option>Faculty</option>
     						<option>Instruction</option>
         					<option>Laboratories</option>
@@ -580,7 +603,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
 					<div class="form-group row">
 						<div class="col-xs-12">
 							<label>Secondary Survey Area:</label>
-    					<select class="form-control underlined" name="secondaryArea">
+    					<select class="form-control underlined" name="secondaryArea" value="${acc.getSecondaryArea()}">
     						<option>Faculty</option>
     						<option>Instruction</option>
         					<option>Laboratories</option>
@@ -599,7 +622,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
 					<div class="form-group row">
 						<div class="col-xs-12">
 							<label>Tertiary Survey Area:</label>
-    					<select class="form-control underlined" name="tertiaryArea">
+    					<select class="form-control underlined" name="tertiaryArea" value="${acc.getTertiaryArea()}">
     						<option>Faculty</option>
     						<option>Instruction</option>
         					<option>Laboratories</option>

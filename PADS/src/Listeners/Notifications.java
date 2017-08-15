@@ -42,10 +42,10 @@ public class Notifications extends HttpServlet {
 		NotificationUtil notifUtil = new NotificationUtil();
 		notifUtil.checkExpiredAccreditations();
 		notifUtil.checkUnconfirmedSurveys();
-		all = notifUtil.getAllNotifications();
-		awards = notifUtil.getAwardNotifications();
-		expirations = notifUtil.getExpirationNotifications();
-		expirations2 = notifUtil.getUnconfirmedNotifications();
+		all = notifUtil.getNotifications("all");
+		awards = notifUtil.getNotifications("Awards");
+		expirations = notifUtil.getNotifications("Expirations");
+		expirations2 = notifUtil.getNotifications("UnconfirmedSurveys");
 		System.out.println(expirations2.get(0).getContent()+"ggggg");
 //		unconfirmedSurveys = notifUtil.getExpirationNotifications();
 		

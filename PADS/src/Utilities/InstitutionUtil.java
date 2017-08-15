@@ -274,29 +274,29 @@ public class InstitutionUtil {
 		if(date==null||date.equals("")||date.equals(" ")){}
 		else{
 		String[] parts = date.split(" ");
-		if(parts[0].equals("Jan")){
+		if(parts[0].equals("January")){
 			month = "01";
-		}else if(parts[0].equals("Feb")){
+		}else if(parts[0].equals("February")){
 			month = "02";
-		}else if(parts[0].equals("Mar")){
+		}else if(parts[0].equals("March")){
 			month = "03";
-		}else if(parts[0].equals("Apr")){
+		}else if(parts[0].equals("April")){
 			month = "04";
 		}else if(parts[0].equals("May")){
 			month = "05";
-		}else if(parts[0].equals("Jun")){
+		}else if(parts[0].equals("June")){
 			month = "06";
-		}else if(parts[0].equals("Jul")){
+		}else if(parts[0].equals("July")){
 			month = "07";
-		}else if(parts[0].equals("Aug")){
+		}else if(parts[0].equals("August")){
 			month = "08";
-		}else if(parts[0].equals("Sep")){
+		}else if(parts[0].equals("September")){
 			month = "09";
-		}else if(parts[0].equals("Oct")){
+		}else if(parts[0].equals("October")){
 			month = "10";
-		}else if(parts[0].equals("Nov")){
+		}else if(parts[0].equals("November")){
 			month = "11";
-		}else if(parts[0].equals("Dec")){
+		}else if(parts[0].equals("December")){
 			month = "12";
 		}
 		year = parts[2];

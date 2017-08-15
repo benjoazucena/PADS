@@ -144,7 +144,7 @@ $.ajax({
 var globalApprovalDate;
 //This function checks what type of survey then returns appropriate modal function 
 function getLink(type,i,ID,decisionJSON,boardApprovalDate){
-// alert(boardApprovalDate);
+alert(boardApprovalDate);
 if(boardApprovalDate=="Date Error"){boardApprovalDate="Please Select a Date"}
 globalApprovalDate = boardApprovalDate
 	if(type=="Formal"){return "'formalConfirm("+i+","+ID+","+decisionJSON+")'"};

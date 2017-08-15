@@ -82,7 +82,12 @@
 					option.text = value.degreeName;
 					option.value = value.SPID;
 					programForm.add(option);
-					document.getElementById('suggestedSurveyType').innerHTML = "Suggested Survey Type: " + value.surveyType;
+					if(value.surveyType == null || value.surveyType == ""){
+						document.getElementById('suggestedSurveyType').innerHTML = "Suggested Survey Type: Preliminary";
+
+					}else{
+						document.getElementById('suggestedSurveyType').innerHTML = "Suggested Survey Type: " + value.surveyType;
+					}
 					$('#programForm').trigger("chosen:updated");
 
 				});
@@ -642,8 +647,6 @@ function addChairperson(btn){
 	$('#addModal').modal();
 }
 function addAccreditor(area, program, survey, areaCounter, programCounter, btn){
-	alert(program);
-	alert(area);
 	var add = "";
 	//BUILDING THE ACCREDITOR TABLE SPECIFICALLY TAILORED FOR EACH INSTITUTION - PROGRAM - AREA
 	var accreditors = [];

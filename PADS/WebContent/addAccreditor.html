@@ -140,7 +140,10 @@ function addProp(){
 
 function addDet(){
 	$("#progBar").html("<div class='progress-bar progress-bar-success progress-bar-striped' role='progressbar' style='width:50%' id='progDetails'>1. Details</div>");
-
+	 $(".chosen-select").trigger("chosen:updated");
+	 $(".chosen-container").each(function() {
+	       $(this).attr('style', 'width: 100%');
+	   });      
 }
 
 function getSystems(){
@@ -197,7 +200,6 @@ function changeDetails(){
 	$("#progDetails").className = "progress-bar progress-bar-success";
 	$("#progSure").className = "progress-bar progress-bar-success";
 }
-
 
 
 function addAffiliation(){
@@ -271,19 +273,39 @@ function getDisciplines(){
 }
 
 function saveAccreditor(){
-	$.ajax({
-		url: 'AddAccreditor?' + $('#accForm').serialize(),
-		type: 'POST',
-		async: false,
-		dataType: 'json',
-		data: {affObject: JSON.stringify(affObject)},
-		success: function(result){
-			
-		}
-	});
-	alert('Accreditor successfully added! Redirecting you to the accreditors page...')
-
-	document.location.href = "Accreditors";
+	
+	var firstName = $('#firstName').val();
+	var lastName = $('#lastName').val();
+	var email = $('#email').val();
+	var discipline = $('#disciplineForm').find(":selected").val();	
+	var primaryArea = $('#primaryArea').find(":selected").val();	
+	
+	if(firstName == ""){
+		alert("Please fill out first name!");
+	}else if(lastName == ""){
+		alert("Please fill out last name!");
+	}else if(email == ""){
+		alert("Please fill out email!");
+	}else if(discipline == ""){
+		alert("Please choose a discipline!");
+	}else if(primaryArea == ""){
+		alert("Please choose a primary area!");
+	}else{
+	
+		$.ajax({
+			url: 'AddAccreditor?' + $('#accForm').serialize(),
+			type: 'POST',
+			async: false,
+			dataType: 'json',
+			data: {affObject: JSON.stringify(affObject)},
+			success: function(result){
+				
+			}
+		});
+		alert('Accreditor successfully added! Redirecting you to the accreditors page...')
+	
+		document.location.href = "Accreditors";
+	}
 }
 
 function togglePresent(){
@@ -398,16 +420,14 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
                         </ul>
                     </div>
                 </header>
-                <aside class="sidebar" style="position:fixed"><img id ="bg" src="assets/bg.jpg">
+                <aside class="sidebar"><img id ="bg" src="assets/bg.jpg">
 				
                     <div class="sidebar-container">
                     	
-                      <div class="sidebar-header" >
-                            <div class="brand" style="background-color:#1c252e;position:relative;left:-17%;width:150%;box-shadow: 10px 9px 24px 0px rgba(1,1,1,1);"  >
-                                 <div class="logo" id="logoDiv" style="width:100%;"> <img src="assets/logoicon.png" style="width:52%;height:185%; top:-40%;left:9%; opacity:1"> </div>
-                       
+                        <div class="sidebar-header">
+                            <div class="brand">
+                                <div class="logo"style="width:100%"> <img src="assets/logoicon.png" style="width:90%;height:170%; top:-5%;left:-5%; opacity:1"> </div>
                         </div>
-                <br>
                         <nav class="menu">
                             <ul class="nav metismenu" id="sidebar-menu">
                                 <li>
@@ -437,7 +457,11 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
 								 
                                  
                                     </ul>
-                               
+                                </li>
+                                <li><a href="#demo3" data-toggle="collapse"> <i class="fa fa-bar-chart"></i> Reports <i class="fa arrow"></i> </a><ul id="demo3" class="collapse"><li> <a href="reportGA.html">GA Awardees</a> </li><li> <a href="reportHistory.html">History</a> </li></ul></li>
+								<li>
+								  <a href="settings.html"> <i class="fa fa-cog"></i> Settings </a>
+								 </li>
                                 
                                
                             </ul>
@@ -483,37 +507,37 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
   						</select>
       				</div>
       				<div class="col-xs-5">
-						<label>First Name:<b style="color:red">*</b></label>
-    					<input type="text" class="form-control underlined" id="surveyName" name="firstName">
+						<label><b style="color:red">*</b>First Name:</label>
+    					<input type="text" class="form-control underlined" id="firstName" name="firstName">
     				</div>
     				<div class="col-xs-1">
 						<label>M.I.:</label>
-    					<input type="text" class="form-control underlined" id="surveyName" name="middleName">
+    					<input type="text" class="form-control underlined" id="middleName" name="middleName">
     				</div>
       				<div class="col-xs-4">
-    					<label>Last Name:<b style="color:red">*</b></label>
-    					<input type="text" class="form-control underlined" id="surveyName" name="lastName">
+    					<label><b style="color:red">*</b>Last Name:</label>
+    					<input type="text" class="form-control underlined" id="lastName" name="lastName">
     				</div>
     				</div>
     				
     				<div class="form-group row">
     				<div class="col-xs-7">
-						<label>Email:<b style="color:red">*</b></label>
-    					<input type="text" class="form-control underlined" id="surveyName" name="email">
+						<label><b style="color:red">*</b>Email:</label>
+    					<input type="text" class="form-control underlined" id="email" name="email">
     				</div>
     				<div class="col-xs-5">
     					<label>Contact Number:</label>
-    					<input type="text" class="form-control underlined" id="surveyName" name="contact">
+    					<input type="text" class="form-control underlined" id="contact" name="contact">
     				</div>
     				</div>
     				<div class="form-group row">
     				<div class="col-xs-7">
 						<label>Address:</label>
-  						<input type="text" class="form-control underlined" id="surveyName" name="address">
+  						<input type="text" class="form-control underlined" id="address" name="address">
 					</div>
 					<div class="col-xs-5">
 						<label>City:</label>
-  						<input type="text" class="form-control underlined" id="surveyName" name="city">
+  						<input type="text" class="form-control underlined" id="city" name="city">
 					</div>
   					</div>
 					
@@ -521,11 +545,11 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
 					
 					<div class="col-xs-7">
 						<label><b>Country:</b></label>
-  						<input type="text" class="form-control underlined" id="surveyName" name="country">
+  						<input type="text" class="form-control underlined" id="country" name="country">
 					</div>
     				<div class="col-xs-5">
-    					<label><b>Discipline/Specialization:<b style="color:red">*</b></b></label>
-  						<select class="form-control underlined chosen-select" data-placeholder="Choose a System..." id="disciplineForm" style="background: transparent;" name="discipline">
+    					<label><b style="color:red">*</b><b>Discipline/Specialization:</b></label>
+  						<select class="form-control underlined chosen-select" data-placeholder="Choose a Discipline..." id="disciplineForm" style="background: transparent;" name="discipline">
 						</select>
 					</div>
 					
@@ -536,7 +560,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
 					
 					<div class="col-xs-7">
 						<label><b>Venue Trained:</b></label>
-  						<input type="text" class="form-control underlined" id="surveyName" name="venue_trained">
+  						<input type="text" class="form-control underlined" id="venueTrained" name="venue_trained">
 					</div>
     				<div class="col-xs-5">
 						<label><b>Date Trained:</b></label>
@@ -551,7 +575,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
 					
 					<div class="form-group row">
 						<div class="col-xs-12">
-							<label>Primary Survey Area:<b style="color:red">*</b></label>
+							<label><b style="color:red">*</b>Primary Survey Area:</label>
     					<select class="form-control underlined" name="primaryArea">
     						<option>Faculty</option>
     						<option>Instruction</option>
@@ -571,6 +595,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
 						<div class="col-xs-12">
 							<label>Secondary Survey Area:</label>
     					<select class="form-control underlined" name="secondaryArea">
+    						<option></option>
     						<option>Faculty</option>
     						<option>Instruction</option>
         					<option>Laboratories</option>
@@ -590,6 +615,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
 						<div class="col-xs-12">
 							<label>Tertiary Survey Area:</label>
     					<select class="form-control underlined" name="tertiaryArea">
+    						<option></option>
     						<option>Faculty</option>
     						<option>Instruction</option>
         					<option>Laboratories</option>
@@ -698,17 +724,21 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
     				
     				
     				</section>
-					
-					<div id="navBut" style="position:absolute;top:670px;">
+					<br><br>
+					<div  id="navBut" style="position:absolute;top:670px; width:90%;">
 					<hr style="position:absolute;">
 						
-						<button type="button" class="btn btn-success" onclick="saveAccreditor();"style="position:relative;top:35px; right:0px;">
+						<button type="button" class="btn btn-success" onclick="addDet();"style="" data-toggle="tab" href="#menu1">
+  						Prev Step
+  						</button>
+  						
+						
+  						
+  						<button type="button" class="btn btn-success" onclick="saveAccreditor();"style="float:right; ">
   						Submit
-  						</button>  					</div>
-    				
-  					</div>
-					
-				
+  						</button>
+  						
+					</div>
 					
 				   
         			</div>

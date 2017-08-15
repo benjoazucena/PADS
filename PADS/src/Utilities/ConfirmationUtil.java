@@ -15,12 +15,6 @@ public class ConfirmationUtil {
 	public ConfirmationUtil(){
 		db = new DBUtil();
 	}
-	private void checkNotif(int accID){
-		
-		
-		
-		
-	}
 	
 	public void confirmAttendance(int PSID,int areaID, int accID){
 				
