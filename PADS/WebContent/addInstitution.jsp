@@ -333,8 +333,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
 				
                 <div class="sidebar-overlay" id="sidebar-overlay"></div>
 				
-         
-                <article class="content dashboard-page">
+                         <article class="content dashboard-page">
 				<form name="addInstForm" onsubmit="return validateForm()"  method="post" action="AddInstitution" class="form">
 				
 				 <div class="title-block">
