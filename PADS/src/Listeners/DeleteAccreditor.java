@@ -35,7 +35,7 @@ public class DeleteAccreditor extends HttpServlet {
 		System.out.println("Delete Accreditor: " + accreditorID);
 		AccreditorUtil accUtil = new AccreditorUtil();
 		accUtil.deleteAccreditor(accreditorID);
-		RequestDispatcher rd = request.getRequestDispatcher("Accreditors");
+		RequestDispatcher rd = request.getRequestDispatcher("InactiveAccreditors");
 		rd.forward(request, response);
 	}
 

@@ -32,13 +32,13 @@ public class ConfirmationUtil {
 		
 	}
 	
-	public void updateDecision(String dteam, String remarks_team, String dcommission, String remarks_commission, String dboard, String remarks_board, String valid_thru, String fi_team, String fc_team, String fp_team, String fi_commission, String fc_commission, String fp_commission, String fi_board, String fc_board, String fp_board,int PSID, String dateApproved){
+	public void updateDecision(String dteam, String remarks_team, String dcommittee, String remarks_committee, String dboard, String remarks_board, String valid_thru, String fi_team, String fc_team, String fp_team, String fi_committee, String fc_committee, String fp_committee, String fi_board, String fc_board, String fp_board,int PSID, String dateApproved){
 		System.out.println(dateApproved+"DateApprovved---------------------");
 		System.out.println(valid_thru+"VALIDITYYY---------------------");
 		updateBy(dteam,remarks_team,fi_team,fc_team,fp_team,PSID,"Team");
-		updateBy(dcommission,remarks_commission,fi_commission,fc_commission,fp_commission,PSID,"Commission");
+		updateBy(dcommittee,remarks_committee,fi_committee,fc_committee,fp_committee,PSID,"Committee");
 		updateBy(dboard,remarks_board,fi_board,fc_board,fp_board,PSID,"Board");
-		if(dateApproved!=null&&dateApproved!=""){
+		if(dateApproved!=null&&!dateApproved.equals("")){
 			updateCurrentDecisionBy("Board", PSID,dateApproved, valid_thru);
 			
 		}
@@ -93,16 +93,17 @@ public void updateCurrentDecisionBy(String by, int PSID, String boardApproval, S
 		try{
 			String queryPortion = "`valid_thru` =?,";
 			Connection conn = db.getConnection();
-			if(valid_thru==""|| valid_thru == null){
+			if(valid_thru.equals("")|| valid_thru == null){
 				queryPortion = "";
 			}
 			else{
-				queryPortion= "`valid_thru` ="+valid_thru+",";
+				queryPortion= "`valid_thru` =?, ";
 			}
 			PreparedStatement ps = conn.prepareStatement("UPDATE `program-survey` SET `currentDecisionBy` =?, "+queryPortion+"  `boardApprovalDate`=? WHERE  PSID= ?");
 			ps.setString(1, by);
-			ps.setString(2, boardApproval);
-			ps.setInt(3, PSID);
+			ps.setString(2, valid_thru);
+			ps.setString(3, boardApproval);
+			ps.setInt(4, PSID);
 			ps.executeUpdate();
 			conn.close();
 			

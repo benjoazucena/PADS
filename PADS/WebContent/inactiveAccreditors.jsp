@@ -1,14 +1,11 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
     pageEncoding="ISO-8859-1"%>
-    <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix = "c" %>
-
-
-
-<!doctype html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix = "c" %>
 <html class="no-js" lang="en">
-
+	
     <head>
-     	 <!-- IMPORTS -->
+    	 <!-- IMPORTS -->
 	<link rel="stylesheet" href="chosen/chosen.css">
     <link rel="stylesheet" href="css/bootstrap.css">
     <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -36,6 +33,8 @@
 	<script src="js/vfs_fonts.js"></script>
 	
 	<!-- END IMPORTS -->
+    	
+    	
         <meta charset="utf-8">
         <meta http-equiv="x-ua-compatible" content="ie=edge">
         <title> PAASCU - Accreditation Schedule Manager </title>
@@ -62,52 +61,87 @@
 	
 <script>
 $(document).ready(function() {
-
+	getDisciplines();
+	var discForm = document.getElementById('discForm');
+	
+	$('#discForm').chosen().change(function(){
+		var discID = $('#discForm').find(":selected").val();
+// 		$.ajax({url: "AccreditorsByDisc?disciplineID=" + discID, success: function(result){
+// 	        alert(result);
+// 	    }});
+		window.location.href = "AccreditorsByDisc?disciplineID=" + discID;
+	});
+    $('#smarttable').DataTable( {
+    	
+    	buttons: [
+            {
+          	  extend: 'pdfHtml5',
+          	  title: "List of Accreditors",
+          	  download: 'open',
+          	  exportOptions: {
+                    columns: [ 0, 1, 2, 3 ]
+                }
+            },
+            {
+          	  extend: 'excelHtml5',
+          	  title: "List of Accreditors",
+          	  exportOptions: {
+                    columns: [ 0, 1, 2, 3 ]
+                }
+            }
+            
+ 		],
+    	dom: 'Blfrtip',
+    	
+        initComplete: function () {
+            this.api().columns().every( function () {
+                var column = this;
+                var select = $('<select><option value=""></option></select>')
+                    .appendTo( $(column.footer()).empty() )
+                    .on( 'change', function () {
+                        var val = $.fn.dataTable.util.escapeRegex(
+                            $(this).val()
+                        );
  
+                        column
+                            .search( val ? '^'+val+'$' : '', true, false )
+                            .draw();
+                    } );
+ 
+                column.data().unique().sort().each( function ( d, j ) {
+                    select.append( '<option value="'+d+'">'+d+'</option>' )
+                } );
+            } );
+        }
+    } );
 
-	  $('#smarttable').DataTable( {
-	    	dom: 'Blfrtip',
-	    	buttons: [
-	                  {
-	                	  extend: 'pdfHtml5',
-	                	  title: "List of Institutions",
-	                	  download: 'open',
-	                	  exportOptions: {
-	                          columns: [ 0, 1, 2, 3 , 4]
-	                      }
-	                  },
-	                  {
-	                	  extend: 'excelHtml5',
-	                	  title: "List of Accreditors",
-	                	  exportOptions: {
-	                          columns: [ 0, 1, 2, 3, 4 ]
-	                      }
-	                  }
-	                  
-	        ],
-	        initComplete: function () {
-	            this.api().columns().every( function () {
-	                var column = this;
-	                var select = $('<select><option value=""></option></select>')
-	                    .appendTo( $(column.footer()).empty() )
-	                    .on( 'change', function () {
-	                        var val = $.fn.dataTable.util.escapeRegex(
-	                            $(this).val()
-	                        );
-	 
-	                        column
-	                            .search( val ? '^'+val+'$' : '', true, false )
-	                            .draw();
-	                    } );
-	 
-	                column.data().unique().sort().each( function ( d, j ) {
-	                    select.append( '<option value="'+d+'">'+d+'</option>' )
-	                } );
-	            } );
-	        }
-	    } );
+	
+		
+	
 		
 } );
+$.fn.dataTable.ext.errMode = 'none';
+
+function getDisciplines(){
+	//GETS ALL SYSTEMS FOR THE SELECT DROPDOWN
+	var obj = document.getElementById('discForm');
+	
+	$.getJSON("DisciplineLoader", function(data){
+		var option = document.createElement("option");
+		option.text = "";
+		option.value = 0;
+		obj.add(option);
+		$.each(data, function (key, value){
+			var option = document.createElement("option");
+			option.text = value.disciplineName;
+			option.value = value.disciplineID;
+			obj.add(option);
+			
+		});	
+		$('#discForm').trigger("chosen:updated");
+	});
+	
+}
 </script>
 
 <style>
@@ -292,18 +326,19 @@ $(document).ready(function() {
     </head>
 
     <body>
+	
         <div class="main-wrapper">
             <div class="app" id="app">
-               
-                <aside class="sidebar" style="position:fixed">
+				   
+               <aside class="sidebar">
 				<img id="bg" src="assets/bg.jpg">
                     <div class="sidebar-container">
-                        <div class="sidebar-header" >
+                         <div class="sidebar-header" >
                             <div class="brand" style="background-color:#1c252e;position:relative;left:-17%;width:150%;box-shadow: 10px 9px 24px 0px rgba(1,1,1,1);"  >
                                  <div class="logo" id="logoDiv" style="width:100%;"> <img src="assets/logoicon.png" style="width:52%;height:185%; top:-40%;left:9%; opacity:1"> </div>
                        
                         </div>
-                <br>
+                <br><br>
                         <nav class="menu">
                             <ul class="nav metismenu" id="sidebar-menu">
                                 <li>
@@ -321,10 +356,10 @@ $(document).ready(function() {
                                     
                                     <ul id="demo" class="collapse">
                                   
-                                        <li> <a href="Accreditors">
+                                        <li class="active"> <a href="Accreditors">
     								Accreditors
     							</a> </li>
-                                        <li  class = "active" > <a href="Institutions">
+                                        <li> <a href="Institutions">
     								Institutions
     							</a> </li>
 								 <li> <a href="SchoolSystems">
@@ -335,8 +370,7 @@ $(document).ready(function() {
 								 
                                  
                                     </ul>
-                                </li>
-                                
+                            
 								   
 								 </li>
                                 
@@ -349,8 +383,8 @@ $(document).ready(function() {
 			
 					
                 </aside>
-				
-                <div class="container">
+				  
+				<div class="container">
 	<video poster="assets/banner.jpg" id="bgvid"  playsinline autoplay muted loop>
   <!-- WCAG general accessibility recommendation is that media such as background video play through only once. Loop turned on for the purposes of illustration; if removed, the end of the video will fade in the same way created by pressing the "Pause" button  -->
 
@@ -358,10 +392,8 @@ $(document).ready(function() {
 </video>
 </div>
             <div id="welcome">
-			<h1>List of Institutions</h1>
-			
-						<button type="button"  style="float:right; position:relative;left:-50px; top:-52px; color:#3c4731;" class="btn btn-oval btn-secondary" onclick="location.href='addInstitution.jsp';"><em class="fa fa-plus"></em><b> Add Institution</b></button>
-                   
+			<h1>List of Inactive Accreditors</h1>
+			  
 			</div>
 			   <header class="header" id="customheader">
 			   
@@ -369,57 +401,49 @@ $(document).ready(function() {
                 </header>
                 <article class="content dashboard-page"  >
                     <section class="section" style="position: relative; top:-135px; left:-25px; width:105%;" >
-                      
-					
-					
-						
-					
                                             <div class="table-responsive" style="width:100%; float:right;" id="contenthole">
 										
-                                                 <table id="smarttable" class="table table-striped table-bordered table-hover">
+                                                <table id="smarttable" class="table table-striped table-bordered table-hover" style="width:100%">
+												   
                                                     <thead>
                                                       <tr>
-                                                            <th>Institution Name</th>
-                                                            <th>System</th>
-                                                            <th>Acronym</th>
-                                                            <th>Date of Membership</th>
+                                                            <th>Full Name</th>
+                                                            <th>Discipline/Program of Study</th>
+															<th>Total Surveys</th>
                                                             <th>City</th>
-                                                            
-                                                             <th>Controls</th>
+                                                            <th>Controls</th>
                                                         </tr>
                                                     </thead>
+													
                                                     <tbody>
-													
-													
-													
-                                                     <c:forEach items="${institutions}" var="inst" >
-														<tr>
-															<td> <c:out value="${inst.getName()}"/> </td>
-															<td> <c:out value="${inst.getSchoolsystemName()}"/> </td>
-															<td> <c:out value="${inst.getInstitutionAcronym()}"/> </td>
-															<td> <c:out value="${inst.getDate_added()}"/> </td>
-															<td> <c:out value="${inst.getCity()}"/> </td>
-															
-															<td>
-															<a href="ViewInstitution?institutionID=<c:out value='${inst.getInstitutionID()}'/>">View</a>
-												         	 <a href="EditInstitution?institutionID=<c:out value='${inst.getInstitutionID()}'/>">Edit</a>
-<%-- 												        	  <a href="DeleteInstitution?institutionID=<c:out value='${inst.getInstitutionID()}'/>">Delete</a></td> --%>
-												        	</td>
-														</tr>
-													</c:forEach>
-														
+														<c:forEach items="${accreditors}" var="acc">
+												        <tr>
+												          <td><c:out value="${acc.getFullName()}"/></td>
+												          <td><c:out value="${acc.getDiscipline()}"/></td>
+												          <td><c:out value="${acc.getTotalSurveys()}"/></td>
+												          <td><c:out value="${acc.getCity()}"/></td>
+												          <td>
+												          <a href="ViewInactiveAccreditor?accreditorID=<c:out value='${acc.getAccreditorID()}'/>">View</a>
+												          <a href="EditAccreditor?accreditorID=<c:out value='${acc.getAccreditorID()}'/>">Edit</a>
+												         </td>
+												        </tr>
+												        </c:forEach>
                                                     </tbody>
-                                                </table>
-                                            </div>
-                                        </section>
+                                                </table><br><hr><a href="Accreditors">Show the list of ACTIVE accreditors</a>
+                                       
+                                            </div>   </section>
                                     </div>
                                 </div>
+                               
                             </div>
                         </div>
 						
                     </section>
+                    
+                  
                 </article>
              
+               
              
         <!-- Reference block for JS -->
         <div class="ref" id="ref">
@@ -429,10 +453,9 @@ $(document).ready(function() {
                 <div class="color-secondary"></div>
             </div>
         </div>
-          
+
         <script src="js/app.js"></script>
-		
-		
+
     </body>
 
 </html>

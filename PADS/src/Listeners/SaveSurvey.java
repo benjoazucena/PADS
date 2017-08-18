@@ -47,7 +47,10 @@ public class SaveSurvey extends HttpServlet {
 		String paascu2Contact = (String)jObj.getString("paascu2Contact");
 		String paascu2Position = (String)jObj.getString("paascu2Position");
 		
-		int chairpersonID = jObj.getInt("chairpersonID");
+		int chairpersonID = 0;
+		if(jObj.has("chairpersonID")){
+			chairpersonID = jObj.getInt("chairpersonID");
+		}
 		int institutionID = (Integer) jObj.getInt("institutionID");
 		int systemID = (Integer) jObj.getInt("systemID");
 		

@@ -60,10 +60,17 @@
 
 <script>
 
-	$(document).ready(function() {
-		
-		/* initialize the external events
-		-----------------------------------------------------------------*/
+function validateForm(){
+	if($('#progName').val() == ""){
+		alert("Please input discipline name!");
+		return false;
+	}else if($('#progAcr').val() == ""){
+		alert("Please input discipline acronym!");
+		return false;
+	}else{
+		return true;
+	}
+}
 </script>
 <style>
 
@@ -217,15 +224,15 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
 											<h3 class="title">
 							Edit Program Form
 						</h3> </div>
-							<form method="post" action="SaveProgram" class="form">
+							<form method="post" onsubmit="return validateForm()" action="SaveProgram" class="form">
 							<c:set var="pro" scope="session" value="${program}"/>
 								
 								<div class="form-group" style="width:48%; padding-right"> 
 								<input type="hidden" value="${ pro.getProgramID() }" name="programID" 	/>
-								<label class="control-label">Program Name</label> 
-								<input type="text" class="form-control underlined" style="width:90%;"  placeholder="e.g. BS-Biology" name="programName" value="${pro.getName()}" /> 
-								<label class="control-label">Acronym</label> 
-								<input type="text" class="form-control underlined" style="width:90%;"  placeholder="e.g. BIO" name="acronym" value="${pro.getAcronym()}" /> 
+								<label class="control-label"><b style="color:red;">*</b>Program Name</label> 
+								<input type="text" class="form-control underlined" id="progName" style="width:90%;"  placeholder="e.g. BS-Biology" name="programName" value="${pro.getName()}" /> 
+								<label class="control-label"><b style="color:red;">*</b>Acronym</label> 
+								<input type="text" class="form-control underlined" id="progAcr" style="width:90%;"  placeholder="e.g. BIO" name="acronym" value="${pro.getAcronym()}" /> 
 								
 								</div>	
 							<br>

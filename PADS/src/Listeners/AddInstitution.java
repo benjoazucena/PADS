@@ -80,8 +80,8 @@ public class AddInstitution extends HttpServlet {
 		InstitutionUtil instUtil = new InstitutionUtil();
 		instUtil.addInstitution(ssID, institutionName, institutionAcronym,  address, city, country, website, contactNumber, fax, institutionHead, position, headEmail, contactPerson, contactPosition, contactEmail, membershipDate);
 		System.out.println(ssID+"SSID");
-		RequestDispatcher rd = request.getRequestDispatcher("Institutions");
-		rd.forward(request, response);
+		response.sendRedirect("Institutions");
+		
 	}
 
 }

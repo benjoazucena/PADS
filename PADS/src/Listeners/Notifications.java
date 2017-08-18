@@ -39,6 +39,8 @@ public class Notifications extends HttpServlet {
 		ArrayList<Notification> expirations = new ArrayList<Notification>();
 		ArrayList<Notification> expirations2 = new ArrayList<Notification>();
 		ArrayList<Notification> unconfirmedSurveys = new ArrayList<Notification>();
+		ArrayList<Notification> readNotifications = new ArrayList<Notification>();
+		
 		NotificationUtil notifUtil = new NotificationUtil();
 		notifUtil.checkExpiredAccreditations();
 		notifUtil.checkUnconfirmedSurveys();
@@ -46,9 +48,7 @@ public class Notifications extends HttpServlet {
 		awards = notifUtil.getNotifications("Awards");
 		expirations = notifUtil.getNotifications("Expirations");
 		expirations2 = notifUtil.getNotifications("UnconfirmedSurveys");
-		System.out.println(expirations2.get(0).getContent()+"ggggg");
-//		unconfirmedSurveys = notifUtil.getExpirationNotifications();
-		
+		readNotifications = notifUtil.getNotifications("read");
 	
 		
 		//all:Notifications to be placed at HOME tab
@@ -58,7 +58,7 @@ public class Notifications extends HttpServlet {
 		request.setAttribute("awards", awards);
 		request.setAttribute("expirations", expirations);
 		request.setAttribute("unconfirmedSurveys", expirations2);
-//		request.setAttribute("unconfirmedSurveys", unconfirmedSurveys);
+		request.setAttribute("read", readNotifications);
 		RequestDispatcher rd = request.getRequestDispatcher("dashboard.jsp");
 		rd.forward(request, response);
 }

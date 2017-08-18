@@ -23,29 +23,58 @@ public class NotificationUtil {
 			db = new DBUtil();
 	}
 	
+	public void deleteReadNotifications(){
+		try{
+			Connection conn = db.getConnection();
+			PreparedStatement ps = conn.prepareStatement("DELETE from notifications WHERE status = 'read'");
+			ps.executeUpdate();
+		} catch (Exception e){
+			System.out.println("Error in NotificationUtil:deleteReadNotification()");
+			e.printStackTrace();
+		}
+	}
+	
+	public void setNotificationRead(int id){
+		try{
+			Connection conn = db.getConnection();
+			PreparedStatement ps = conn.prepareStatement("UPDATE notifications SET status='read' WHERE notificationID = ?");
+			ps.setInt(1, id);
+			ps.executeUpdate();
+		} catch (Exception e){
+			System.out.println("Error in NotificationUtil:setNotificationRead()");
+			e.printStackTrace();
+		}
+	}
 	
 	public ArrayList<Notification> getNotifications (String notifType){
 		ArrayList<Notification> notifs = new ArrayList<Notification>();
 		Notification temp = new Notification();
 		String queryAppend = "";
+		
 		try{
 			Connection conn = db.getConnection();
-			if(!notifType.equals("all")){queryAppend = " Where type = '"+notifType+"'";}
+			if(notifType.equals("read")){
+				System.out.println("read na read");
+				queryAppend = " WHERE status = 'read'";
+			}else if(!notifType.equals("all")){
+				queryAppend = " Where type = '"+notifType+"'";
+			}
 			PreparedStatement ps = conn.prepareStatement("SELECT * FROM notifications" + queryAppend + " Order by notificationID DESC");
 			ResultSet rs = ps.executeQuery();
 			while(rs.next()){
-								
+				if(notifType.equals("read")){
+					System.out.println(rs.getString(2));
+				}
 				int notificationID = rs.getInt(1);
 				String content = rs.getString(2);
 				String date_created = rs.getString(3);
 				String status = rs.getString(4);
 				String type = rs.getString(5);
-				System.out.println(content+"weeeeeeeeeeeeeeeeeeeeeeeeeeew");
 				temp = new Notification(notificationID, content, date_created, status, type);
 				notifs.add(temp);
 			}
 		} catch (Exception e){
-			System.out.println("Error in AccreditorUtil:getAccreditors()");
+			System.out.println("Error in NotificationUtil:getNotifications()");
 			e.printStackTrace();
 		}
 		    return notifs;
@@ -246,6 +275,85 @@ System.out.println("EXPIRATION NOTIFS CREATED");
 			}
 		return name;
 	}
+	
+	public void readUnconfirmed(int surveyID){
+		
+		
+		
+		String name= getSurveyInst(surveyID);
+		String date= getSurveyDate(surveyID);
+		try{
+			Connection conn = db.getConnection();
+			//SQL statement that checks if the current date is greater than the date of validity of a program's latest accreditation
+			PreparedStatement ps = conn.prepareStatement("SELECT `content` FROM `notifications`");
+			ResultSet rs = ps.executeQuery();
+			
+			while(rs.next()){
+				if(rs.getString(1).contains(name)&&rs.getString(1).contains(date)){
+					ps = conn.prepareStatement("UPDATE `notifications` SET `status`= 'read' WHERE `content`= "+rs.getString(1));
+					ps.executeUpdate();
+				}
+			}
+		
+			
+		} catch (Exception e){
+				System.out.println("Error in AccreditorUtil:getAccreditors()");
+				e.printStackTrace();
+			}
+	
+	}
+	
+	
+private String getSurveyDate(int surveyID){
+		
+		String name = "";		
+		
+		try{
+			Connection conn = db.getConnection();
+			//SQL statement that checks if the current date is greater than the date of validity of a program's latest accreditation
+			PreparedStatement ps = conn.prepareStatement("SELECT `end_date` FROM `surveys` Where `surveyID` =?");
+			ps.setInt(1, surveyID);
+			ResultSet rs = ps.executeQuery();
+			
+			if(rs.next())
+			name = (String)rs.getString(1);
+						
+		
+			
+		} catch (Exception e){
+				System.out.println("Error in AccreditorUtil:getAccreditors()");
+				e.printStackTrace();
+			}
+	return name;
+	}
+
+private String getSurveyInst(int surveyID){
+	
+	String name = "";		
+	
+	try{
+		Connection conn = db.getConnection();
+		//SQL statement that checks if the current date is greater than the date of validity of a program's latest accreditation
+		PreparedStatement ps = conn.prepareStatement("SELECT `institutionID` FROM `surveys` Where `surveyID` =?");
+		ps.setInt(1, surveyID);
+		ResultSet rs = ps.executeQuery();
+		
+		if(rs.next())
+			ps = conn.prepareStatement("SELECT `name` FROM `institutions` Where `institutionID` =?");
+			ps.setString(1, rs.getString(1));
+			ResultSet rs1 = ps.executeQuery();
+			if(rs1.next()){
+				name = rs1.getString(1);
+			}
+					
+	
+		
+	} catch (Exception e){
+			System.out.println("Error in AccreditorUtil:getAccreditors()");
+			e.printStackTrace();
+		}
+return name;
+}
 	
 private static String formatNotifDate(){
 	long yourmilliseconds = System.currentTimeMillis();

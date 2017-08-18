@@ -96,7 +96,7 @@ public JSONArray getSystems(){
 			job.put("systemID", rs.getInt(1));
 			job.put("systemName", rs.getString(2));
 			jArray.put(job);
-			System.out.println(rs.getInt(1) + rs.getString(2) + "jugjug");
+		
 			
 		}
 	} catch (Exception e){

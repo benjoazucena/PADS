@@ -13,7 +13,7 @@
     <script src="js/bootstrap.min.js"></script>
     <link rel="apple-touch-icon" href="apple-touch-icon.png">
     <link rel="stylesheet" href="css/vendor.css">
-    <link href='fullcalendar.css' rel='stylesheet' />
+
     <link href='calendar/fullcalendar.print.css' rel='stylesheet' media='print' />
 	<script src='calendar/lib/moment.min.js'></script>
 	<script src='calendar/fullcalendar.min.js'></script>
@@ -51,7 +51,7 @@
             {
                 document.write('<link rel="stylesheet" id="theme-style" href="css/app.css">');
             }
-        </script><link href='fullcalendar.css' rel='stylesheet' />
+        </script>
         
 <link href='calendar/fullcalendar.print.css' rel='stylesheet' media='print' />
 <script src='calendar/lib/moment.min.js'></script>
@@ -161,10 +161,12 @@ function addAlert(asd){
 	$('#section').append('<div class="alert alert-success"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a><strong>Success!</strong> Successfully added survey called: '+asd +'.</div> <br>');
 }
 
+
+
 function addSurvey(){
 	var surveyName = document.getElementById("surveyName").value;
 	var school = document.getElementById("school").value;
-	var School System = document.getElementById("School System").value;
+	var SchoolSystem = document.getElementById("School System").value;
 	
 	$('#external-events').append('<div class="fc-event ui-draggable ui-draggable-handle" data-event="{\"title\":\"' + surveyName + '\"}">' + surveyName + '</div> <br>');
 	$('#external-events .fc-event').each(function() {
@@ -204,6 +206,46 @@ function addSure(){
 
 }
 
+function duplicateCheck(ss){
+	var hasMatch = false;
+// 	alert(entry);
+	 $.ajax({
+   	  url: "SystemsLoader",
+   	  dataType: 'json',
+   	  async: false,
+   	  success: function(data) {
+   		  $.each(data, function (key, value){
+   			
+   				if(ss.toUpperCase() == value.systemName.toUpperCase()){
+	   				alert("This institution already exists in the database."); 
+	   				hasMatch=true; 
+	   				return false;
+   				} 
+   			});	
+   		
+   	  }
+   	});	
+	 if(!hasMatch){return true;}	
+}
+
+
+function validateForm() {
+	
+	
+	var ssName = document.forms["addSSForm"]["ssName"].value;
+	
+
+    if(duplicateCheck(ssName)){
+    if(ssName==""){
+    	alert("School System must be selected");
+        return false;	
+    } 
+    else{
+    	alert("succesfully added institution!");
+    	
+        }}
+    else return false;
+}
 
 function changeDetails(){
 	$("#progProponents").className = "progress-bar progress-bar-success progress-bar-striped";
@@ -374,7 +416,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
 				<section class="section" id="section">   
 				 <div class="tab-content">     
 				 	<div id="menu1" class="tab-pane fade in active">          
-		<form method="post" action="AddSchoolSystem" class="form">
+		<form name="addSSForm" onsubmit="return validateForm()"  method="post" action="AddSchoolSystem" class="form">
 						<div class="col-md-12">
 									<div class="card card-block sameheight-item">
 										<div class="title-block">
@@ -404,7 +446,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
 <!-- 									Submit then add an Institutions 						 -->
 <!-- 									</button> -->
 									
-									<button type="submit" class="btn btn-info" onclick="alert('Successfully added a School System!');location.href = 'SchoolSystems';"  style="float:right; padding-right:15px;">
+									<button type="submit" class="btn btn-info" style="float:right; padding-right:15px;">
 									Save
 									</button>
 								</div>

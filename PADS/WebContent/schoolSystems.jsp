@@ -397,7 +397,7 @@ $(document).ready(function() {
 															<td> 
 															<a href="ViewSchoolSystem?schoolsystemID=<c:out value='${ss.getSchoolSystemID()}'/>">View</a>
 															<a href="EditSchoolSystem?schoolsystemID=<c:out value='${ss.getSchoolSystemID()}'/>">Edit</a>
-															     <a href="DeleteSchoolSystem?schoolsystemID=<c:out value='${ss.getSchoolSystemID()}'/>">Delete</a> </td>
+															    
 															
 														</tr>
 													</c:forEach>

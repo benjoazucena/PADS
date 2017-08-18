@@ -161,6 +161,45 @@ function getSystems(){
 
 
 
+
+function validateForm() {
+	
+	
+	var ssName = document.forms["addInstForm"]["ssName"].value;
+	var institutionName = document.forms["addInstForm"]["institutionName"].value;
+    var institutionName = document.forms["addInstForm"]["institutionName"].value;
+    var institutionAcronym = document.forms["addInstForm"]["institutionAcronym"].value;
+    var membershipDate = document.forms["addInstForm"]["membershipDate"].value;
+    var city =  document.forms["addInstForm"]["city"].value;
+    
+  
+    
+   
+    if(ssName=="0"){
+    	alert("School System must be selected");
+        return false;	
+    }    
+    else if (institutionName == "") {
+        alert("Institution Name must be filled out");
+        return false;
+    }
+    else if (institutionAcronym == "") {
+        alert("Institution Acronym must be filled out");
+        return false;
+    }
+    else if (membershipDate == "") {
+        alert("Membership Date must be filled out");
+        return false;
+    }
+    else if (city == "") {
+        alert("City must be filled out");
+        return false;
+    }
+    else{
+    	alert("succesfully added institution!");
+    	location.href = 'institutions.jsp';
+        }
+}
 </script>
 
 <script>
@@ -303,7 +342,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
 				
          
                 <article class="content dashboard-page">
-				<form method="post" action="UpdateInstitution" class="form">
+				<form name="addInstForm" onsubmit="return validateForm()"  method="post" action="UpdateInstitution" class="form">
 				
 				 <div class="title-block">
                         <h3 class="title" style="float:left;">
@@ -325,7 +364,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
 							Edit Institution Form
 						</h3> </div>
 											<div class="form-group">
-  						<label for="sel1">School System:</label><br>
+  						<label for="sel1">School System:<b style="color:red">*</b></label><br>
   						<select class="form-control underlined chosen-select" data-placeholder="Choose a System..." id="systemForm" style="background: transparent;" name="ssName">
 							 				
   						</select>
@@ -334,11 +373,13 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
 					</div>
 					
 					
-											<div class="form-group" style="width:48%; padding-right"> <label class="control-label">Institution Name</label> <input type="text" class="form-control underlined" style="width:90%;"  placeholder="e.g. De La Salle University" name="institutionName" value="<%=inst.getName() %>"> </div>
-											<div class="form-group" style="width:48%; padding-right"> <label class="control-label">Institution Acronym</label> <input type="text" class="form-control underlined" style="width:90%;"  placeholder="e.g. DLSU-M" name="institutionAcronym" value="<%=inst.getInstitutionAcronym() %>"> </div>
+											<div class="form-group" style="width:48%; padding-right"> <label class="control-label">Institution Name<b style="color:red">*</b></label> <input type="text" class="form-control underlined" style="width:90%;"  placeholder="e.g. De La Salle University" name="institutionName" value="<%=inst.getName() %>"> </div>
+											<div class="form-group" style="width:48%; padding-right"> <label class="control-label">Institution Acronym<b style="color:red">*</b></label> <input type="text" class="form-control underlined" style="width:90%;"  placeholder="e.g. DLSU-M" name="institutionAcronym" value="<%=inst.getInstitutionAcronym() %>"> </div>
 								<br><br><br>	
 											<div class="form-group"  style="width:48%; padding-right"> <label class="control-label">Institution Address</label> <input type="text" class="form-control underlined" style="width:90%;" placeholder="e.g. 2401 Taft Avenue, 1004 Manila, Philippines" name="address" value="<%=inst.getAddress() %>"> </div>
-											<div class="form-group"  style="width:48%; padding-right"> <label class="control-label">City of Institution </label> <input type="text" class="form-control underlined" style="width:90%;" placeholder="e.g. Manila" name="city" value="<%=inst.getCity() %>"> </div>
+											<div class="form-group"  style="width:48%; padding-right"> <label class="control-label">Date of Membership<b style="color:red">*</b></label> <input id="datepicker" type="text" class="form-control underlined" style="width:90%;" placeholder="" name="membershipDate"> </div>
+										
+											<div class="form-group"  style="width:48%; padding-right"> <label class="control-label">City of Institution<b style="color:red">*</b> </label> <input type="text" class="form-control underlined" style="width:90%;" placeholder="e.g. Manila" name="city" value="<%=inst.getCity() %>"> </div>
 								<br><br><br>
 											 <div class="form-group"  style="width:48%; padding-right"> <label class="control-label">Country of Institution </label> <input type="text" class="form-control underlined" style="width:90%;" placeholder="e.g. Philippines" name="country" value="<%=inst.getCountry() %>"> </div>
 											<div class="form-group"  style="width:48%; padding-right"> <label class="control-label">Institution Website</label> <input type="text" class="form-control underlined" style="width:90%;" placeholder="e.g. http://www.dlsu.edu.ph/" name="website" value="<%=inst.getWebsite() %>"> </div>
@@ -356,8 +397,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
 											<div class="form-group"  style="width:48%; padding-right"> <label class="control-label">Email of Contact Person</label> <input type="text" class="form-control underlined" style="width:90%;" placeholder="e.g. person@email.com" name="contactEmail" value="<%=inst.getContact_email() %>"> </div>
 									</div>
 									
-										<button type="submit" class="btn btn-info" onclick="alert('Successfully added Institutions!');location.href = 'institutions.jsp';"  style="float:right; padding-right:15px;">
-									Save
+										<button type="submit" class="btn btn-info" style="float:right; padding-right:15px;">	Save
 									</button>
 								</div>
 

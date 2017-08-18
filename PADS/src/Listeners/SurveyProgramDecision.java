@@ -44,7 +44,11 @@ public class SurveyProgramDecision extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-	generated method stub
 		String type = (String)request.getParameter("type");
+		String optionID_team = (String)request.getParameter("optionID_team");
+		String optionID_committee = (String)request.getParameter("optionID_committee");
+		String optionID_board = (String)request.getParameter("optionID_board");
 		int PSID = Integer.parseInt((String)request.getParameter("PSID"));
+		int surveyID = Integer.parseInt((String)request.getParameter("surveyID"));
 		String valid_thru="";
 		String fi ="";
 		String fc ="";
@@ -56,23 +60,95 @@ public class SurveyProgramDecision extends HttpServlet {
 		
 		
 		if(type.equals("Resurvey")){
-			int surveyID = Integer.parseInt((String)request.getParameter("surveyID"));
-			String decision = (String)request.getParameter("opt");
+		String decision_team="",decision_committee="",decision_board="";
+		
+	//TEAM DECISION
+			if(optionID_team.equals("rsOpt1")){
+				String year_team = (String)request.getParameter("yearRsOpt1_team");
+				decision_team = "Re-accreditation after a period of "+year_team+" years";
+			}
+			else if(optionID_team.equals("rsOpt2")){
+				String year_team = (String)request.getParameter("yearRsOpt2_team");
+				String year2_team = (String)request.getParameter("year2RsOpt2_team");
+				String areas_team = (String)request.getParameter("areasRsOpt2_team");
+				decision_team = "Re-accreditation after a period of "+year_team+" years with a written progress report on the "+year2_team+ " year for the following areas: "+areas_team;
+			}
+			else if(optionID_team.equals("rsOpt3")){
+				String year_team = (String)request.getParameter("yearRsOpt3_team");
+				String year2_team = (String)request.getParameter("year2RsOpt3_team");
+				String areas_team = (String)request.getParameter("areasRsOpt3_team");
+				decision_team = "Re-accreditation after a period of "+year_team+" years with an Interim visit on the "+year2_team+ " year for the following areas: "+areas_team;
+			}
+			else if(optionID_team.equals("rsOpt4")){
 			
-			RequestDispatcher rd = request.getRequestDispatcher("ConfirmationPage?surveyID="+surveyID);
-			rd.forward(request, response);	
+				String reasons_team = (String)request.getParameter("reasonsRsOpt4_team");
+				decision_team = "Re-accreditation deferred";
+			}
+	//COMMITTEE DECISION		
+			if(optionID_committee.equals("rsOpt1")){
+				String year_committee = (String)request.getParameter("yearRsOpt1_committee");
+				decision_committee = "Re-accreditation after a period of "+year_committee+" years";
+			}
+			else if(optionID_committee.equals("rsOpt2")){
+				String year_committee = (String)request.getParameter("yearRsOpt2_committee");
+				String year2_committee = (String)request.getParameter("year2RsOpt2_committee");
+				String areas_committee = (String)request.getParameter("areasRsOpt2_committee");
+				decision_committee = "Re-accreditation after a period of "+year_committee+" years with a written progress report on the "+year2_committee+ " year for the following areas: "+areas_committee;
+			}
+			else if(optionID_committee.equals("rsOpt3")){
+				String year_committee = (String)request.getParameter("yearRsOpt3_committee");
+				String year2_committee = (String)request.getParameter("year2RsOpt3_committee");
+				String areas_committee = (String)request.getParameter("areasRsOpt3_committee");
+				decision_committee = "Re-accreditation after a period of "+year_committee+" years with an Interim visit on the "+year2_committee+ " year for the following areas: "+areas_committee;
+			}
+			else if(optionID_committee.equals("rsOpt4")){
+			
+				String reasons_committee = (String)request.getParameter("reasonsRsOpt4_committee");
+				decision_committee = "Re-accreditation deferred";
+			}
+	//BOARD DECISION		
+			if(optionID_board.equals("rsOpt1")){
+				String year_board = (String)request.getParameter("yearRsOpt1_board");
+				decision_board = "Re-accreditation after a period of "+year_board+" years";
+			}
+			else if(optionID_board.equals("rsOpt2")){
+				String year_board = (String)request.getParameter("yearRsOpt2_board");
+				String year2_board = (String)request.getParameter("year2RsOpt2_board");
+				String areas_board = (String)request.getParameter("areasRsOpt2_board");
+				decision_board = "Re-accreditation after a period of "+year_board+" years with a written progress report on the "+year2_board+ " year for the following areas: "+areas_board;
+			}
+			else if(optionID_board.equals("rsOpt3")){
+				String year_board = (String)request.getParameter("yearRsOpt3_board");
+				String year2_board = (String)request.getParameter("year2RsOpt3_board");
+				String areas_board = (String)request.getParameter("areasRsOpt3_board");
+				decision_board = "Re-accreditation after a period of "+year_board+" years with an Interim visit on the "+year2_board+ " year for the following areas: "+areas_board;
+			}
+			else if(optionID_board.equals("rsOpt4")){
+			
+				String reasons_board = (String)request.getParameter("reasonsRsOpt4_board");
+				decision_board = "Re-accreditation deferred";
+			}
+			
+			
+			System.out.println(decision_board+"+++BOARD++++FINAAAAAAALLYYYYYYY!!!!!!!!!!!!!!!!!!!!!!!!!!");
+			
+			
+			response.sendRedirect("ConfirmationPage?surveyID="+surveyID);
+			
 		}
 		else if(type.equals("Formal")){
-			int surveyID = Integer.parseInt((String)request.getParameter("surveyID"));
+		
 			String decision_team = (String)request.getParameter("opt_team");
-			String decision_commission = (String)request.getParameter("opt_commission");
+			String decision_committee = (String)request.getParameter("opt_committee");
 			String decision_board = ""+(String)request.getParameter("opt_board");
 			String remarks_team = (String)request.getParameter("remarks_team");
-			String remarks_commission = (String)request.getParameter("remarks_commission");
+			String remarks_committee = (String)request.getParameter("remarks_committee");
 			String remarks_board = (String)request.getParameter("remarks_board");
 			
 			
-			if(decision_board.equals("Initial accreditation for three (3) years")){
+			if(decision_board.equals("NA")){}
+					
+			else if(decision_board.equals("Initial accreditation for three (3) years")){
 				
 				String[] parts = dateApproved.split("-");
 				int year = Integer.parseInt(parts[0]);
@@ -83,56 +159,70 @@ public class SurveyProgramDecision extends HttpServlet {
 				String[] parts = dateApproved.split("-");
 				if(parts.length>1){
 				int year = Integer.parseInt(parts[0]);
-				year += 1;
+				year += 3;
 				valid_thru = Integer.toString(year) +"-"+parts[1]+"-"+ parts[2];
 				}
 			}
 			
 			ConfirmationUtil cUtil = new ConfirmationUtil();
-			cUtil.updateDecision(decision_team, remarks_team, decision_commission, remarks_commission, decision_board, remarks_board, valid_thru,"","","","","","","","","", PSID,dateApproved);
+			cUtil.updateDecision(decision_team, remarks_team, decision_committee, remarks_committee, decision_board, remarks_board, valid_thru,"","","","","","","","","", PSID,dateApproved);
 					
 			
 			RequestDispatcher rd = request.getRequestDispatcher("ConfirmationPage?surveyID="+surveyID);
 			rd.forward(request, response);	
 		}
 		else if(type.equals("Revisit")){
-			int surveyID = Integer.parseInt((String)request.getParameter("surveyID"));
+			
 			String decision = (String)request.getParameter("opt");
 			
 //			System.out.println("PSID of specified REVIST:" + PSID);
 			
-			RequestDispatcher rd = request.getRequestDispatcher("ConfirmationPage?surveyID="+surveyID);
-			rd.forward(request, response);	
+			response.sendRedirect("ConfirmationPage?surveyID="+surveyID);
 		}
 		else if(type.equals("Consultancy")){
-			int surveyID = Integer.parseInt((String)request.getParameter("surveyID"));
+
 			String decision_team = ""+(String)request.getParameter("opt_team");
-			String decision_commission = ""+(String)request.getParameter("opt_commission");
+			String decision_committee = ""+(String)request.getParameter("opt_committee");
 			String decision_board = ""+(String)request.getParameter("opt_board");
 			String remarks_team = ""+(String)request.getParameter("remarks"+PSID+"_team");
-			String remarks_commission = ""+(String)request.getParameter("remarks"+PSID+"_commission");
+			String remarks_committee = ""+(String)request.getParameter("remarks"+PSID+"_committee");
 			String remarks_board = ""+(String)request.getParameter("remarks"+PSID+"_board");
+			
+			if(decision_board.equals("NA")){}
+			else{
+				
+				String[] parts = dateApproved.split("-");
+				System.out.println(parts[0]+"PARTS 1");
+				int year = Integer.parseInt(parts[0]);
+				year += 1;
+				valid_thru = Integer.toString(year) +"-"+parts[1]+"-"+ parts[2];
+				
+				if(decision_board.contains("Consultancy")){
+					String[] parts2 = dateApproved.split("-");
+					fc = valid_thru;
+				}
+			}
 						
 			ConfirmationUtil cUtil = new ConfirmationUtil();
-			cUtil.updateDecision(decision_team, remarks_team, decision_commission, remarks_commission, decision_board, remarks_board, valid_thru,"","","","","","","","","", PSID,dateApproved);
+			cUtil.updateDecision(decision_team, remarks_team, decision_committee, remarks_committee, decision_board, remarks_board, valid_thru,"","","","","","","","","", PSID,dateApproved);
 					
 			
-			RequestDispatcher rd = request.getRequestDispatcher("ConfirmationPage?surveyID="+surveyID);
-			rd.forward(request, response);	
+			response.sendRedirect("ConfirmationPage?surveyID="+surveyID);	
 				
 		}
 		else if(type.equals("Preliminary")){
-			int surveyID = Integer.parseInt((String)request.getParameter("surveyID"));
+			
 			String decision_team = ""+(String)request.getParameter("opt_team");
-			String decision_commission = ""+(String)request.getParameter("opt_commission");
-			String decision_board = ""+(String)request.getParameter("opt_board");
+			String decision_committee = ""+(String)request.getParameter("opt_committee");
+			String decision_board = (String)request.getParameter("opt_board");
 			String remarks_team = ""+(String)request.getParameter("remarks"+PSID+"_team");
-			String remarks_commission = ""+(String)request.getParameter("remarks"+PSID+"_commission");
+			String remarks_committee = ""+(String)request.getParameter("remarks"+PSID+"_committee");
 			String remarks_board = ""+(String)request.getParameter("remarks"+PSID+"_board");
-//			System.out.println(decision_board+"DECISION OF BOARD");
+		System.out.println(decision_board+"DECISION OF BOARD");
 			
 					
-			if(decision_board !="" && decision_board!=null){
+			if(decision_board.equals("NA")){}
+			else{
 				
 				String[] parts = dateApproved.split("-");
 				System.out.println(parts[0]+"PARTS 1");
@@ -149,11 +239,10 @@ public class SurveyProgramDecision extends HttpServlet {
 			
 			
 			ConfirmationUtil cUtil = new ConfirmationUtil();
-			cUtil.updateDecision(decision_team, remarks_team, decision_commission, remarks_commission, decision_board, remarks_board, valid_thru,"","","","","","","","","", PSID,dateApproved);
+			cUtil.updateDecision(decision_team, remarks_team, decision_committee, remarks_committee, decision_board, remarks_board, valid_thru,"","","","","","","","","", PSID,dateApproved);
 					
-			
-			RequestDispatcher rd = request.getRequestDispatcher("ConfirmationPage?surveyID="+surveyID);
-			rd.forward(request, response);			
+			response.sendRedirect("ConfirmationPage?surveyID="+surveyID);
+					
 			
 		}
 		

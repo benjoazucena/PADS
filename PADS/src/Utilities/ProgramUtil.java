@@ -391,7 +391,7 @@ public class ProgramUtil {
 		ArrayList<ProgramSurvey> hist= new ArrayList();
 		try{
 			Connection conn = db.getConnection();
-			PreparedStatement ps = conn.prepareStatement("SELECT `PSID`, `surveyID`, `survey_type`, `valid_thru`, `boardApprovalDate` FROM `program-survey` WHERE SPID = ? AND currentDecisionBy = 'Board' ");
+			PreparedStatement ps = conn.prepareStatement("SELECT `PSID`, `surveyID`, `survey_type`, `valid_thru`, `boardApprovalDate` FROM `program-survey` WHERE SPID = ? AND currentDecisionBy = 'Board' ORDER BY `surveyID` DESC");
 			ps.setInt(1, SPID);
 			ResultSet rs = ps.executeQuery();
 			while(rs.next()){

@@ -75,8 +75,8 @@ String ssID = request.getParameter("ssID");
 		InstitutionUtil instUtil = new InstitutionUtil();
 		instUtil.editInstitution(institutionID, ssID, institutionName, institutionAcronym,  address, city, country, website, contactNumber, fax, institutionHead, position, headEmail, contactPerson, contactPosition, contactEmail, membershipDate);
 
-		RequestDispatcher rd = request.getRequestDispatcher("Institutions");
-		rd.forward(request, response);
+		response.sendRedirect("Institutions");
+	
 	}
 
 }

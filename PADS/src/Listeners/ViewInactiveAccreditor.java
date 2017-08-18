@@ -1,6 +1,7 @@
 package Listeners;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -9,19 +10,21 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import Utilities.SchoolSystemUtil;
+import Models.Accreditation;
+import Models.Accreditor;
+import Utilities.AccreditorUtil;
 
 /**
- * Servlet implementation class UpdateSchoolSystem
+ * Servlet implementation class ViewAccreditor
  */
-@WebServlet("/UpdateSchoolSystem")
-public class UpdateSchoolSystem extends HttpServlet {
+@WebServlet("/ViewInactiveAccreditor")
+public class ViewInactiveAccreditor extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public UpdateSchoolSystem() {
+    public ViewInactiveAccreditor() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -31,20 +34,25 @@ public class UpdateSchoolSystem extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
-		response.getWriter().append("Served at: ").append(request.getContextPath());
+		int accreditorID = Integer.parseInt(request.getParameter("accreditorID"));
+		System.out.println("View Accreditor: " + accreditorID);
+		AccreditorUtil accUtil = new AccreditorUtil();
+		//accUtil.deleteAccreditor(accreditorID);
+		Accreditor acc = accUtil.getAccreditor(accreditorID);
+		request.setAttribute("accreditor", acc);
+		ArrayList<Accreditation> past = accUtil.getAccreditations(accreditorID);
+		request.setAttribute("accreditations", past);
+		request.setAttribute("inactive", "yup");
+		RequestDispatcher rd = request.getRequestDispatcher("inactiveAccreditorProfile.jsp");
+		rd.forward(request, response);
 	}
 
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		String SchoolSystemName = request.getParameter("ssName");
-		String date_joined = request.getParameter("joinDate");
-		int systemID = Integer.parseInt(request.getParameter("systemID"));
-		SchoolSystemUtil ssUtil = new SchoolSystemUtil();
-		ssUtil.editSchoolSystem(systemID, SchoolSystemName, date_joined);	
-		System.out.println("output1:"+ SchoolSystemName);
-		response.sendRedirect("SchoolSystems");
+		// TODO Auto-generated method stub
+		doGet(request, response);
 	}
 
 }

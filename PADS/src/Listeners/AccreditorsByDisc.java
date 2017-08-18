@@ -33,11 +33,17 @@ public class AccreditorsByDisc extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
-		int discplineID = Integer.parseInt(request.getParameter("disciplineID"));
+		int disciplineID = Integer.parseInt(request.getParameter("disciplineID"));
 		ArrayList<Accreditor> accreditors = new ArrayList<Accreditor>();
 		AccreditorUtil accUtil = new AccreditorUtil();
-		accreditors = accUtil.getAccreditorsByDisc(discplineID);
+		if(disciplineID == 0){
+			accreditors = accUtil.getAccreditors();
+			
+		}else{
+			accreditors = accUtil.getAccreditorsByDisc(disciplineID);
+		}
 		request.setAttribute("accreditors", accreditors);
+		request.setAttribute("disciplineID", disciplineID);
 		RequestDispatcher rd = request.getRequestDispatcher("accreditors.jsp");
 		rd.forward(request, response);
 	}

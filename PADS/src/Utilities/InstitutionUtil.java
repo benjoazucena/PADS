@@ -45,6 +45,29 @@ public class InstitutionUtil {
 		return jArray;
 	}
 	
+	public JSONArray getDuplicateCheckerJSON(){
+		JSONArray jArray = new JSONArray();
+		JSONObject job = new JSONObject();
+		
+		try{
+			Connection conn = db.getConnection();
+			PreparedStatement ps = conn.prepareStatement("SELECT systemID, name, city FROM `institutions`");
+			ResultSet rs = ps.executeQuery();
+			while(rs.next()){
+				job = new JSONObject();
+				job.put("ssID", rs.getInt(1));
+				job.put("institutionName", rs.getString(2)); 
+				job.put("city", rs.getString(3));
+				jArray.put(job);				
+			}
+		} catch (Exception e){
+			System.out.println("Error in InstitutionUtil:getDuplicateCheckerJSON()");
+			e.printStackTrace();
+		}
+		
+		return jArray;
+	}
+	
 	private String getSchoolSystemName(int ID){
 		String name="";
 		

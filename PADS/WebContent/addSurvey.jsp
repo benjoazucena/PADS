@@ -275,16 +275,23 @@ function checkAffiliations(SPID, systemID,area){
 var globalPrograms = 0;
 //HANDLER FOR EACH ADD OF PROGRAM IN PROCESS 2
 function addProgram(){
-	globalPrograms++;
+	
 
 	var strUser = $('#programForm option:selected').text();
 	var strSurvey = $('#surveyForm option:selected').text();
 	var programID = $('#programForm option:selected').val();
 	var systemID = $('#systemForm option:selected').val();
+	
+	if(strUser == ""){
+		alert("Please choose a program!");
+	}else if(strSurvey = ""){
+		alert("Please choose survey type!");
+	}else{
 	var obj = {};
 	obj.SPID = programID;
 	obj.surveyType = strSurvey;
 	obj.areas = [];
+	globalPrograms++;
 	obj.id = globalPrograms;
 	var areaCounter = 0;
 	var counter = 0;
@@ -608,6 +615,7 @@ function addProgram(){
 	$('#addedList2').append(tableDiv);
 
 	}
+}
 
 function addChairperson(btn){
 	var accreditors = [];

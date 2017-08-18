@@ -153,6 +153,7 @@ public class Accreditor {
 		else if(primaryArea.equals("Research")) id = 9;
 		else if(primaryArea.equals("Clinical Training")) id = 10;
 		else if(primaryArea.equals("Other Resources")) id = 11;
+		else id=0;
 		return id;
 	}
 	public int getSecondaryAreaID(){
@@ -168,6 +169,7 @@ public class Accreditor {
 		else if(secondaryArea.equals("Research")) id = 9;
 		else if(secondaryArea.equals("Clinical Training")) id = 10;
 		else if(secondaryArea.equals("Other Resources")) id = 11;
+		else id=0;
 		return id;
 	}
 	
@@ -184,6 +186,7 @@ public class Accreditor {
 		else if(tertiaryArea.equals("Research")) id = 9;
 		else if(tertiaryArea.equals("Clinical Training")) id = 10;
 		else if(tertiaryArea.equals("Other Resources")) id = 11;
+		else id=0;
 		return id;
 	}
 	public String getSecondaryArea() {

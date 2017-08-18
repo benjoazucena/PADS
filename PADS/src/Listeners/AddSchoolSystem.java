@@ -44,8 +44,7 @@ public class AddSchoolSystem extends HttpServlet {
 		SchoolSystemUtil ssUtil = new SchoolSystemUtil();
 		ssUtil.addSchoolSystem(SchoolSystemName, date_joined);	
 		System.out.println("output1:"+ SchoolSystemName);
-		RequestDispatcher rd = request.getRequestDispatcher("SchoolSystems");
-		rd.forward(request, response);
+		response.sendRedirect("SchoolSystems");
 	}
 
 }

@@ -112,7 +112,7 @@ $.ajax({
 		  add += ("<ul class='list-group'> <br>") ;		  
 	$.each(data, function (key, value){
 			
-	var title = "<h4>Institution: "+value.title+"</h4><h6>Date: "+value.start+"</h6>";
+	var title = "<h4>Institution: "+value.title+"</h4><h6>Date: "+value.start+"</h6> <input type='hidden' name='surveyID' value='<%=request.getAttribute("surveyID")%>'";
 	$('#surveyTitle').append(title);
 	
 	for(var i = 0; i < value.programs.length; i++){ 
@@ -129,7 +129,7 @@ $.ajax({
 			var checked = checkAttendance(value.programs[i].areas[j].confirmation)			    	 
 			    		add += ("<tr > ");
 			    		add += ("<td><a id='accLink"+value.programs[i].areas[j].areaID +"' href='ViewAccreditor?accreditorID=" + value.programs[i].areas[j].accreditorID + "' data-toggle='tooltip' title='This will take you to the accreditor page.'>"+ value.programs[i].areas[j].accreditor + "</a></td><td id='area"+value.programs[i].areas[j].areaID +"'>" + value.programs[i].areas[j].area + "</td>"); 
-			    			add += ("<td><label><input type='checkbox' "+ checked +" onclick='confirmAccreditor(" + value.programs[i].PSID + "," + value.programs[i].areas[j].areaID + "," + value.programs[i].areas[j].accreditorID + ")' class='checkbox rounded' value='Confirm Attendance' id='checkbox_confirm"+value.programs[i].areas[j].accreditorID+"'><span>Confirm</span></label> <button class='btn btn-link btn-sm' onclick='changeAcc(" + value.programs[i].areas[j].areaID + ","+value.systemID+","+value.programs[i].PSID+","+ value.programs[i].areas[j].accreditorID+" )' id='changedbutton"+value.programs[i].areas[j].accreditorID+"'><i class='fa fa-pencil'></i>Changed</button></td>");
+			    			add += ("<td><label><input type='checkbox' "+ checked +" onclick='confirmAccreditor(" + value.programs[i].PSID + "," + value.programs[i].areas[j].areaID + "," + value.programs[i].areas[j].accreditorID + ","+checked+")' class='checkbox rounded' value='Confirm Attendance' id='checkbox_confirm"+value.programs[i].areas[j].accreditorID+"'><span>Confirm</span></label> <button class='btn btn-link btn-sm' onclick='changeAcc(" + value.programs[i].areas[j].areaID + ","+value.systemID+","+value.programs[i].PSID+","+ value.programs[i].areas[j].accreditorID+" )' id='changedbutton"+value.programs[i].areas[j].accreditorID+"," + value.programs[i].PSID + "," + value.programs[i].areas[j].areaID + "'><i class='fa fa-pencil'></i>Changed</button></td>");
 			 				add += ("</tr> ");
 			}
 			    		add += ("</tbody> ");
@@ -144,8 +144,8 @@ $.ajax({
 var globalApprovalDate;
 //This function checks what type of survey then returns appropriate modal function 
 function getLink(type,i,ID,decisionJSON,boardApprovalDate){
-alert(boardApprovalDate);
-if(boardApprovalDate=="Date Error"){boardApprovalDate="Please Select a Date"}
+
+if(boardApprovalDate=="Date Error"){boardApprovalDate="-Select-"}
 globalApprovalDate = boardApprovalDate
 	if(type=="Formal"){return "'formalConfirm("+i+","+ID+","+decisionJSON+")'"};
 	if(type=="Consultancy"){return "'consultancyConfirm("+i+","+ID+","+decisionJSON+")'"};
@@ -155,17 +155,30 @@ globalApprovalDate = boardApprovalDate
 }
 
 function checkAttendance(str){	
-	if(str=="Confirmed") {return "checked"};
-	if(str=="Unonfirmed") {return ""};
+	if(str=="Confirmed") {return "checked";}
+	else {return "";}
 }
 		 
-function confirmAccreditor(PSID, areaID, accID){
-	$.ajax({ //CALLING ACCREDITORS WITH EXTRA CHECKING FOR AFFILIATION CONFLICTS
-		  url: "ConfirmAttendance?PSID=" + PSID +"&areaID=" + areaID+"&accID=" + accID,		 
-		  success: function() {
-			 alert("attendance confirmed")
-			}
-	});					
+function confirmAccreditor(PSID, areaID, accID, checked){
+	var id = accID+","+PSID+","+areaID;
+	if(checked=='checked'){
+		$.ajax({ //CALLING ACCREDITORS WITH EXTRA CHECKING FOR AFFILIATION CONFLICTS
+			  url: "ConfirmAttendance?PSID=" + PSID +"&areaID=" + areaID+"&accID=" + accID+"&add=-1",		 
+			  success: function() {
+				 alert("Attendance Unconfirmed")
+				 document.getElementById("changedbutton"+id+"").style.visibility = 'visible';
+				}
+		});		
+	}
+	else{
+		$.ajax({ //CALLING ACCREDITORS WITH EXTRA CHECKING FOR AFFILIATION CONFLICTS
+			  url: "ConfirmAttendance?PSID=" + PSID +"&areaID=" + areaID+"&accID=" + accID+"&add=1",		 
+			  success: function() {
+				 alert("Attendance Confirmed")
+				  document.getElementById("changedbutton"+id+"").style.visibility = 'hidden';
+				}
+		});		
+	}
 }
 
 function addAreaTeam(PSID){
@@ -178,6 +191,27 @@ function addAreaTeam(PSID){
 	textarea.value =  contents + select.options[select.selectedIndex].text;	
 }
 
+function addAreaTeam2(PSID){
+	var id = PSID+"_team";	
+	
+	var textarea= document.getElementById("2remarks"+id);
+	var select= document.getElementById("2areaSelect"+id);	
+	var contents = textarea.value;
+	if(contents!= ""){contents += ", "}
+	textarea.value =  contents + select.options[select.selectedIndex].text;	
+}
+
+function addAreaTeam3(PSID){
+	var id = PSID+"_team";	
+	
+	var textarea= document.getElementById("3remarks"+id);
+	var select= document.getElementById("3areaSelect"+id);	
+	var contents = textarea.value;
+	if(contents!= ""){contents += ", "}
+	textarea.value =  contents + select.options[select.selectedIndex].text;	
+}
+
+
 function resetAreaTeam(PSID){
 	var id = PSID+"_team";	
 	
@@ -187,8 +221,26 @@ function resetAreaTeam(PSID){
 	textarea.value =  "";	
 }
 
-function resetAreaCommission(PSID){
-	var id = PSID+"_commission";	
+function resetAreaTeam2(PSID){
+	var id = PSID+"_team";	
+	
+	var textarea= document.getElementById("2remarks"+id);
+	var contents = textarea.value;
+	if(contents!= ""){contents += ", "}
+	textarea.value =  "";	
+}
+
+function resetAreaTeam3(PSID){
+	var id = PSID+"_team";	
+	
+	var textarea= document.getElementById("3remarks"+id);
+	var contents = textarea.value;
+	if(contents!= ""){contents += ", "}
+	textarea.value =  "";	
+}
+
+function resetAreaCommittee(PSID){
+	var id = PSID+"_committee";	
 	
 	var textarea= document.getElementById("remarks"+id);
 	var contents = textarea.value;
@@ -205,8 +257,8 @@ function resetAreaBoard(PSID){
 	textarea.value =  "";	
 }
 
-function addAreaCommission(PSID){
-	var id = PSID+"_commission";	
+function addAreaCommittee(PSID){
+	var id = PSID+"_committee";	
 	
 	var textarea= document.getElementById("remarks"+id);
 	var select= document.getElementById("areaSelect"+id);	
@@ -226,8 +278,8 @@ function addAreaBoard(PSID){
 
 function revisitConfirm(PSID, surveyID) {	
 	var add = "";	
-	$('#modalBody2').html("<div style='width: 49%; float:left;'><h4>Revisit After Deferment</h4> Decision By: <select><option></option><option></option><option>Team</option>Commission<option>Board</option></select></div>");  
-	add += ("<form method='post' action='SurveyProgramDecision'> <div>Decision By: <select name='decisionBy'><option> </option><option selected >Team</option><option>Commission</option><option>Board</option></select></div>");
+	$('#modalBody2').html("<div style='width: 49%; float:left;'><h4>Revisit After Deferment</h4> Decision By: <select><option></option><option></option><option>Team</option>Committee<option>Board</option></select></div>");  
+	add += ("<form method='post' action='SurveyProgramDecision'> <div>Decision By: <select name='decisionBy'><option> </option><option selected >Team</option><option>Committee</option><option>Board</option></select></div>");
    	 add += ("<div id='modalBody' class='modal-body'>	");
    		 add += ("<div class='form-group' style='width:100%;'> <div> 	");
    		 add += ("<label class='control-label' style='width:100%;'> <br><hr><input name='opt' class='radio ' type='radio' value='Re-accreditation for a period of five years'>	<span>Re-accreditation for a period of <select name='yearSelect"+PSID+"'><option>Four</option><option>Five</option><option>Six</option><option>Seven</option></select> years</span>  <br> <hr></label>");
@@ -255,7 +307,7 @@ function resurveyConfirm(PSID, surveyID, decisionJSON) {
 	$('#modalBody2').html("<div style='width: 49%; float:left;'><h4>Resurvey</h4></div>");  
 	add+=("<ul class='nav nav-tabs nav-tabs-bordered'>"
 		    +"<li class='nav-item'><a class='nav-link active' data-target='#team' data-toggle='tab' aria-controls='team' role='tab'>Team Decision</a></li>"
-		    +"<li class='nav-item'><a class='nav-link' data-target='#commission' data-toggle='tab' aria-controls='commission' role='tab' href='#commission'>Commission Decision</a></li>"
+		    +"<li class='nav-item'><a class='nav-link' data-target='#committee' data-toggle='tab' aria-controls='committee' role='tab' href='#committee'>Committee Decision</a></li>"
 		    +"<li class='nav-item'><a class='nav-link' data-target='#board' data-toggle='tab' aria-controls='board' role='tab' href='#board'>Board Decision</a></li>"
 		 +"</ul>");
 	add += ("<form method='post' action='SurveyProgramDecision'>");
@@ -267,45 +319,194 @@ function resurveyConfirm(PSID, surveyID, decisionJSON) {
  	var opt1="",opt2="",opt3="",opt4="",opt5="",remarksArea="";		
  		 
   if(value.decisionBy == "Team"){ 
- 	 var opt1="",opt2="",remarksArea="";
+	  var opt1="",opt2="",opt3="",remarksArea="", three="value='three'",four="value='four'",five="value='five'",six="value='six'",seven="value='seven'",fir="value='1st'", sec="value='2nd'",thi="value='3rd'",fou="value='4th'",fif="value='5th'",six2="value='6th'",sev="value='7th'";
  //  START OF TEAM TAB CONTENT	-PRELIMINARY
 	 //rsOpt1: yearRsOpt1
 	 //rsOpt2: yearRsOpt2, areasRsOpt2, year2RsOpt2
 	 //rsOpt3:yearRsOpt3, areasRsOpt3, year2RsOpt3
-	 //rsOpt4: reasonRsOpt4
+	 //rsOpt4: reasonsRsOpt4
 	 	 
  	add+=("<div id='team' class='tab-pane fade in active'>");
    	add += ("<div class='form-group' style='width:100%;'> <div>"); 
  	add +=("<input type='hidden'  name='optionID_team' id='optionID_team'><input type='hidden' name='PSID' value='"+PSID+"'><input type='hidden' name='surveyID' value='"+surveyID+"'><input type='hidden' name='type'value='Resurvey'>");
-		 var opt1="",opt2="",opt3="",remarksArea="";
-		 if(value.decision == "Initial accreditation for three (3) years") opt1 = "checked";
-		 else if(value.decision == "Accreditation not granted") {opt2 = "checked";remarksArea = value.remarks}
 		
-   		 add += ("<label class='control-label' style='width:100%;'><br><input "+opt1+" onclick='updateOptionID(\"rsOpt1\")' name='opt_team' class='radio ' type='radio'>	<span>Re-accreditation for a period of <select name='yearSelect"'><option>Two</option><option>Three</option><option>Four</option><option selected='selected'>Five</option><option>Six</option><option>Seven</option></select> years</span>  <br> <hr></label>");
-   		 add += ("<label><input "+opt2+"  name='opt_team'class='radio' type='radio' value='Re-accreditation for five years with a written progress report on the'>  <span>Re-accreditation for five years with a WRITTEN PROGRESS REPORT on the</span><select name='year2RsOpt1'><option>1st</option><option>2nd</option><option>3rd</option><option>4th</option><option>5th</option></select>");
-   		 add += ("<span> year for the following areas:</label> <br>");      	
-   		 add += ("<div class='form-group'> <label class='control-label'><select id='areaSelect"+PSID+"'><option></option><option>Faculty</option><option>Curriculum and Instructions</option><option>Laboratories</option><option>Libraries</option><option>Community</option></option>Physical Facilities</option><option>Student Services</option><option>Administration</option><option>Research</option><option>Clinical Training</option><option>Other Resources</option></select> <em id='addicon' class='fa fa-plus' onclick='addArea("+PSID+")'></em> </label> <br> <textarea id='remarks"+PSID+"' name='remarks' rows='3'  class='form-control' style='width:100%;'>	</textarea> </div> <br> <hr>");
-     		
-   		 add += ("<label><input "+opt2+" name='opt_team'class='radio' type='radio' >   <span>Re-accreditation after five years with a WRITTEN PROGRESS REPORT on the <select name='year2RsOpt1'><option>1st</option><option>2nd</option><option>3rd</option><option>4th</option><option>5th</option></select> year on the following areas:</span> <select id='areaSelect"+PSID+"_team'><option></option><option>Faculty</option><option>Curriculum and Instructions</option><option>Laboratories</option><option>Libraries</option><option>Community</option></option>Physical Facilities</option><option>Student Services</option><option>Administration</option><option>Research</option><option>Clinical Training</option><option>Other Resources</option></select> <em id='addicon' style='margin-left:5px;' class='fa fa-plus' onclick='addAreaTeam("+PSID+")'></em> <em id='addicon' style='margin-left:5px;'class='fa fa-undo' onclick='resetAreaTeam("+PSID+")'></em> </label> <br>");
-  		 add += ("<div class='form-group'> <label class='control-label'>Areas</label> <br> <textarea id='remarks"+PSID+"_team' name='remarks"+PSID+"_team' rows='3'  class='form-control' style='width:100%;'>"+remarksArea+"</textarea> </div>");
+		 if(value.option == "rsOpt1") opt1 = "checked";
+		 
+		 else if(value.option == "rsOpt2") {opt2 = "checked";remarksArea = value.remarks;
+		 	if(value.year=='three'){three += " select='select'"}
+		 	else if(value.year=='four'){four += " select='select'"}
+		 		else if(value.year=='five'){five += " select='select'"}
+		 			else if(value.year=='six'){six += " select='select'"}
+		 				else if(value.year=='seven'){seven += " select='select'"}
+		 	if(value.year2=='1st'){fir += " select='select'"}
+		 	else if(value.year2=='2nd'){sec += " select='select'"}
+		 		else if(value.year2=='3rd'){thi += " select='select'"}
+		 			else if(value.year2=='4th'){fou += " select='select'"}
+		 				else if(value.year2=='5th'){fif += " select='select'"}
+		 					else if(value.year2=='6th'){six2 += " select='select'"}
+		 						else if(value.year2=='7th'){sev += " select='select'"}
+		 				 		}
+		 else if(value.option == "rsOpt3") {opt3 = "checked";remarksArea = value.remarks;
+		 	if(value.year=='three'){three += " select='select'"}
+		 	else if(value.year=='four'){four += " select='select'"}
+		 		else if(value.year=='five'){five += " select='select'"}
+		 			else if(value.year=='six'){six += " select='select'"}
+		 				else if(value.year=='seven'){seven += " select='select'"}
+		 	if(value.year2=='1st'){fir += " select='select'"}
+		 	else if(value.year2=='2nd'){sec += " select='select'"}
+		 		else if(value.year2=='3rd'){thi += " select='select'"}
+		 			else if(value.year2=='4th'){fou += " select='select'"}
+		 				else if(value.year2=='5th'){fif += " select='select'"}
+		 					else if(value.year2=='6th'){six2 += " select='select'"}
+		 						else if(value.year2=='7th'){sev += " select='select'"}
+		 				 		} 	 
+	
+		 else if(value.option == "rsOpt4") {opt4 = "checked";remarksArea = value.remarks;}
+		 
+		 
+   		 add += ("<label class='control-label' style='width:100%;'><br><input "+opt1+" onclick='updateOptionID_team(\"rsOpt1\")' name='opt_team' class='radio ' type='radio'>	<span>Re-accreditation for a period of <select name='yearRsOpt1_team'><option>three</option><option>four</option><option selected='selected'>five</option><option>six</option><option>seven</option></select> years</span>  <br> <hr></label>");
+   	
+   		 add += ("<label><input "+opt2+" onclick='updateOptionID_team(\"rsOpt2\")' name='opt_team'class='radio' type='radio' >   <span>Re-accreditation after <select name='yearRsOpt2_team'><option "+three+">three</option><option "+four+">four</option><option "+five+">five</option><option "+six+">six</option><option "+seven+">seven</option></select> years with a WRITTEN PROGRESS REPORT on the <select name='year2RsOpt2_team'><option "+fir+">1st</option><option "+sec+">2nd</option><option "+thi+">3rd</option><option "+fou+">4th</option><option "+fif+">5th</option><option "+six2+">6th</option><option "+sev+">7th</option></select> year on the following areas:</span> <select id='2areaSelect"+PSID+"_team'><option></option><option>Faculty</option><option>Curriculum and Instructions</option><option>Laboratories</option><option>Libraries</option><option>Community</option><option>Physical Facilities</option><option>Student Services</option><option>Administration</option><option>Research</option><option>Clinical Training</option><option>Other Resources</option></select> <em id='addicon' style='margin-left:5px;' class='fa fa-plus' onclick='addAreaTeam2("+PSID+")'></em> <em id='addicon' style='margin-left:5px;'class='fa fa-undo' onclick='resetAreaTeam2("+PSID+")'></em> </label> <br>");
+  		 add += ("<div class='form-group'> <label class='control-label'>Areas</label> <br> <textarea id='2remarks"+PSID+"_team' name='areasRsOpt2_team' rows='3'  class='form-control' style='width:100%;'>"+remarksArea+"</textarea> </div>");
    		 
    		 
-  		 add += ("<label> <input type='hidden' name='PSID' value='"+PSID+"'><input type='hidden' name='surveyID' value='"+surveyID+"'> <input type='hidden' name='type'value='Preliminary'> <input "+opt5+" name='opt_team'class='radio' type='radio' value='Consultancy Visit after one year for the following areas:'>   <span>Another Consultancy Visit for the following areas:</span> <select id='areaSelect"+PSID+"_team'><option></option><option>Faculty</option><option>Curriculum and Instructions</option><option>Laboratories</option><option>Libraries</option><option>Community</option></option>Physical Facilities</option><option>Student Services</option><option>Administration</option><option>Research</option><option>Clinical Training</option><option>Other Resources</option></select> <em id='addicon' style='margin-left:5px;' class='fa fa-plus' onclick='addAreaTeam("+PSID+")'></em> <em id='addicon' style='margin-left:5px;'class='fa fa-undo' onclick='resetAreaTeam("+PSID+")'></em> </label> <br>");
- 		 add += ("<div class='form-group'> <label class='control-label'>Areas</label> <br> <textarea id='remarks"+PSID+"_team' name='remarks"+PSID+"_team' rows='3'  class='form-control' style='width:100%;'>"+remarksArea+"</textarea> </div>");
+  		 add += ("<label><input "+opt3+" onclick='updateOptionID_team(\"rsOpt3\")' name='opt_team'class='radio' type='radio'>   <span>Re-accreditation for <select name='yearRsOpt3_team'><option "+three+">three</option><option "+four+">four</option><option "+five+"'>five</option><option "+six+">six</option><option "+seven+">seven</option></select> years with a INTERIM VISIT on the</span><span><select name='year2RsOpt3_team'><option "+fir+">1st</option><option "+sec+">2nd</option><option "+thi+">3rd</option><option "+fou+">4th</option><option "+fif+">5th</option><option "+six2+">6th</option><option "+sev+">7th</option></select>  year on the following areas:</span>  <br> <select id='3areaSelect"+PSID+"_team'><option></option><option>Faculty</option><option>Curriculum and Instructions</option><option>Laboratories</option><option>Libraries</option><option>Community</option><option>Physical Facilities</option><option>Student Services</option><option>Administration</option><option>Research</option><option>Clinical Training</option><option>Other Resources</option></select> <em id='addicon' style='margin-left:5px;' class='fa fa-plus' onclick='addAreaTeam3("+PSID+")'></em> <em id='addicon' style='margin-left:5px;'class='fa fa-undo' onclick='resetAreaTeam3("+PSID+")'></em> </label> <br>");
+ 		 add += ("<div class='form-group'> <label class='control-label'>Areas</label> <br> <textarea id='3remarks"+PSID+"_team' name='areasRsOpt3_team' rows='3'  class='form-control' style='width:100%;'>"+remarksArea+"</textarea> </div>");
   		 
   		 
-   		 add += ("<label><input "+opt3+" name='opt_team'class='radio' type='radio' value='Re-accreditation for five years with a written progress report on the'>  <span>Re-accreditation for five years with a INTERIM VISIT on the</span><select name='yearSelect"+PSID+"'><option>1st</option><option>2nd</option><option>3rd</option><option>4th</option><option>5th</option></select>");
-  		 add += ("<span> year for the following areas:</label> <br>");      	
-  		 add += ("<div class='form-group'> <label class='control-label'><select id='areaSelect"+PSID+"'><option></option><option>Faculty</option><option>Curriculum and Instructions</option><option>Laboratories</option><option>Libraries</option><option>Community</option></option>Physical Facilities</option><option>Student Services</option><option>Administration</option><option>Research</option><option>Clinical Training</option><option>Other Resources</option></select> <em id='addicon' class='fa fa-plus' onclick='addArea("+PSID+")'></em> </label> <br> <textarea id='remarks"+PSID+"' name='remarks' rows='3'  class='form-control' style='width:100%;'></textarea> </div> <br> <hr>");
- 
-     	 add += ("<label> <input type='hidden' name='PSID' value='"+PSID+"'><input type='hidden' name='surveyID' value='"+surveyID+"'> <input type='hidden' name='type'value='Resurvey'> <input name='opt_team'class='radio' type='radio' value='Re-accreditation deferred'>  <span>Re-accreditation deferred</span> </label> <br>");
-  		 add += ("<div class='form-group'> <label class='control-label'>Reason(s) for deferment:</label> <br> <textarea id='remarks"+PSID+"' name='remarks' rows='3'  class='form-control' style='width:100%;'></textarea> </div>");
+   	
+     	 add += ("<label> <input "+opt4+" onclick='updateOptionID_team(\"rsOpt4\")' name='opt_team'class='radio' type='radio'>  <span>Re-accreditation deferred</span> </label> <br>");
+  		 add += ("<div class='form-group'> <label class='control-label'>Reason(s) for deferment:</label> <br> <textarea id='reasonRsOpt4' name='reasonsRsOpt4_team' rows='3'  class='form-control' style='width:100%;'>"+remarksArea+"</textarea> </div>");
    	 add += ("</div> </div>");
    	 add += ("</div>")
   }
   
-  else if(value.decisionBy == "Commission"){ }
-  else if(value.decisionBy == "Board"){ }
+  else if(value.decisionBy == "Committee"){
+	  var opt1="",opt2="",opt3="",remarksArea="", three="value='three'",four="value='four'",five="value='five'",six="value='six'",seven="value='seven'",fir="value='1st'", sec="value='2nd'",thi="value='3rd'",fou="value='4th'",fif="value='5th'",six2="value='6th'",sev="value='7th'";
+	  //  START OF TEAM TAB CONTENT	-PRELIMINARY
+	 	 //rsOpt1: yearRsOpt1
+	 	 //rsOpt2: yearRsOpt2, areasRsOpt2, year2RsOpt2
+	 	 //rsOpt3:yearRsOpt3, areasRsOpt3, year2RsOpt3
+	 	 //rsOpt4: reasonsRsOpt4
+	 	 	 
+	  	add+=("<div id='team' class='tab-pane fade in active'>");
+	    	add += ("<div class='form-group' style='width:100%;'> <div>"); 
+	  	add +=("<input type='hidden'  name='optionID_team' id='optionID_team'><input type='hidden' name='PSID' value='"+PSID+"'><input type='hidden' name='surveyID' value='"+surveyID+"'><input type='hidden' name='type'value='Resurvey'>");
+	 		
+	 		 if(value.option == "rsOpt1") opt1 = "checked";
+	 		 
+	 		 else if(value.option == "rsOpt2") {opt2 = "checked";remarksArea = value.remarks;
+	 		 	if(value.year=='three'){three += " select='select'"}
+	 		 	else if(value.year=='four'){four += " select='select'"}
+	 		 		else if(value.year=='five'){five += " select='select'"}
+	 		 			else if(value.year=='six'){six += " select='select'"}
+	 		 				else if(value.year=='seven'){seven += " select='select'"}
+	 		 	if(value.year2=='1st'){fir += " select='select'"}
+	 		 	else if(value.year2=='2nd'){sec += " select='select'"}
+	 		 		else if(value.year2=='3rd'){thi += " select='select'"}
+	 		 			else if(value.year2=='4th'){fou += " select='select'"}
+	 		 				else if(value.year2=='5th'){fif += " select='select'"}
+	 		 					else if(value.year2=='6th'){six2 += " select='select'"}
+	 		 						else if(value.year2=='7th'){sev += " select='select'"}
+	 		 				 		}
+	 		 else if(value.option == "rsOpt3") {opt3 = "checked";remarksArea = value.remarks;
+	 		 	if(value.year=='three'){three += " select='select'"}
+	 		 	else if(value.year=='four'){four += " select='select'"}
+	 		 		else if(value.year=='five'){five += " select='select'"}
+	 		 			else if(value.year=='six'){six += " select='select'"}
+	 		 				else if(value.year=='seven'){seven += " select='select'"}
+	 		 	if(value.year2=='1st'){fir += " select='select'"}
+	 		 	else if(value.year2=='2nd'){sec += " select='select'"}
+	 		 		else if(value.year2=='3rd'){thi += " select='select'"}
+	 		 			else if(value.year2=='4th'){fou += " select='select'"}
+	 		 				else if(value.year2=='5th'){fif += " select='select'"}
+	 		 					else if(value.year2=='6th'){six2 += " select='select'"}
+	 		 						else if(value.year2=='7th'){sev += " select='select'"}
+	 		 				 		} 	 
+	 	
+	 		 else if(value.option == "rsOpt4") {opt4 = "checked";remarksArea = value.remarks;}
+	 		 
+	 		 
+	    		 add += ("<label class='control-label' style='width:100%;'><br><input "+opt1+" onclick='updateOptionID_team(\"rsOpt1\")' name='opt_team' class='radio ' type='radio'>	<span>Re-accreditation for a period of <select name='yearRsOpt1_team'><option>three</option><option>four</option><option selected='selected'>five</option><option>six</option><option>seven</option></select> years</span>  <br> <hr></label>");
+	    	
+	    		 add += ("<label><input "+opt2+" onclick='updateOptionID_team(\"rsOpt2\")' name='opt_team'class='radio' type='radio' >   <span>Re-accreditation after <select name='yearRsOpt2_team'><option "+three+">three</option><option "+four+">four</option><option "+five+">five</option><option "+six+">six</option><option "+seven+">seven</option></select> years with a WRITTEN PROGRESS REPORT on the <select name='year2RsOpt2_team'><option "+fir+">1st</option><option "+sec+">2nd</option><option "+thi+">3rd</option><option "+fou+">4th</option><option "+fif+">5th</option><option "+six2+">6th</option><option "+sev+">7th</option></select> year on the following areas:</span> <select id='2areaSelect"+PSID+"_team'><option></option><option>Faculty</option><option>Curriculum and Instructions</option><option>Laboratories</option><option>Libraries</option><option>Community</option><option>Physical Facilities</option><option>Student Services</option><option>Administration</option><option>Research</option><option>Clinical Training</option><option>Other Resources</option></select> <em id='addicon' style='margin-left:5px;' class='fa fa-plus' onclick='addAreaTeam2("+PSID+")'></em> <em id='addicon' style='margin-left:5px;'class='fa fa-undo' onclick='resetAreaTeam2("+PSID+")'></em> </label> <br>");
+	   		 add += ("<div class='form-group'> <label class='control-label'>Areas</label> <br> <textarea id='2remarks"+PSID+"_team' name='areasRsOpt2_team' rows='3'  class='form-control' style='width:100%;'>"+remarksArea+"</textarea> </div>");
+	    		 
+	    		 
+	   		 add += ("<label><input "+opt3+" onclick='updateOptionID_team(\"rsOpt3\")' name='opt_team'class='radio' type='radio'>   <span>Re-accreditation for <select name='yearRsOpt3_team'><option "+three+">three</option><option "+four+">four</option><option "+five+"'>five</option><option "+six+">six</option><option "+seven+">seven</option></select> years with a INTERIM VISIT on the</span><span><select name='year2RsOpt3_team'><option "+fir+">1st</option><option "+sec+">2nd</option><option "+thi+">3rd</option><option "+fou+">4th</option><option "+fif+">5th</option><option "+six2+">6th</option><option "+sev+">7th</option></select>  year on the following areas:</span>  <br> <select id='3areaSelect"+PSID+"_team'><option></option><option>Faculty</option><option>Curriculum and Instructions</option><option>Laboratories</option><option>Libraries</option><option>Community</option><option>Physical Facilities</option><option>Student Services</option><option>Administration</option><option>Research</option><option>Clinical Training</option><option>Other Resources</option></select> <em id='addicon' style='margin-left:5px;' class='fa fa-plus' onclick='addAreaTeam3("+PSID+")'></em> <em id='addicon' style='margin-left:5px;'class='fa fa-undo' onclick='resetAreaTeam3("+PSID+")'></em> </label> <br>");
+	  		 add += ("<div class='form-group'> <label class='control-label'>Areas</label> <br> <textarea id='3remarks"+PSID+"_team' name='areasRsOpt3_team' rows='3'  class='form-control' style='width:100%;'>"+remarksArea+"</textarea> </div>");
+	   		 
+	   		 
+	    	
+	      	 add += ("<label> <input "+opt4+" onclick='updateOptionID_team(\"rsOpt4\")' name='opt_team'class='radio' type='radio'>  <span>Re-accreditation deferred</span> </label> <br>");
+	   		 add += ("<div class='form-group'> <label class='control-label'>Reason(s) for deferment:</label> <br> <textarea id='reasonRsOpt4' name='reasonsRsOpt4_team' rows='3'  class='form-control' style='width:100%;'>"+remarksArea+"</textarea> </div>");
+	    	 add += ("</div> </div>");
+	    	 add += ("</div>")
+	  
+	  
+  }//END OF RESURVEY COMMITTEE
+  else if(value.decisionBy == "Board"){ 
+	  var opt1="",opt2="",opt3="",remarksArea="", three="value='three'",four="value='four'",five="value='five'",six="value='six'",seven="value='seven'",fir="value='1st'", sec="value='2nd'",thi="value='3rd'",fou="value='4th'",fif="value='5th'",six2="value='6th'",sev="value='7th'";
+	  //  START OF TEAM TAB CONTENT	-PRELIMINARY
+	 	 //rsOpt1: yearRsOpt1
+	 	 //rsOpt2: yearRsOpt2, areasRsOpt2, year2RsOpt2
+	 	 //rsOpt3:yearRsOpt3, areasRsOpt3, year2RsOpt3
+	 	 //rsOpt4: reasonsRsOpt4
+	 	 	 
+	  	add+=("<div id='team' class='tab-pane fade in active'>");
+	    	add += ("<div class='form-group' style='width:100%;'> <div>"); 
+	  	add +=("<input type='hidden'  name='optionID_team' id='optionID_team'><input type='hidden' name='PSID' value='"+PSID+"'><input type='hidden' name='surveyID' value='"+surveyID+"'><input type='hidden' name='type'value='Resurvey'>");
+	 		
+	 		 if(value.option == "rsOpt1") opt1 = "checked";
+	 		 
+	 		 else if(value.option == "rsOpt2") {opt2 = "checked";remarksArea = value.remarks;
+	 		 	if(value.year=='three'){three += " select='select'"}
+	 		 	else if(value.year=='four'){four += " select='select'"}
+	 		 		else if(value.year=='five'){five += " select='select'"}
+	 		 			else if(value.year=='six'){six += " select='select'"}
+	 		 				else if(value.year=='seven'){seven += " select='select'"}
+	 		 	if(value.year2=='1st'){fir += " select='select'"}
+	 		 	else if(value.year2=='2nd'){sec += " select='select'"}
+	 		 		else if(value.year2=='3rd'){thi += " select='select'"}
+	 		 			else if(value.year2=='4th'){fou += " select='select'"}
+	 		 				else if(value.year2=='5th'){fif += " select='select'"}
+	 		 					else if(value.year2=='6th'){six2 += " select='select'"}
+	 		 						else if(value.year2=='7th'){sev += " select='select'"}
+	 		 				 		}
+	 		 else if(value.option == "rsOpt3") {opt3 = "checked";remarksArea = value.remarks;
+	 		 	if(value.year=='three'){three += " select='select'"}
+	 		 	else if(value.year=='four'){four += " select='select'"}
+	 		 		else if(value.year=='five'){five += " select='select'"}
+	 		 			else if(value.year=='six'){six += " select='select'"}
+	 		 				else if(value.year=='seven'){seven += " select='select'"}
+	 		 	if(value.year2=='1st'){fir += " select='select'"}
+	 		 	else if(value.year2=='2nd'){sec += " select='select'"}
+	 		 		else if(value.year2=='3rd'){thi += " select='select'"}
+	 		 			else if(value.year2=='4th'){fou += " select='select'"}
+	 		 				else if(value.year2=='5th'){fif += " select='select'"}
+	 		 					else if(value.year2=='6th'){six2 += " select='select'"}
+	 		 						else if(value.year2=='7th'){sev += " select='select'"}
+	 		 				 		} 	 
+	 	
+	 		 else if(value.option == "rsOpt4") {opt4 = "checked";remarksArea = value.remarks;}
+	 		 
+	 		 
+	    		 add += ("<label class='control-label' style='width:100%;'><br><input "+opt1+" onclick='updateOptionID_team(\"rsOpt1\")' name='opt_team' class='radio ' type='radio'>	<span>Re-accreditation for a period of <select name='yearRsOpt1_team'><option>three</option><option>four</option><option selected='selected'>five</option><option>six</option><option>seven</option></select> years</span>  <br> <hr></label>");
+	    	
+	    		 add += ("<label><input "+opt2+" onclick='updateOptionID_team(\"rsOpt2\")' name='opt_team'class='radio' type='radio' >   <span>Re-accreditation after <select name='yearRsOpt2_team'><option "+three+">three</option><option "+four+">four</option><option "+five+">five</option><option "+six+">six</option><option "+seven+">seven</option></select> years with a WRITTEN PROGRESS REPORT on the <select name='year2RsOpt2_team'><option "+fir+">1st</option><option "+sec+">2nd</option><option "+thi+">3rd</option><option "+fou+">4th</option><option "+fif+">5th</option><option "+six2+">6th</option><option "+sev+">7th</option></select> year on the following areas:</span> <select id='2areaSelect"+PSID+"_team'><option></option><option>Faculty</option><option>Curriculum and Instructions</option><option>Laboratories</option><option>Libraries</option><option>Community</option><option>Physical Facilities</option><option>Student Services</option><option>Administration</option><option>Research</option><option>Clinical Training</option><option>Other Resources</option></select> <em id='addicon' style='margin-left:5px;' class='fa fa-plus' onclick='addAreaTeam2("+PSID+")'></em> <em id='addicon' style='margin-left:5px;'class='fa fa-undo' onclick='resetAreaTeam2("+PSID+")'></em> </label> <br>");
+	   		 add += ("<div class='form-group'> <label class='control-label'>Areas</label> <br> <textarea id='2remarks"+PSID+"_team' name='areasRsOpt2_team' rows='3'  class='form-control' style='width:100%;'>"+remarksArea+"</textarea> </div>");
+	    		 
+	    		 
+	   		 add += ("<label><input "+opt3+" onclick='updateOptionID_team(\"rsOpt3\")' name='opt_team'class='radio' type='radio'>   <span>Re-accreditation for <select name='yearRsOpt3_team'><option "+three+">three</option><option "+four+">four</option><option "+five+"'>five</option><option "+six+">six</option><option "+seven+">seven</option></select> years with a INTERIM VISIT on the</span><span><select name='year2RsOpt3_team'><option "+fir+">1st</option><option "+sec+">2nd</option><option "+thi+">3rd</option><option "+fou+">4th</option><option "+fif+">5th</option><option "+six2+">6th</option><option "+sev+">7th</option></select>  year on the following areas:</span>  <br> <select id='3areaSelect"+PSID+"_team'><option></option><option>Faculty</option><option>Curriculum and Instructions</option><option>Laboratories</option><option>Libraries</option><option>Community</option><option>Physical Facilities</option><option>Student Services</option><option>Administration</option><option>Research</option><option>Clinical Training</option><option>Other Resources</option></select> <em id='addicon' style='margin-left:5px;' class='fa fa-plus' onclick='addAreaTeam3("+PSID+")'></em> <em id='addicon' style='margin-left:5px;'class='fa fa-undo' onclick='resetAreaTeam3("+PSID+")'></em> </label> <br>");
+	  		 add += ("<div class='form-group'> <label class='control-label'>Areas</label> <br> <textarea id='3remarks"+PSID+"_team' name='areasRsOpt3_team' rows='3'  class='form-control' style='width:100%;'>"+remarksArea+"</textarea> </div>");
+	   		 
+	   		 
+	    	
+	      	 add += ("<label> <input "+opt4+" onclick='updateOptionID_team(\"rsOpt4\")' name='opt_team'class='radio' type='radio'>  <span>Re-accreditation deferred</span> </label> <br>");
+	   		 add += ("<div class='form-group'> <label class='control-label'>Reason(s) for deferment:</label> <br> <textarea id='reasonRsOpt4' name='reasonsRsOpt4_team' rows='3'  class='form-control' style='width:100%;'>"+remarksArea+"</textarea> </div>");
+	    	 add += ("</div> </div>");
+	    	 add += ("</div>")
+  }//End of RESURVEy - BOARD
   
   
 });	
@@ -322,7 +523,7 @@ function formalConfirm(PSID, surveyID, decisionJSON) {
 	$('#modalBody2').html("<div style='width: 49%; float:left;'><h4>Formal Survey</h4> </div>");  
 	add+=("<ul class='nav nav-tabs nav-tabs-bordered'>"
 		    +"<li class='nav-item'><a class='nav-link active' data-target='#team' data-toggle='tab' aria-controls='team' role='tab'>Team Decision</a></li>"
-		    +"<li class='nav-item'><a class='nav-link' data-target='#commission' data-toggle='tab' aria-controls='commission' role='tab' href='#commission'>Commission Decision</a></li>"
+		    +"<li class='nav-item'><a class='nav-link' data-target='#committee' data-toggle='tab' aria-controls='committee' role='tab' href='#committee'>Committee Decision</a></li>"
 		    +"<li class='nav-item'><a class='nav-link' data-target='#board' data-toggle='tab' aria-controls='board' role='tab' href='#board'>Board Decision</a></li>"
 		 +"</ul>");
 	add += ("<form method='post' action='SurveyProgramDecision'> ");
@@ -342,26 +543,27 @@ function formalConfirm(PSID, surveyID, decisionJSON) {
   		 add += ("<div class='form-group'> <label class='control-label'>Reason(s) for denial</label> <br> <textarea id='reasons"+PSID+"' name='remarks_team' rows='3'  class='form-control' style='width:100%;'>"+remarksArea+"</textarea> </div>");
    	 add += ("</div></div>");
  		}
- 	else if(value.decisionBy=="Commission"){
+ 	else if(value.decisionBy=="Committee"){
  		var opt1="",opt2="",remarksArea="";
  	 	if(value.decision == "Initial accreditation for three (3) years") opt1 = "checked";
  		else if(value.decision == "Accreditation not granted") {opt2 = "checked";remarksArea = value.remarks}
- 			add+=("<div id='commission' class='tab-pane fade in'>");
+ 			add+=("<div id='committee' class='tab-pane fade in'>");
  	   		 add += ("<div class='form-group' style='width:100%;'> ");
- 	   			 add += ("<label class='control-label' style='width:100%;'> <br><input "+opt1+" name='opt_commission' class='radio ' type='radio' value='Initial accreditation for three (3) years'>	<span>Initial accreditation for three (3) years</span> <br> <hr></label>");
- 	   			 add += ("<label> <input type='hidden' name='PSID' value='"+PSID+"'><input type='hidden' name='surveyID' value='"+surveyID+"'> <input type='hidden' name='type'value='Formal'> <input "+opt2+" name='opt_commission'class='radio' type='radio' value='Accreditation not granted'>  <span>Accreditation not granted</span> </label> <br>");
- 	  		 add += ("<div class='form-group'> <label class='control-label'>Reason(s) for denial</label> <br> <textarea id='reasons"+PSID+"' name='remarks_commission' rows='3'  class='form-control' style='width:100%;'>"+remarksArea+"</textarea> </div>");
+ 	   			 add += ("<label class='control-label' style='width:100%;'> <br><input "+opt1+" name='opt_committee' class='radio ' type='radio' value='Initial accreditation for three (3) years'>	<span>Initial accreditation for three (3) years</span> <br> <hr></label>");
+ 	   			 add += ("<label> <input type='hidden' name='PSID' value='"+PSID+"'><input type='hidden' name='surveyID' value='"+surveyID+"'> <input type='hidden' name='type'value='Formal'> <input "+opt2+" name='opt_committee'class='radio' type='radio' value='Accreditation not granted'>  <span>Accreditation not granted</span> </label> <br>");
+ 	  		 add += ("<div class='form-group'> <label class='control-label'>Reason(s) for denial</label> <br> <textarea id='reasons"+PSID+"' name='remarks_committee' rows='3'  class='form-control' style='width:100%;'>"+remarksArea+"</textarea> </div>");
  	   	 add += ("</div></div>");
  		 }
  	else if(value.decisionBy=="Board"){
  		var opt1="",opt2="",remarksArea="";
  		if(value.decision == "Initial accreditation for three (3) years") opt1 = "checked";
  	  	else if(value.decision == "Accreditation not granted") {opt2 = "checked";remarksArea = value.remarks}
+ 	   else{add += ("<input checked type='radio' name='opt_board' class='radio' value='NA' style='visibility:hidden'>")}
  			add+=("<div id='board' class='tab-pane fade in'>");
  	   		 add += ("<div class='form-group' style='width:100%;'> ");
  	   	// Start Input unique for board decision only
  			add += ("<div id='boardDiv'><span>Enter Board Approval Date: </span> <input type='text' id='datepicker' name='decisionDate' value='"+globalApprovalDate+"' /></div>");
- 	// End Input unique for board decision only	
+ 	// End Input unique for board decision only
  	   		 add += ("<label class='control-label' style='width:100%;'> <br><input "+opt1+" name='opt_board' class='radio ' type='radio' value='Initial accreditation for three (3) years'>	<span>Initial accreditation for three (3) years</span> <br> <hr></label>");
  	   			 add += ("<label> <input type='hidden' name='PSID' value='"+PSID+"'><input type='hidden' name='surveyID' value='"+surveyID+"'> <input type='hidden' name='type'value='Formal'> <input "+opt2+" name='opt_board'class='radio' type='radio' value='Accreditation not granted'>  <span>Accreditation not granted</span> </label> <br>");
  	  		 add += ("<div class='form-group'> <label class='control-label'>Reason(s) for denial</label> <br> <textarea id='reasons"+PSID+"' name='remarks_board' rows='3'  class='form-control' style='width:100%;'>"+remarksArea+"</textarea> </div>");
@@ -376,11 +578,10 @@ function formalConfirm(PSID, surveyID, decisionJSON) {
     $('[data-toggle="tooltip"]').tooltip();    
 }
 
-function updateOptionID(id){
-	alert(id);
+function updateOptionID_team(id){
+	
+	document.getElementById("optionID_team").value = id;
 
-	document.getElementById("optionID").value = id;
-	alert(document.getElementById("optionID").value);
 }
 
 function preliminaryConfirm(PSID, surveyID, decisionJSON) {
@@ -391,7 +592,7 @@ function preliminaryConfirm(PSID, surveyID, decisionJSON) {
 $('#modalBody2').html("<div style='width: 49%; float:left;'><h4>Preliminary Survey</h4></div>");  
 	add+=("<ul class='nav nav-tabs nav-tabs-bordered'>"
 		    +"<li class='nav-item'><a class='nav-link active' data-target='#team' data-toggle='tab' aria-controls='team' role='tab'>Team Decision</a></li>"
-		    +"<li class='nav-item'><a class='nav-link' data-target='#commission' data-toggle='tab' aria-controls='commission' role='tab' href='#commission'>Commission Decision</a></li>"
+		    +"<li class='nav-item'><a class='nav-link' data-target='#committee' data-toggle='tab' aria-controls='committee' role='tab' href='#committee'>Committee Decision</a></li>"
 		    +"<li class='nav-item'><a class='nav-link' data-target='#board' data-toggle='tab' aria-controls='board' role='tab' href='#board'>Board Decision</a></li>"
 		 +"</ul>");
 	add += ("<form method='post' action='SurveyProgramDecision'>");
@@ -420,9 +621,9 @@ $('#modalBody2').html("<div style='width: 49%; float:left;'><h4>Preliminary Surv
    	add+=("</div>");
  }
 
- else if(value.decisionBy=="Commission"){
-// START OF COMMISSION TAB CONTENT -PRELIMINARY
-   	add+=("<div id='commission' class='tab-pane fade'>");
+ else if(value.decisionBy=="Committee"){
+// START OF Committee TAB CONTENT -PRELIMINARY
+   	add+=("<div id='committee' class='tab-pane fade'>");
 		 add += ("<div class='form-group' style='width:100%;'> <div> 	");
 		 var opt1="",opt2="",opt3="",opt4="",opt5="",remarksArea="";
    		 if(value.decision == "Eligible for formal survey after six months to one year") opt1 = "checked";
@@ -430,12 +631,12 @@ $('#modalBody2').html("<div style='width: 49%; float:left;'><h4>Preliminary Surv
    		 else if(value.decision== "Consultancy visit after one year to determine readiness for formal survey") opt3 = "checked";
    		 else if(value.decision=="Second preliminary survey") opt4 = "checked";
    		 else if(value.decision =="Consultancy Visit after one year for the following areas:") {opt5 = "checked"; remarksArea = value.remarks}
-   			 add += ("<label class='control-label' style='width:100%;'> <br><input "+opt1+" name='opt_commission' class='radio ' type='radio' value='Eligible for formal survey after six months to one year'>	<span>Eligible for formal survey after six months to one year </span> <br> <hr></label>");
-   			 add += ("<label class='control-label' style='width:100%;'> <input "+opt2+" name='opt_commission' class='radio ' type='radio' value='Eligible for formal survey after one year'>	<span>Eligible for formal survey after one year </span> <br> <hr></label>");
-   			 add += ("<label class='control-label' style='width:100%;'> <input "+opt3+" name='opt_commission' class='radio ' type='radio' value='Consultancy visit after one year to determine readiness for formal survey'>	<span>Consultancy visit after one year to determine readiness for formal survey</span> <br> <hr></label>");
-   			 add += ("<label class='control-label' style='width:100%;'> <input "+opt4+" name='opt_commission' class='radio ' type='radio' value='Second preliminary survey'>	<span>Second preliminary survey</span> <br> <hr></label>");
-   			 add += ("<label> <input type='hidden' name='PSID' value='"+PSID+"'><input type='hidden' name='surveyID' value='"+surveyID+"'> <input type='hidden' name='type'value='Preliminary'> <input "+opt5+" name='opt_commission'class='radio' type='radio' value='Consultancy Visit after one year for the following areas:'>   <span>Another Consultancy Visit for the following areas:</span> <select id='areaSelect"+PSID+"_commission'><option></option><option>Faculty</option><option>Curriculum and Instructions</option><option>Laboratories</option><option>Libraries</option><option>Community</option></option>Physical Facilities</option><option>Student Services</option><option>Administration</option><option>Research</option><option>Clinical Training</option><option>Other Resources</option></select> <em id='addicon' style='margin-left:5px;' class='fa fa-plus' onclick='addAreaCommission("+PSID+")'></em> <em id='addicon' style='margin-left:5px;'class='fa fa-undo' onclick='resetAreaCommission("+PSID+")'></em>  </label> <br>");
-  		 add += ("<div class='form-group'> <label class='control-label'>Areas</label> <br> <textarea id='remarks"+PSID+"_commission' name='remarks"+PSID+"_commission' rows='3'  class='form-control' style='width:100%;'> "+remarksArea+"</textarea> </div>");
+   			 add += ("<label class='control-label' style='width:100%;'> <br><input "+opt1+" name='opt_committee' class='radio ' type='radio' value='Eligible for formal survey after six months to one year'>	<span>Eligible for formal survey after six months to one year </span> <br> <hr></label>");
+   			 add += ("<label class='control-label' style='width:100%;'> <input "+opt2+" name='opt_committee' class='radio ' type='radio' value='Eligible for formal survey after one year'>	<span>Eligible for formal survey after one year </span> <br> <hr></label>");
+   			 add += ("<label class='control-label' style='width:100%;'> <input "+opt3+" name='opt_committee' class='radio ' type='radio' value='Consultancy visit after one year to determine readiness for formal survey'>	<span>Consultancy visit after one year to determine readiness for formal survey</span> <br> <hr></label>");
+   			 add += ("<label class='control-label' style='width:100%;'> <input "+opt4+" name='opt_committee' class='radio ' type='radio' value='Second preliminary survey'>	<span>Second preliminary survey</span> <br> <hr></label>");
+   			 add += ("<label> <input type='hidden' name='PSID' value='"+PSID+"'><input type='hidden' name='surveyID' value='"+surveyID+"'> <input type='hidden' name='type'value='Preliminary'> <input "+opt5+" name='opt_committee'class='radio' type='radio' value='Consultancy Visit after one year for the following areas:'>   <span>Another Consultancy Visit for the following areas:</span> <select id='areaSelect"+PSID+"_committee'><option></option><option>Faculty</option><option>Curriculum and Instructions</option><option>Laboratories</option><option>Libraries</option><option>Community</option></option>Physical Facilities</option><option>Student Services</option><option>Administration</option><option>Research</option><option>Clinical Training</option><option>Other Resources</option></select> <em id='addicon' style='margin-left:5px;' class='fa fa-plus' onclick='addAreacommittee("+PSID+")'></em> <em id='addicon' style='margin-left:5px;'class='fa fa-undo' onclick='resetAreacommittee("+PSID+")'></em>  </label> <br>");
+  		 add += ("<div class='form-group'> <label class='control-label'>Areas</label> <br> <textarea id='remarks"+PSID+"_committee' name='remarks"+PSID+"_committee' rows='3'  class='form-control' style='width:100%;'> "+remarksArea+"</textarea> </div>");
    	 	add += ("</div> </div>");
 	add+=("</div>");
  }
@@ -454,7 +655,8 @@ else if(value.decisionBy=="Board"){
    		 else if(value.decision== "Consul	tancy visit after one year to determine readiness for formal survey") opt3 = "checked";
    		 else if(value.decision=="Second preliminary survey") opt4 = "checked";
    		 else if(value.decision =="Consultancy Visit after one year for the following areas:") {opt5 = "checked"; remarksArea = value.remarks}
-   			 add += ("<label class='control-label' style='width:100%;'> <br><input "+opt1+" name='opt_board' class='radio ' type='radio' value='Eligible for formal survey after six months to one year'>	<span>Eligible for formal survey after six months to one year </span> <br> <hr></label>");
+   		 else{add += ("<input checked type='radio' name='opt_board' class='radio' value='NA' style='visibility:hidden'>")}
+   		 add += ("<label class='control-label' style='width:100%;'> <br><input "+opt1+" name='opt_board' class='radio ' type='radio' value='Eligible for formal survey after six months to one year'>	<span>Eligible for formal survey after six months to one year </span> <br> <hr></label>");
    			 add += ("<label class='control-label' style='width:100%;'> <input "+opt2+" name='opt_board' class='radio ' type='radio' value='Eligible for formal survey after one year'>	<span>Eligible for formal survey after one year </span> <br> <hr></label>");
    			 add += ("<label class='control-label' style='width:100%;'> <input "+opt3+" name='opt_board' class='radio ' type='radio' value='Consultancy visit after one year to determine readiness for formal survey'>	<span>Consultancy visit after one year to determine readiness for formal survey</span> <br> <hr></label>");
    			 add += ("<label class='control-label' style='width:100%;'> <input "+opt4+" name='opt_board' class='radio ' type='radio' value='Second preliminary survey'>	<span>Second preliminary survey</span> <br> <hr></label>");
@@ -486,7 +688,7 @@ function consultancyConfirm(PSID, surveyID, decisionJSON) {
  $('#modalBody2').html("<div style='width: 49%; float:left;'><h4>Consultancy Survey</h4></div>");
  add+=("<ul class='nav nav-tabs nav-tabs-bordered'>"
 		    +"<li class='nav-item'><a class='nav-link active' data-target='#team' data-toggle='tab' aria-controls='team' role='tab'>Team Decision</a></li>"
-		    +"<li class='nav-item'><a class='nav-link' data-target='#commission' data-toggle='tab' aria-controls='commission' role='tab' href='#commission'>Commission Decision</a></li>"
+		    +"<li class='nav-item'><a class='nav-link' data-target='#committee' data-toggle='tab' aria-controls='committee' role='tab' href='#committee'>Committee Decision</a></li>"
 		    +"<li class='nav-item'><a class='nav-link' data-target='#board' data-toggle='tab' aria-controls='board' role='tab' href='#board'>Board Decision</a></li>"
 		 +"</ul>");
     add += ("<form method='post' action='SurveyProgramDecision'>");
@@ -517,9 +719,9 @@ function consultancyConfirm(PSID, surveyID, decisionJSON) {
    	   	add+=("</div>");
    	 }
 
-   	 else if(value.decisionBy=="Commission"){
-   	// START OF COMMISSION TAB CONTENT -consultancy
-   	   	add+=("<div id='commission' class='tab-pane fade'>");
+   	 else if(value.decisionBy=="Committee"){
+   	// START OF Committee TAB CONTENT -consultancy
+   	   	add+=("<div id='committee' class='tab-pane fade'>");
    			 add += ("<div class='form-group' style='width:100%;'> <div> 	");
    		// Start Input unique for board decision only
    			add += ("<div id='boardDiv'><span>Enter Board Approval Date: </span> <input type='text' id='datepicker' name='decisionDate' value='"+globalApprovalDate+"' /></div>");
@@ -530,12 +732,12 @@ function consultancyConfirm(PSID, surveyID, decisionJSON) {
    	   		 else if(value.decision== "Consultancy visit after one year to determine readiness for formal survey") opt3 = "checked";
    	   		 else if(value.decision=="Second consultancy survey") opt4 = "checked";
    	   		 else if(value.decision =="Consultancy Visit after one year for the following areas:") {opt5 = "checked"; remarksArea = value.remarks}
-   	   			 add += ("<label class='control-label' style='width:100%;'> <br><input "+opt1+" name='opt_commission' class='radio ' type='radio' value='Eligible for formal survey after six months to one year'>	<span>Eligible for formal survey after six months to one year </span> <br> <hr></label>");
-   	   			 add += ("<label class='control-label' style='width:100%;'> <input "+opt2+" name='opt_commission' class='radio ' type='radio' value='Eligible for formal survey after one year'>	<span>Eligible for formal survey after one year </span> <br> <hr></label>");
-   	   			 add += ("<label class='control-label' style='width:100%;'> <input "+opt3+" name='opt_commission' class='radio ' type='radio' value='Consultancy visit after one year to determine readiness for formal survey'>	<span>Consultancy visit after one year to determine readiness for formal survey</span> <br> <hr></label>");
-   	   			 add += ("<label class='control-label' style='width:100%;'> <input "+opt4+" name='opt_commission' class='radio ' type='radio' value='Second consultancy survey'>	<span>Second consultancy survey</span> <br> <hr></label>");
-   	   			 add += ("<label> <input type='hidden' name='PSID' value='"+PSID+"'><input type='hidden' name='surveyID' value='"+surveyID+"'> <input type='hidden' name='type'value='Consultancy'> <input "+opt5+" name='opt_commission'class='radio' type='radio' value='Consultancy Visit after one year for the following areas:'>   <span>Another Consultancy Visit for the following areas:</span> <select id='areaSelect"+PSID+"_commission'><option></option><option>Faculty</option><option>Curriculum and Instructions</option><option>Laboratories</option><option>Libraries</option><option>Community</option></option>Physical Facilities</option><option>Student Services</option><option>Administration</option><option>Research</option><option>Clinical Training</option><option>Other Resources</option></select> <em id='addicon' style='margin-left:5px;' class='fa fa-plus' onclick='addAreaCommission("+PSID+")'></em> <em id='addicon' style='margin-left:5px;'class='fa fa-undo' onclick='resetAreaCommission("+PSID+")'></em> </label> <br>");
-   	  		 add += ("<div class='form-group'> <label class='control-label'>Areas</label> <br> <textarea id='remarks"+PSID+"_commission' name='remarks"+PSID+"_commission' rows='3'  class='form-control' style='width:100%;'>"+remarksArea+"</textarea> </div>");
+   	   			 add += ("<label class='control-label' style='width:100%;'> <br><input "+opt1+" name='opt_committee' class='radio ' type='radio' value='Eligible for formal survey after six months to one year'>	<span>Eligible for formal survey after six months to one year </span> <br> <hr></label>");
+   	   			 add += ("<label class='control-label' style='width:100%;'> <input "+opt2+" name='opt_committee' class='radio ' type='radio' value='Eligible for formal survey after one year'>	<span>Eligible for formal survey after one year </span> <br> <hr></label>");
+   	   			 add += ("<label class='control-label' style='width:100%;'> <input "+opt3+" name='opt_committee' class='radio ' type='radio' value='Consultancy visit after one year to determine readiness for formal survey'>	<span>Consultancy visit after one year to determine readiness for formal survey</span> <br> <hr></label>");
+   	   			 add += ("<label class='control-label' style='width:100%;'> <input "+opt4+" name='opt_committee' class='radio ' type='radio' value='Second consultancy survey'>	<span>Second consultancy survey</span> <br> <hr></label>");
+   	   			 add += ("<label> <input type='hidden' name='PSID' value='"+PSID+"'><input type='hidden' name='surveyID' value='"+surveyID+"'> <input type='hidden' name='type'value='Consultancy'> <input "+opt5+" name='opt_committee'class='radio' type='radio' value='Consultancy Visit after one year for the following areas:'>   <span>Another Consultancy Visit for the following areas:</span> <select id='areaSelect"+PSID+"_committee'><option></option><option>Faculty</option><option>Curriculum and Instructions</option><option>Laboratories</option><option>Libraries</option><option>Community</option></option>Physical Facilities</option><option>Student Services</option><option>Administration</option><option>Research</option><option>Clinical Training</option><option>Other Resources</option></select> <em id='addicon' style='margin-left:5px;' class='fa fa-plus' onclick='addAreacommittee("+PSID+")'></em> <em id='addicon' style='margin-left:5px;'class='fa fa-undo' onclick='resetAreacommittee("+PSID+")'></em> </label> <br>");
+   	  		 add += ("<div class='form-group'> <label class='control-label'>Areas</label> <br> <textarea id='remarks"+PSID+"_committee' name='remarks"+PSID+"_committee' rows='3'  class='form-control' style='width:100%;'>"+remarksArea+"</textarea> </div>");
    	   	 	add += ("</div> </div>");
    		add+=("</div>");
    	 }
@@ -550,7 +752,8 @@ function consultancyConfirm(PSID, surveyID, decisionJSON) {
    	   		 else if(value.decision== "Consultancy visit after one year to determine readiness for formal survey") opt3 = "checked";
    	   		 else if(value.decision=="Second consultancy survey") opt4 = "checked";
    	   		 else if(value.decision =="Consultancy Visit after one year for the following areas:") {opt5 = "checked"; remarksArea = value.remarks}
-   	   			 add += ("<label class='control-label' style='width:100%;'> <br><input "+opt1+" name='opt_board' class='radio ' type='radio' value='Eligible for formal survey after six months to one year'>	<span>Eligible for formal survey after six months to one year </span> <br> <hr></label>");
+   	   	 else{add += ("<input checked type='radio' name='opt_board' class='radio' value='NA' style='visibility:hidden'>")}
+   	   		 add += ("<label class='control-label' style='width:100%;'> <br><input "+opt1+" name='opt_board' class='radio ' type='radio' value='Eligible for formal survey after six months to one year'>	<span>Eligible for formal survey after six months to one year </span> <br> <hr></label>");
    	   			 add += ("<label class='control-label' style='width:100%;'> <input "+opt2+" name='opt_board' class='radio ' type='radio' value='Eligible for formal survey after one year'>	<span>Eligible for formal survey after one year </span> <br> <hr></label>");
    	   			 add += ("<label class='control-label' style='width:100%;'> <input "+opt3+" name='opt_board' class='radio ' type='radio' value='Consultancy visit after one year to determine readiness for formal survey'>	<span>Consultancy visit after one year to determine readiness for formal survey</span> <br> <hr></label>");
    	   			 add += ("<label class='control-label' style='width:100%;'> <input "+opt4+" name='opt_board' class='radio ' type='radio' value='Second consultancy survey'>	<span>Second consultancy survey</span> <br> <hr></label>");
@@ -643,7 +846,6 @@ function changeAcc(areaID, systemID,  PSID, oldAccreditorID){
 // 		obj.areas[areaCounter]['areaID'] = 1;
 // 		obj.areas[areaCounter]['area'] = 'Faculty';
 // 		obj.areas[areaCounter]['accreditorIDs'] = [];
-		var facCounter1 = areaCounter;
 		
 		$.ajax({url: "LatestAccreditor?PSID=" + PSID + "&areaID=1",  async: false, success: function(result){
 	             var area = document.getElementById("area"+areaID).innerHTML;

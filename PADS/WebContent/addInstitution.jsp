@@ -125,12 +125,46 @@ function changeDetails(){
 	$("#progSure").className = "progress-bar progress-bar-success";
 }
 
+function duplicateCheck(entry){
+	var hasMatch = false;
+// 	alert(entry);
+	 $.ajax({
+   	  url: "CheckDuplicateInstitution",
+   	  dataType: 'json',
+   	  async: false,
+   	  success: function(data) {
+   		  $.each(data, function (key, value){
+   			var inst = value.ssID+"|"+value.institutionName+"|"+value.city;
+   				if(inst.toUpperCase() == entry.toUpperCase()){
+	   				alert("This institution already exists in the database."); 
+	   				hasMatch=true; 
+	   				return false;
+   				} 
+   			});	
+   		
+   	  }
+   	});	
+	 if(!hasMatch){return true;}
+}
+
 function validateForm() {
+	
+	
+	var ssName = document.forms["addInstForm"]["ssName"].value;
+	var institutionName = document.forms["addInstForm"]["institutionName"].value;
     var institutionName = document.forms["addInstForm"]["institutionName"].value;
     var institutionAcronym = document.forms["addInstForm"]["institutionAcronym"].value;
     var membershipDate = document.forms["addInstForm"]["membershipDate"].value;
+    var city =  document.forms["addInstForm"]["city"].value;
     
-    if (institutionName == "") {
+    var entry = ssName +"|"+institutionName+"|"+city
+   
+    if(duplicateCheck(entry)){
+    if(ssName=="0"){
+    	alert("School System must be selected");
+        return false;	
+    }    
+    else if (institutionName == "") {
         alert("Institution Name must be filled out");
         return false;
     }
@@ -142,10 +176,15 @@ function validateForm() {
         alert("Membership Date must be filled out");
         return false;
     }
+    else if (city == "") {
+        alert("City must be filled out");
+        return false;
+    }
     else{
     	alert("succesfully added institution!");
     	location.href = 'institutions.jsp';
-        }
+        }}
+    else return false;
 }
 </script>
 
@@ -296,7 +335,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
 				
          
                 <article class="content dashboard-page">
-				<form name="addInstForm" onsubmit="return validateForm()" method="post" action="AddInstitution" class="form">
+				<form name="addInstForm" method="post" action="AddInstitution" class="form">
 				
 				 <div class="title-block">
                         <h3 class="title" style="float:left;">
@@ -334,7 +373,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
 											<div class="form-group"  style="width:48%; padding-right"> <label class="control-label">Institution Address</label> <input type="text" class="form-control underlined" style="width:90%;" placeholder="e.g. 2401 Taft Avenue, 1004 Manila, Philippines" name="address"> </div>
 											<div class="form-group"  style="width:48%; padding-right"> <label class="control-label">Date of Membership<b style="color:red">*</b></label> <input id="datepicker" type="text" class="form-control underlined" style="width:90%;" placeholder="" name="membershipDate"> </div>
 											
-											<div class="form-group"  style="width:48%; padding-right"> <label class="control-label">City of Institution </label> <input type="text" class="form-control underlined" style="width:90%;" placeholder="e.g. 2401 Taft Avenue, 1004 Manila, Philippines" name="city"> </div>
+											<div class="form-group"  style="width:48%; padding-right"> <label class="control-label">City of Institution<b style="color:red">*</b></label> <input type="text" class="form-control underlined" style="width:90%;" placeholder="e.g. 2401 Taft Avenue, 1004 Manila, Philippines" name="city"> </div>
 								<br><br><br>
 											<div class="form-group"  style="width:48%; padding-right"> <label class="control-label">Country of Institution </label> <input type="text" class="form-control underlined" style="width:90%;" placeholder="e.g. Philippines" name="country"> </div>
 											<div class="form-group"  style="width:48%; padding-right"> <label class="control-label">Institution Website</label> <input type="text" class="form-control underlined" style="width:90%;" placeholder="e.g. http://www.dlsu.edu.ph/" name="website"> </div>

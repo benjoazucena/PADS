@@ -9,7 +9,9 @@
     <link rel="stylesheet" href="css/bootstrap.css">
     <script src="js/bootstrap.min.js"></script>
     <link rel="apple-touch-icon" href="apple-touch-icon.png">
-   
+   <link rel="stylesheet" type="text/css" href=" css/dataTables.bootstrap.min.css">
+	<script src="js/jquery.dataTables.min.js"></script>
+	<script src="js/dataTables.bootstrap.min.js"></script>
 		<link href='css/fullcalendar.css' rel='stylesheet' />
  
 
@@ -69,50 +71,184 @@
 	     });
 	});*/
 	
-	function UpdateConfirmation(con, id, psid, area, obj){
-		if (con == "Not Available"){
-			obj.parentNode.parentNode.className="danger";
-			obj.className = "btn btn-pill-left btn-danger btn-sm";
-			obj.nextSibling.className = "btn btn-pill-right btn-secondary btn-sm";
-		}else if (con == "Confirmed"){
-			obj.parentNode.parentNode.className="success";
-			obj.className = "btn btn-pill-right btn-success btn-sm";
-			obj.previousSibling.className = "btn btn-pill-left btn-secondary btn-sm";
+function UpdateConfirmation(con, id, psid, area, obj){
+	if (con == "Not Available"){
+		obj.parentNode.parentNode.className="danger";
+		obj.className = "btn btn-pill-left btn-danger btn-sm";
+		obj.nextSibling.className = "btn btn-pill-right btn-secondary btn-sm";
+	}else if (con == "Confirmed"){
+		obj.parentNode.parentNode.className="success";
+		obj.className = "btn btn-pill-right btn-success btn-sm";
+		obj.previousSibling.className = "btn btn-pill-left btn-secondary btn-sm";
 
 
 
-		}
-		$.ajax({url: "UpdateConfirmation?accreditorID=" + id + "&confirmation=" + con + "&PSID=" + psid + "&areaID=" + area, success: function(result){
-	    }});
 	}
+	$.ajax({url: "UpdateConfirmation?accreditorID=" + id + "&confirmation=" + con + "&PSID=" + psid + "&areaID=" + area, success: function(result){
+    }});
 	
-	function DeleteProgram(PSID, obj){
-		var r = confirm("Are you sure?\nThis will delete all data related to the survey-program.")
-		if(r == true){
+	$("#calendar").fullCalendar("refetchEvents");
+	$("#calendar").fullCalendar("rerenderEvents");
+}
+	
+function DeleteProgram(PSID, obj){
+	var r = confirm("Are you sure?\nThis will delete all data related to the survey-program.")
+	if(r == true){
 		obj.parentNode.parentNode.removeChild(obj.parentNode);
 		$.ajax({url: "DeletePSID?PSID=" + PSID, success: function(result){
 	        alert(result);
 	    }});
-		}
+		$("#calendar").fullCalendar("refetchEvents");
+		$("#calendar").fullCalendar("rerenderEvents");
 	}
+}
 	
-	function EditProgram(PSID){
-		document.location.href='EditPSID?PSID=' + PSID;
-	}
-	function formatDate(date) {
-		  var monthNames = [
-		    "January", "February", "March",
-		    "April", "May", "June", "July",
-		    "August", "September", "October",
-		    "November", "December"
-		  ];
+function deleteArea(accreditorID, PSID, areaID, btn){
+	btn.parentNode.parentNode.parentNode.removeChild(btn.parentNode.parentNode);
+	$.ajax({url: "DeleteProgramArea?accreditorID=" + accreditorID + "&PSID=" + PSID + "&areaID=" + areaID,
+			success: function(result){
+			}
+    });
+	$("#calendar").fullCalendar("refetchEvents");
+	$("#calendar").fullCalendar("rerenderEvents");
+}
+	
+function editAccreditor(accreditorID, institutionID, PSID, areaID, btn){
+	//btn.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.modal();
+	$('#fullCalModal').modal("hide");
 
-		  var day = date.getDate();
-		  var monthIndex = date.getMonth();
-		  var year = date.getFullYear();
 
-		  return monthNames[monthIndex] + ' '+ day + ', ' + year;
+	var add = "";
+	var accreditors = [];
+	var obj = {};
+	var counter = 0;
+	$.ajax({ //CALLING ACCREDITORS WITH EXTRA CHECKING FOR AFFILIATION CONFLICTS
+		  
+		
+		url: "AccreditorsLoaderSurvey?PSID=" + PSID +"&institutionID=" + institutionID +"&areaID=" + areaID,
+		  dataType: 'json',
+		  async: false,
+		  success: function(data) {
+			  accreditors = data; 			
+		  }
+		});
+	
+	$('#modalTitle1').html('<span class="sr-only">close</span></button><h4 id="modalTitle1" class="modal-title"> Editing accreditor... </h4>');
+	add += " *Affiliated accreditors and those of different disciplines are hidden in the table.";
+	add += "<hr>";
+	add += '<div class="table-responsive" style="width:100%; float:right;" id="contenthole">';
+	add += '<table id="smarttable" class="table table-striped table-bordered table-hover">';
+	add += '<thead><tr><th>ID</th><th>Rank</th><th>Full Name</th><th>Affiliation</th> <th>Discipline</th><th>Primary Survey Area</th><th>Secondary Survey Area</th><th>Tertiary Survey Area</th><th>Total Surveys</th><th>Last Survey Date</th><th>City</th> </tr></thead>';
+	add += '<tbody>';
+	if(accreditors.length > 0){
+		var removes = [];
+		//VALIDATOR AND STYLE CHANGER
+		var removal = accreditors[accreditors.length - 1].rank;
+		
+		for(var i = 0; i < accreditors.length; i++){
+			if(accreditors[i].rank == removal){
+				removes.push(accreditors[i]);
+			}else{
+				add+="<tr>";
+				add += '<td>' + accreditors[i].accreditorID + '</td>';
+				add += '<td>' + accreditors[i].rank + '</td>';
+				add += '<td>' + accreditors[i].accreditorName + '</td>';
+				add += '<td>' + accreditors[i].affiliation + '</td>';
+				add += '<td>' + accreditors[i].discipline + '</td>';
+				add += '<td>' + accreditors[i].primaryArea + '</td>';
+				add += '<td>' + accreditors[i].secondaryArea + '</td>';
+				add += '<td>' + accreditors[i].tertiaryArea + '</td>';
+				add += '<td>' + accreditors[i].numberSurveys + '</td>';
+				add += '<td>' + accreditors[i].lastSurveyDate + '</td>';
+				add += '<td>' + accreditors[i].city + '</td>';
+				add += '</tr>';
+
+			}
+			
 		}
+	}
+	add += '</tbody></table></div>';
+
+
+
+	$('#modalBody1').html(add);
+	var table = $('#modalBody1').find("table").DataTable({
+		"columnDefs": [
+            {
+                "targets": [ 0 ],
+                "visible": false,
+                "searchable": false
+            }
+        ],
+        "order": [[ 1, "asc" ]]
+	});
+	
+	var removesButton = document.createElement("BUTTON");
+	removesButton.innerHTML = "<i class='fa fa-times-circle' aria-hidden='true' ></i> Show all Accreditors ";
+	removesButton.onclick = function() { 
+		removesButton.parentNode.removeChild(removesButton);
+		var aff;
+		for(var j = 0; j < removes.length; j++){
+			var t = table.row.add([
+				removes[j].accreditorID,
+				removes[j].rank,
+				removes[j].accreditorName,
+				removes[j].affiliation,
+				removes[j].discipline,
+				removes[j].primaryArea,
+				removes[j].secondaryArea,
+				removes[j].tertiaryArea,
+				removes[j].lastSurveyDate,
+				removes[j].numberSurveys,
+				removes[j].city
+			]).draw(false);
+			$(t.node()).addClass('danger');
+		}
+	};
+	
+	$('#modalBody1').prepend(removesButton);
+	
+	 $('#smarttable tbody').on('click', 'tr', function () {
+			var chosenAccreditor = table.row(this).data();
+			
+			var accID = chosenAccreditor[0];
+			btn.parentNode.parentNode.cells[0].innerHTML = "<a href='ViewAccreditor?accreditorID=" + accID + "' data-toggle='tooltip' title='This will take you to the accreditor page.'>" + chosenAccreditor[2] +"</a>";
+			
+			$.ajax({url: "UpdateAccreditor?accreditorID=" + accreditorID + "&PSID=" + PSID + "&areaID=" + areaID +"&accID=" + accID,
+				success: function(result){
+				}
+	    });
+			$("#calendar").fullCalendar("refetchEvents");
+			$("#calendar").fullCalendar("rerenderEvents");
+			$('#addModal').modal('toggle');
+			$('#fullCalModal').modal('show');
+			
+			
+
+    } );
+
+	$('#addModal').modal();
+	
+
+	//$('#addModal').modal('hide');
+	
+	
+
+}
+function formatDate(date) {
+	  var monthNames = [
+	    "January", "February", "March",
+	    "April", "May", "June", "July",
+	    "August", "September", "October",
+	    "November", "December"
+	  ];
+
+	  var day = date.getDate();
+	  var monthIndex = date.getMonth();
+	  var year = date.getFullYear();
+
+	  return monthNames[monthIndex] + ' '+ day + ', ' + year;
+	}
 
 	$(document).ready(function() {
 		
@@ -133,12 +269,13 @@
 		$('#calendar').fullCalendar({
 			theme:false,
 			header: {
-				left: 'prev,next today',
+				left: 'prev,next today, month',
 				center: 'title',
 				right: 'prevYear, nextYear'
 			},
 			buttonText: {
-		        prevYear: parseInt(new Date().getFullYear(), 10) - 1,
+		        month: "Month View",
+				prevYear: parseInt(new Date().getFullYear(), 10) - 1,
 		        nextYear: parseInt(new Date().getFullYear(), 10) + 1
 		        },
 	        viewRender: function(view) {
@@ -147,6 +284,7 @@
 	            $(".fc-prevYear-button").text(parseInt(d.year(), 10) - 1);
 	            $(".fc-nextYear-button").text(parseInt(d.year(), 10) + 1);
 	        },
+	        dayClick: false,
 			defaultDate: today,
 			hiddenDays: [0],
 			navLinks: true, // can click day/week names to navigate views
@@ -236,7 +374,10 @@
 				var dateStart = formatDate(new Date(event.start.format()));
 				var dateEnd = formatDate(new Date(event.endDate));
 				var d1 = Date.parse(today);
+				var institutionID = event.institutionID;
 		    	var d2 = Date.parse(event.start);
+	            alert(surveyID);
+
 				if(d2 <= d1 ){
 					
 					$('#modalTitle').html(event.title + "<a class='btn btn-oval btn-sm btn-secondary'style='position: releative;float:right; right:10px; ' href='ConfirmationPage?surveyID=" + surveyID +"'>Go to confirmation page</a>");
@@ -249,14 +390,29 @@
 		            $('#modalBody').html("<div style='width: 49%; float:left;'><h4>Date: " + dateStart + " to " + dateEnd + "</h4><h6>Institution: " + event.institutionName + "</h6></div>");
 
 				}
+				
+				var extra = "<div style='width:30%; float:left;'>";
+	            extra += "Chairperson: " + event.chairpersonName;
+	            if(event.paascu1Name != "" && event.paascu1Name != null){
+		            extra += "<br>PAASCU Reps: <br>" + event.paascu1Name;
+	            }
+	            
+	            if(event.paascu2Name != "" && event.paascu2Name != null){
+		            extra += "<br>" + event.paascu2Name;
+	            }
+	            extra += "</div>";
+	            
+	            $('#modalBody').append(extra);
 	            
 	            add += ("<button class='btn btn-sm btn-info' data-toggle='collapse' data-target='#reports' style='float:right;'><i class='fa fa-folder-open'></i> Reports</button>");
-	            add += ("<div style='width: 49%; float:right;' id='reports' class='collapse'><div style='float:right; width: 40%;'><button class='btn btn-link btn-sm' onclick=\'generateTeam(" + JSON.stringify(event.programs) + ", \"" + event.institutionName + "\" , \"" + event.institutionCity + "\" , \" " + dateStart + "\", \"" + event.chairpersonName + "\" , \"" + event.chairpersonInstitution + "\" , \"" + event.chairpersonPosition + "\" , \"" + event.chairpersonCity + "\" , \"" +   event.paascu1Name + "\" , \""  + event.paascu1Position + "\" , \"" +  event.paascu2Name + "\" , \""  + event.paascu2Position + "\")' data-toggle='tooltip' data-placement='left' title='This will generate a ready-to-print PDF file of the team line up for this survey.'><i class='fa fa-file-pdf-o'></i> Team Line Up</button><label class='btn btn-link btn-sm' data-toggle='tooltip' data-placement='left' title='This will let you upload the Team Recommendations file the accreditors have filled up after the visit.'><i class='fa fa-upload'></i> Team Recommendation <input style='display:none;' type='file'></label><button class='btn btn-link btn-sm' data-toggle='tooltip' data-placement='left' title='This will let you download a copy of the survey details.'><i class='fa fa-download'></i> Survey Details</button></div></div>");
-	            add += ("<br><br><br><hr><div><h4>Programs and Proponents</h4> <button class='btn btn-sm btn-link' style='float:right;'><i class='fa fa-plus'></i>  Add Program</button> <br><hr><ul class='list-group'>");
+	            add += ("<div style='width: 20%; float:left; background-color:white;' id='reports' class='collapse'><div style='float:right;'><button class='btn btn-link btn-sm' onclick=\'generateTeam(" + JSON.stringify(event.programs) + ", \"" + event.institutionName + "\" , \"" + event.institutionCity + "\" , \" " + dateStart + "\", \"" + event.chairpersonName + "\" , \"" + event.chairpersonInstitution + "\" , \"" + event.chairpersonPosition + "\" , \"" + event.chairpersonCity + "\" , \"" +   event.paascu1Name + "\" , \""  + event.paascu1Position + "\" , \"" +  event.paascu2Name + "\" , \""  + event.paascu2Position + "\")' data-toggle='tooltip' data-placement='left' title='This will generate a ready-to-print PDF file of the team line up for this survey.'><i class='fa fa-file-pdf-o'></i> Team Line Up</button><label class='btn btn-link btn-sm' data-toggle='tooltip' data-placement='left' title='This will let you upload the Team Recommendations file the accreditors have filled up after the visit.'><i class='fa fa-upload'></i> Team Recommendation <input style='display:none;' type='file'></label><button class='btn btn-link btn-sm' data-toggle='tooltip' data-placement='left' title='This will let you download a copy of the survey details.'><i class='fa fa-download'></i> Survey Details</button></div></div>");
+	            add += ("<br><br><br><hr><div><h4>Programs and Proponents</h4><label for='sel1'>Programs:</label><select class='form-control underlined chosen-select' data-placeholder='Choose a Program...' id='programForm' style='background: transparent;''></select><button class='btn btn-sm btn-link' style='float:right;'><i class='fa fa-plus'></i>  Add Program</button> <br><hr><ul class='list-group'>");
+	            
+	            
 	            
 	            for(var i = 0; i < event.programs.length; i++){
 	            	var PSID = event.programs[i].PSID;
-		            add += ("<li class='list-group-item'><label>" + event.programs[i].programName + " - " + event.programs[i].surveyType + "</label><button onclick='DeleteProgram(" + PSID + ", this)' class='btn btn-link btn-sm' style='float:right;' data-toggle='tooltip' title='This will delete the whole program currently associated with the visit.'><i class='fa fa-times'></i> Delete</button><button onclick='EditProgram(" + PSID + ")' class='btn btn-link btn-sm' style='float:right;' data-toggle='tooltip' title='This will take you to another page that will let you edit the proponents currently associated with the program and their areas. It will also allow you to change the type of the visit.'><i class='fa fa-pencil-square-o'></i> Edit</button>");
+		            add += ("<li class='list-group-item'><label id='PSID"+PSID+"'>" + event.programs[i].programName + " - " + event.programs[i].surveyType + " <i id='editIcon' style='position:relative; top:0px;right:-5px;' onclick='editType("+PSID+",\""+ event.programs[i].programName +"\", \"" + event.programs[i].surveyType + "\")' class='fa fa-pencil-square-o'></i></label><button onclick='DeleteProgram(" + PSID + ", this)' class='btn btn-link btn-sm' style='float:right;' data-toggle='tooltip' title='This will delete the whole program currently associated with the visit.'><i class='fa fa-times'></i> Delete</button>");
 		            add += ("<br><br><table class='table'>");
 		            add += ("<thead><tr><th style='width: 20%;'>Name</th> <th style='width: 40%;'>Area</th> <th style='width: 40%;'>Specify Availability</th></tr></thead>");
 		            add += ("<tbody>"); 
@@ -271,23 +427,24 @@
 		            	}
 		            	if(event.programs[i].areas[j].accreditorID == 0){
 		            		if(event.programs[i].areas[j].confirmation == "Not Available"){
-			            		add += ("<td>" + event.programs[i].areas[j].accreditor + "</td><td>" + event.programs[i].areas[j].area + "</td><td><button class='btn btn-pill-left btn-sm btn-danger' onclick='UpdateConfirmation(\"Not Available\", " + event.programs[i].areas[j].accreditorID + ", " + PSID + ", " + event.programs[i].areas[j].areaID + ", this)'><i class='fa fa-thumbs-o-down'></i> Not Available</button><button class='btn btn-link btn-sm btn-secondary btn-pill-right' onclick='UpdateConfirmation(\"Confirmed\", " + event.programs[i].areas[j].accreditorID + ", " + PSID + ", " + event.programs[i].areas[j].areaID + ", this)'><i class='fa fa-thumbs-o-up'></i> Available</button></td></tr>");
+			            		add += ("<td>" + event.programs[i].areas[j].accreditor + "</td><td>" + event.programs[i].areas[j].area + "</td><td><button class='btn btn-pill-left btn-sm btn-danger' onclick='UpdateConfirmation(\"Not Available\", " + event.programs[i].areas[j].accreditorID + ", " + PSID + ", " + event.programs[i].areas[j].areaID + ", this)'><i class='fa fa-thumbs-o-down'></i> Not Available</button><button class='btn btn-link btn-sm btn-secondary btn-pill-right' onclick='UpdateConfirmation(\"Confirmed\", " + event.programs[i].areas[j].accreditorID + ", " + PSID + ", " + event.programs[i].areas[j].areaID + ", this)'><i class='fa fa-thumbs-o-up'></i> Available</button><button class='btn btn-link btn-sm'  style='float:right;' onclick='deleteArea(" + event.programs[i].areas[j].accreditorID + ", " + PSID + ", " + event.programs[i].areas[j].areaID + ", this)'><i class='fa fa-times'></i></button><button class='btn btn-link btn-sm'  style='float:right;' onclick='editAccreditor(" + event.programs[i].areas[j].accreditorID + ", " + institutionID + "," + PSID + ", " + event.programs[i].areas[j].areaID + ", this)'><i class='fa fa-pencil-square-o'></i></button></td></tr>");
 		            		}else if(event.programs[i].areas[j].confirmation == "Confirmed"){
-			            		add += ("<td>" + event.programs[i].areas[j].accreditor + "</td><td>" + event.programs[i].areas[j].area + "</td><td><button class='btn btn-pill-left btn-sm btn-secondary' onclick='UpdateConfirmation(\"Not Available\", " + event.programs[i].areas[j].accreditorID + ", " + PSID + ", " + event.programs[i].areas[j].areaID + ", this)'><i class='fa fa-thumbs-o-down'></i> Not Available</button><button class='btn btn-link btn-sm btn-success btn-pill-right' onclick='UpdateConfirmation(\"Confirmed\", " + event.programs[i].areas[j].accreditorID + ", " + PSID + ", " + event.programs[i].areas[j].areaID + ", this)'><i class='fa fa-thumbs-o-up'></i> Available</button></td></tr>");
+			            		add += ("<td>" + event.programs[i].areas[j].accreditor + "</td><td>" + event.programs[i].areas[j].area + "</td><td><button class='btn btn-pill-left btn-sm btn-secondary' onclick='UpdateConfirmation(\"Not Available\", " + event.programs[i].areas[j].accreditorID + ", " + PSID + ", " + event.programs[i].areas[j].areaID + ", this)'><i class='fa fa-thumbs-o-down'></i> Not Available</button><button class='btn btn-link btn-sm btn-success btn-pill-right' onclick='UpdateConfirmation(\"Confirmed\", " + event.programs[i].areas[j].accreditorID + ", " + PSID + ", " + event.programs[i].areas[j].areaID + ", this)'><i class='fa fa-thumbs-o-up'></i> Available</button><button class='btn btn-link btn-sm'  style='float:right;' onclick='deleteArea(" + event.programs[i].areas[j].accreditorID + ", " + PSID + ", " + event.programs[i].areas[j].areaID + ", this)'><i class='fa fa-times'></i></button><button class='btn btn-link btn-sm'  style='float:right;' onclick='editAccreditor(" + event.programs[i].areas[j].accreditorID + ", " + institutionID + "," + PSID + ", " + event.programs[i].areas[j].areaID + ", this)'><i class='fa fa-pencil-square-o'></i></button></td></tr>");
 		            		}else{
-			            		add += ("<td>" + event.programs[i].areas[j].accreditor + "</td><td>" + event.programs[i].areas[j].area + "</td><td><button class='btn btn-pill-left btn-sm btn-secondary' onclick='UpdateConfirmation(\"Not Available\", " + event.programs[i].areas[j].accreditorID + ", " + PSID + ", " + event.programs[i].areas[j].areaID + ", this)'><i class='fa fa-thumbs-o-down'></i> Not Available</button><button class='btn btn-link btn-sm btn-secondary btn-pill-right' onclick='UpdateConfirmation(\"Confirmed\", " + event.programs[i].areas[j].accreditorID + ", " + PSID + ", " + event.programs[i].areas[j].areaID + ", this)'><i class='fa fa-thumbs-o-up'></i> Available</button></td></tr>");
+			            		add += ("<td>" + event.programs[i].areas[j].accreditor + "</td><td>" + event.programs[i].areas[j].area + "</td><td><button class='btn btn-pill-left btn-sm btn-secondary' onclick='UpdateConfirmation(\"Not Available\", " + event.programs[i].areas[j].accreditorID + ", " + PSID + ", " + event.programs[i].areas[j].areaID + ", this)'><i class='fa fa-thumbs-o-down'></i> Not Available</button><button class='btn btn-link btn-sm btn-secondary btn-pill-right' onclick='UpdateConfirmation(\"Confirmed\", " + event.programs[i].areas[j].accreditorID + ", " + PSID + ", " + event.programs[i].areas[j].areaID + ", this)'><i class='fa fa-thumbs-o-up'></i> Available</button><button class='btn btn-link btn-sm'  style='float:right;' onclick='deleteArea(" + event.programs[i].areas[j].accreditorID + ", " + PSID + ", " + event.programs[i].areas[j].areaID + ", this)'><i class='fa fa-times'></i></button><button class='btn btn-link btn-sm'  style='float:right;' onclick='editAccreditor(" + event.programs[i].areas[j].accreditorID + ", " + institutionID + "," + PSID + ", " + event.programs[i].areas[j].areaID + ", this)'><i class='fa fa-pencil-square-o'></i></button></td></tr>");
 		            		}
 		            	}else{
 		            		if(event.programs[i].areas[j].confirmation == "Not Available"){
-				            	add += ("<td><a href='ViewAccreditor?accreditorID=" + event.programs[i].areas[j].accreditorID + "' data-toggle='tooltip' title='This will take you to the accreditor page.'>" + event.programs[i].areas[j].accreditor + "</a></td><td>" + event.programs[i].areas[j].area + "</td><td><button class='btn btn-link btn-sm btn-pill-left btn-danger' onclick='UpdateConfirmation(\"Not Available\", " + event.programs[i].areas[j].accreditorID + ", " + PSID + ", " + event.programs[i].areas[j].areaID + ", this)'><i class='fa fa-thumbs-o-down'></i> Not Available</button><button class='btn btn-link btn-sm btn-pill-right btn-secondary' onclick='UpdateConfirmation(\"Confirmed\", " + event.programs[i].areas[j].accreditorID + ", " + PSID + ", " + event.programs[i].areas[j].areaID + ", this)'><i class='fa fa-thumbs-o-up'></i> Available</button></td></tr>");
+				            	add += ("<td><a href='ViewAccreditor?accreditorID=" + event.programs[i].areas[j].accreditorID + "' data-toggle='tooltip' title='This will take you to the accreditor page.'>" + event.programs[i].areas[j].accreditor + "</a></td><td>" + event.programs[i].areas[j].area + "</td><td><button class='btn btn-link btn-sm btn-pill-left btn-danger' onclick='UpdateConfirmation(\"Not Available\", " + event.programs[i].areas[j].accreditorID + ", " + PSID + ", " + event.programs[i].areas[j].areaID + ", this)'><i class='fa fa-thumbs-o-down'></i> Not Available</button><button class='btn btn-link btn-sm btn-pill-right btn-secondary' onclick='UpdateConfirmation(\"Confirmed\", " + event.programs[i].areas[j].accreditorID + ", " + PSID + ", " + event.programs[i].areas[j].areaID + ", this)'><i class='fa fa-thumbs-o-up'></i> Available</button><button class='btn btn-link btn-sm'  style='float:right;' onclick='deleteArea(" + event.programs[i].areas[j].accreditorID + ", " + PSID + ", " + event.programs[i].areas[j].areaID + ", this)'><i class='fa fa-times'></i></button><button class='btn btn-link btn-sm'  style='float:right;' onclick='editAccreditor(" + event.programs[i].areas[j].accreditorID + ", " + institutionID + "," + PSID + ", " + event.programs[i].areas[j].areaID + ", this)'><i class='fa fa-pencil-square-o'></i></button></td></tr>");
 		            		}else if(event.programs[i].areas[j].confirmation == "Confirmed"){
-				            	add += ("<td><a href='ViewAccreditor?accreditorID=" + event.programs[i].areas[j].accreditorID + "' data-toggle='tooltip' title='This will take you to the accreditor page.'>" + event.programs[i].areas[j].accreditor + "</a></td><td>" + event.programs[i].areas[j].area + "</td><td><button class='btn btn-link btn-sm btn-pill-left btn-secondary' onclick='UpdateConfirmation(\"Not Available\", " + event.programs[i].areas[j].accreditorID + ", " + PSID + ", " + event.programs[i].areas[j].areaID + ", this)'><i class='fa fa-thumbs-o-down'></i> Not Available</button><button class='btn btn-link btn-sm btn-pill-right btn-success' onclick='UpdateConfirmation(\"Confirmed\", " + event.programs[i].areas[j].accreditorID + ", " + PSID + ", " + event.programs[i].areas[j].areaID + ", this)'><i class='fa fa-thumbs-o-up'></i> Available</button></td></tr>");
+				            	add += ("<td><a href='ViewAccreditor?accreditorID=" + event.programs[i].areas[j].accreditorID + "' data-toggle='tooltip' title='This will take you to the accreditor page.'>" + event.programs[i].areas[j].accreditor + "</a></td><td>" + event.programs[i].areas[j].area + "</td><td><button class='btn btn-link btn-sm btn-pill-left btn-secondary' onclick='UpdateConfirmation(\"Not Available\", " + event.programs[i].areas[j].accreditorID + ", " + PSID + ", " + event.programs[i].areas[j].areaID + ", this)'><i class='fa fa-thumbs-o-down'></i> Not Available</button><button class='btn btn-link btn-sm btn-pill-right btn-success' onclick='UpdateConfirmation(\"Confirmed\", " + event.programs[i].areas[j].accreditorID + ", " + PSID + ", " + event.programs[i].areas[j].areaID + ", this)'><i class='fa fa-thumbs-o-up'></i> Available</button><button class='btn btn-link btn-sm'  style='float:right;' onclick='deleteArea(" + event.programs[i].areas[j].accreditorID + ", " + PSID + ", " + event.programs[i].areas[j].areaID + ", this)'><i class='fa fa-times'></i></button><button class='btn btn-link btn-sm'  style='float:right;' onclick='editAccreditor(" + event.programs[i].areas[j].accreditorID + ", " + institutionID + "," + PSID + ", " + event.programs[i].areas[j].areaID + ", this)'><i class='fa fa-pencil-square-o'></i></button></td></tr>");
 		            		}else{
-				            	add += ("<td><a href='ViewAccreditor?accreditorID=" + event.programs[i].areas[j].accreditorID + "' data-toggle='tooltip' title='This will take you to the accreditor page.'>" + event.programs[i].areas[j].accreditor + "</a></td><td>" + event.programs[i].areas[j].area + "</td><td><button class='btn btn-link btn-sm btn-pill-left btn-secondary' onclick='UpdateConfirmation(\"Not Available\", " + event.programs[i].areas[j].accreditorID + ", " + PSID + ", " + event.programs[i].areas[j].areaID + ", this)'><i class='fa fa-thumbs-o-down'></i> Not Available</button><button class='btn btn-link btn-sm btn-pill-right btn-secondary' onclick='UpdateConfirmation(\"Confirmed\", " + event.programs[i].areas[j].accreditorID + ", " + PSID + ", " + event.programs[i].areas[j].areaID + ", this)'><i class='fa fa-thumbs-o-up'></i> Available</button></td></tr>");
+				            	add += ("<td><a href='ViewAccreditor?accreditorID=" + event.programs[i].areas[j].accreditorID + "' data-toggle='tooltip' title='This will take you to the accreditor page.'>" + event.programs[i].areas[j].accreditor + "</a></td><td>" + event.programs[i].areas[j].area + "</td><td><button class='btn btn-link btn-sm btn-pill-left btn-secondary' onclick='UpdateConfirmation(\"Not Available\", " + event.programs[i].areas[j].accreditorID + ", " + PSID + ", " + event.programs[i].areas[j].areaID + ", this)'><i class='fa fa-thumbs-o-down'></i> Not Available</button><button class='btn btn-link btn-sm btn-pill-right btn-secondary' onclick='UpdateConfirmation(\"Confirmed\", " + event.programs[i].areas[j].accreditorID + ", " + PSID + ", " + event.programs[i].areas[j].areaID + ", this)'><i class='fa fa-thumbs-o-up'></i> Available</button><button class='btn btn-link btn-sm'  style='float:right;' onclick='deleteArea(" + event.programs[i].areas[j].accreditorID + ", " + PSID + ", " + event.programs[i].areas[j].areaID + ", this)'><i class='fa fa-times'></i></button><button class='btn btn-link btn-sm'  style='float:right;' onclick='editAccreditor(" + event.programs[i].areas[j].accreditorID + ", " + institutionID + "," + PSID + ", " + event.programs[i].areas[j].areaID + ", this)'><i class='fa fa-pencil-square-o'></i></button></td></tr>");
 		            		}
 		            
 		            	}
 		            }
+		            add += ("<tr class='info' style='height:65px'><td><select id='areaSelect'><option>Faculty</option><option>Instruction</option><option>Laboratories</option><option>Libraries</option><option>Community</option><option>Physical Facilities</option><option>Student Services</option><option>Administration</option><option>Research</option><option>Clinical Training</option><option>Other Resources</option></select></td><td><button onclick='addNewSurveyArea("+PSID+", " + institutionID + ")'  class='btn btn-info btn-sm' style='position:relative; left:50%; top:10px'><i class='fa fa-plus'></i> Add New Area</button></td><td></td></tr>");
 		            add += ("</tbody>");
 		            add += ("</table></li>");
 
@@ -298,6 +455,24 @@
 	            
 	            add += ("</ul></div>");
 	            $('#modalBody').append(add);
+	            alert(institutionID);
+	            $('#programForm').empty();
+				var temp = document.createElement("option");
+				temp.text = "";
+				temp.value = 0;
+				programForm.add(temp);
+				$.getJSON("ProgramLoader?institutionID=" + institutionID, function(data){
+					$.each(data, function (key, value){
+						var option = document.createElement("option");
+						option.text = value.degreeName;
+						option.value = value.SPID;
+						programForm.add(option);
+						
+						$('#programForm').trigger("chosen:updated");
+
+					});
+				});
+				
 	            $('#modalfooter').html('<button id="delButton" type="button" class="close" data-dismiss="modal" onclick="deleteSurvey(' + surveyID + ')"><em id="delIcon" class="fa fa-trash-o"></em></button>');
 	            $('#fullCalModal').modal();
 	            $('[data-toggle="tooltip"]').tooltip(); 
@@ -513,7 +688,6 @@
 		  $('#expModal').modal("show");
 		  $('#expmodalTitle').html("Showing Expanded Calendar for " + date1 + " to " + date2);
 	});
-		
 	loadPendings();
 });
 
@@ -522,21 +696,86 @@ function addAlert(){
 	$('#section').append('<div class="alert alert-success"><a class="close" data-dismiss="alert" aria-label="close">&times;</a><strong>Success!</strong> Successfully added survey called: '+asd +'.</div> <br>');
 }
 
+function editType(PSID,pName, orig){
+	var content = document.getElementById("PSID"+PSID).innerHTML;
+	content =  pName + " - <select id='selected"+PSID+"'><option>Preliminary</option><option>Formal</option><option>Consultancy</option><option>Revisit</option><option>Interim</option><option>Resurvey</option></select> <i id='saveIcon' style='position:relative; top:0px;right:-5px;' onclick='saveType("+PSID+",\""+pName+"\", \"" + orig + "\")' class='fa fa-check'></i>" +
+	"<i id='cancelIcon' style='position:relative; top:0px;right:-10px;' onclick='saveType2("+PSID+",\""+ pName +"\", \"" + orig + "\")' class='fa fa-times'></i>";
+
+	document.getElementById("PSID"+PSID).innerHTML = content;
+}
+
+function saveType(PSID,pName, orig){
+	var e = document.getElementById("selected"+PSID+"");
+	var type = e.options[e.selectedIndex].text;
+	var content =  pName + " - "+type+"<i id='editIcon' style='position:relative; top:0px;right:-5px;' onclick='editType("+PSID+",\""+ pName +"\")' class='fa fa-pencil-square-o'></i>";
+	document.getElementById("PSID"+PSID).innerHTML = content;
+	
+	$.ajax({url: "UpdateSurveyType?PSID=" + PSID + "&type=" + type , success: function(result){alert("Successfully changed the program type to "+type);
+    }});
+	
+	$("#calendar").fullCalendar("refetchEvents");
+	$("#calendar").fullCalendar("rerenderEvents");
+	
+}
+
+function saveType2(PSID,pName, orig){
+	
+	type = orig;
+	var content =  pName + " - "+type+"<i id='editIcon' style='position:relative; top:0px;right:-5px;' onclick='editType("+PSID+",\""+ pName +"\", \"" + orig + "\")' class='fa fa-pencil-square-o'></i>";
+	document.getElementById("PSID"+PSID).innerHTML = content;
+	
+	
+	$("#calendar").fullCalendar("refetchEvents");
+	$("#calendar").fullCalendar("rerenderEvents");
+	
+}
+
+function addNewSurveyArea(PSID, institutionID){
+	var e = document.getElementById("areaSelect");
+	var area = e.options[e.selectedIndex].value;
+	if(area=="Faculty"){var areaID = 1}
+	else if(area=="Instruction"){var areaID = 2}
+	else if(area=="Other Resources"){var areaID = 11}
+	else if(area=="Laboratories"){var areaID = 3}
+	else if(area=="Libraries"){var areaID = 4}
+	else if(area=="Community"){var areaID = 5}
+	else if(area=="Physical Facilities"){var areaID = 6}
+	else if(area=="Student Services"){var areaID = 7}
+	else if(area=="Administration"){var areaID = 8}
+	else if(area=="Research"){var areaID = 9}
+	else if(area=="Clinical Training"){var areaID = 10}
+	var add = "";
+	$.ajax({url: "AddNewSurveyArea?PSID=" + PSID +"&areaID="+areaID , success: function(result){
+    }});
+	
+	var nice = e.parentNode.parentNode.parentNode.parentNode;
+	$("#calendar").fullCalendar("refetchEvents");
+	$("#calendar").fullCalendar("rerenderEvents");
+	
+     	
+     	//name
+     e.parentNode.parentNode.remove();
+     add += ("<tr><td>None</td><td>" + area+ "</td><td><button class='btn btn-pill-left btn-sm btn-secondary' onclick='UpdateConfirmation(\"Not Available\", " + "0" + ", " + PSID + ", " + areaID + ", this)'><i class='fa fa-thumbs-o-down'></i> Not Available</button><button class='btn btn-link btn-sm btn-secondary btn-pill-right' onclick='UpdateConfirmation(\"Confirmed\", " + "0" + ", " + PSID + ", " + areaID + ", this)'><i class='fa fa-thumbs-o-up'></i> Available</button><button class='btn btn-link btn-sm'  style='float:right;' onclick='deleteArea(" + "0" + ", " + PSID + ", " + areaID + ", this)'><i class='fa fa-times'></i></button><button class='btn btn-link btn-sm'  style='float:right;' onclick='editAccreditor(" + "0" + ", " + institutionID + "," + PSID + ", " + areaID + ", this)'><i class='fa fa-pencil-square-o'></i></button></td></tr>");
+     
+     add += ("<tr class='info' style='height:65px'><td><select id='areaSelect'><option>Faculty</option><option>Instruction</option><option>Laboratories</option><option>Libraries</option><option>Community</option><option>Physical Facilities</option><option>Student Services</option><option>Administration</option><option>Research</option><option>Clinical Training</option><option>Other Resources</option></select></td><td><button onclick='addNewSurveyArea("+PSID+", "+ institutionID + ")'  class='btn btn-info btn-sm' style='position:relative; left:50%; top:10px'><i class='fa fa-plus'></i> Add New Area</button></td><td></td></tr>");
+	nice.innerHTML += add;
+}
 
 function deleteSurvey(surveyID){
 	var r = confirm("Are you sure?\nThis will delete all survey details as well as the programs, areas and accreditors linked to this survey.")
 	if(r == true){
 		$('#calendar').fullCalendar('removeEvents',surveyID);
+		$.ajax({ //CALLING ACCREDITORS WITH EXTRA CHECKING FOR AFFILIATION CONFLICTS
+			  url: "DeleteSurvey?surveyID=" + surveyID,
+			  async: false,
+			  success: function(data) {
+					alert("Successfully deleted survey!");
+					} 
+		});
 		
 	}
 	
-	$.ajax({ //CALLING ACCREDITORS WITH EXTRA CHECKING FOR AFFILIATION CONFLICTS
-		  url: "DeleteSurvey?surveyID=" + surveyID,
-		  async: false,
-		  success: function(data) {
-				alert("Successfully deleted survey!");
-				} 
-	});
+	
 }
 
 function loadPendings(){
@@ -670,12 +909,26 @@ function generateTeam(program, institution, institutionCity,  date, chairpersonN
 		y+=10;
 		
 	    
-
+		if(y >= 260){
+			pdf.addPage();
+			y = 20;
+		}
+		
 		for(var j = 0; j < program[i].areas.length; j++){
+			if(y >= 260){
+				pdf.addPage();
+				y = 20;
+			}
 			pdf.setFontType("normal");
 		    pdf.text(program[i].areas[j].area, 30, y);
 		    pdf.setFontType("bold");
-		    pdf.text(": " + program[i].areas[j].accreditor, indent, y);
+		    
+		    if(program[i].areas[j].confirmation == "Unconfirmed" || program[i].areas[j].confirmation == "Not Available"){
+		    	pdf.text(": *" + program[i].areas[j].accreditor, indent, y);
+		    }else{
+		    	pdf.text(": " + program[i].areas[j].accreditor, indent, y);
+		    }
+		    
 		    if(program[i].areas[j].accreditor != "None"){
 			    y+=5;
 			    pdf.text(": " + program[i].areas[j].accreditorPosition, indent, y);
@@ -689,23 +942,33 @@ function generateTeam(program, institution, institutionCity,  date, chairpersonN
 		y+=5;
 	}
 	
+	if(y >= 260){
+		pdf.addPage();
+		y = 20;
+	}
+	
     
-    
-    pdf.text("PAASCU Representative: ", 30, y);
-    pdf.setFontType("bold");
-    pdf.text(": " + paascu1Name, indent, y);
-    if(paascu1Name != null){
-    	y+=5;
-        pdf.text(": " + paascu1Position, indent, y);
-    }
-    
-    if(paascu2Name != null){
-    	y+=10;
-        pdf.text(": " + paascu2Name, indent, y);
-        y+=5;
-        pdf.text(": " + paascu2Position, indent, y);
-
-    }
+	if(paascu1Name != "" && paascu1Name != null && paascu2Name != "" && paascu2Name != null){
+	    pdf.text("PAASCU Representative: ", 30, y);
+	    pdf.setFontType("bold");
+	    pdf.text(": " + paascu1Name, indent, y);
+	    if(paascu1Name != null || paascu1Name != ""){
+	    	y+=5;
+	        pdf.text(": " + paascu1Position, indent, y);
+	    }
+	    
+	    if(paascu2Name != null || paascu2Name != ""){
+	    	y+=10;
+	        pdf.text(": " + paascu2Name, indent, y);
+	        y+=5;
+	        pdf.text(": " + paascu2Position, indent, y);
+	
+	    }
+	}else{
+		pdf.text("PAASCU Representative ", 30, y);
+	    pdf.setFontType("bold");
+	    pdf.text(": No PAASCU Representatives", indent, y);
+	}
     pdf.save('Team line up.pdf');
 }
 
@@ -1308,6 +1571,27 @@ left:5px;
             			
             		</div>
             		<div id="modalfooter" class="modal-footer">
+                	
+           		 	</div>
+        		</div>
+    		</div>
+		
+		</div>
+		
+		<!-- ACCREDITOR MODAL -->
+       	<div id="addModal" class="modal fade">
+    		<div class="modal-dialog modal-lg style="width:70%;"">
+        		<div class="modal-content">
+            	
+            		<div class="modal-header">
+                		<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span> <span class="sr-only">close</span></button>
+                		<h4 id="modalTitle1" class="modal-title"></h4>
+            		</div>
+            	
+            		<div id="modalBody1" class="modal-body">
+            			
+            		</div>
+            		<div id="modalfooter1" class="modal-footer">
                 	
            		 	</div>
         		</div>

@@ -207,50 +207,60 @@ function addAffiliation(){
 	var pos = $('#pastPosition').val();
 	var from = $('#datepicker2').val();
 	var to = $('#datepicker3').val();
-	var institutionID = $('#institutionFormWork').find(":selected").val();	
-
-	if(to == ""){
-		var add = "<li class='list-group-item'>"+inst+"<ul class='list-group'><li class='list-group-item'>Position: " + pos + "</li><li class='list-group-item'>From " + from + " to present</li></ul></li>";
-
-	}else{
-		var add = "<li class='list-group-item'>"+inst+"<ul class='list-group'><li class='list-group-item'>Position: " + pos + "</li><li class='list-group-item'>From " + from + " to " + to + "</li></ul></li>";
-
-	}
-
-	var obj = {};
-	obj.institutionID = institutionID;
-	obj.pos = pos;
-	obj.from = from;
-	obj.to = to;
-	affObject.works.push(obj);
-	$('#addedAffiliations').append(add);
-	var lal = document.getElementById("affiliations");
-	lal.scrollTop = lal.scrollHeight;
 	
-	$('#pastPosition').val("");
-	$('#datepicker2').val("");
-	$('#datepicker3').val("");
+	var institutionID = $('#institutionFormWork').find(":selected").val();	
+	
+	if(inst ==  ""){
+		alert("Please fill out institution!");
+	}else if(pos == ""){
+		alert("Please input position!");
+	}else if(from == ""){
+		alert("Please input date!");
+	}else{
+		if(to == ""){
+			var add = "<li class='list-group-item'>"+inst+"<ul class='list-group'><li class='list-group-item'>Position: " + pos + "</li><li class='list-group-item'>From " + from + " to present</li></ul></li>";
+	
+		}else{
+			var add = "<li class='list-group-item'>"+inst+"<ul class='list-group'><li class='list-group-item'>Position: " + pos + "</li><li class='list-group-item'>From " + from + " to " + to + "</li></ul></li>";
+	
+		}
+	
+		var obj = {};
+		obj.institutionID = institutionID;
+		obj.pos = pos;
+		obj.from = from;
+		obj.to = to;
+		affObject.works.push(obj);
+		$('#addedAffiliations').append(add);
+		var lal = document.getElementById("affiliations");
+		lal.scrollTop = lal.scrollHeight;
+		
+		$('#pastPosition').val("");
+		$('#datepicker2').val("");
+		$('#datepicker3').val("");
+	}
 
 }
 
 function validateAccreditor(){
-	var hasMatch ="none";
+	var hasMatch =false;
     var accEmail = document.getElementById("email").value;
-    alert(accEmail);
-	$.getJSON("AccreditorEmailLoader", function(data){
-		alert(JSON.stringify(data));
-		$.each(data, function (key, value){
-			if(value.email == accEmail){alert("This accreditor already exists in the database."); hasMatch="true"}
-			
-			
-			
-		});	
-		
-	});
-	
-	if(!hasMatch){saveAccreditor();}
-	
-	
+    
+    $.ajax({
+    	  url: "AccreditorEmailLoader",
+    	  dataType: 'json',
+    	  async: false,
+    	  success: function(data) {
+    		  $.each(data, function (key, value){
+    				if(value.email == accEmail){alert("This accreditor already exists in the database."); hasMatch=true;}
+    				
+    				
+    				
+    			});	
+    			if(!hasMatch){saveAccreditor();}
+
+    	  }
+    	});	
 }
 
 function addEducation(){
@@ -258,16 +268,22 @@ function addEducation(){
 	var univ = $('#institutionFormEdu').find(":selected").text();
 	var add = "<li class='list-group-item'>"+univ+"<ul class='list-group'><li class='list-group-item'>Course: " + course + "</li></ul></li>";
 	
-	var obj = {};
-	obj.institutionID = $('#institutionFormEdu').find(":selected").val();
-	obj.course = course;
-	affObject.edu.push(obj);
-	
-	$('#addedAffiliations').append(add);
-	var lal = document.getElementById("affiliations");
-	lal.scrollTop = lal.scrollHeight;
-	
-	$('#courseName').val("");
+	if(course == ""){
+		alert("Please input course!");
+	}else if(univ == ""){
+		alert("Please choose an institution!");
+	}else{
+		var obj = {};
+		obj.institutionID = $('#institutionFormEdu').find(":selected").val();
+		obj.course = course;
+		affObject.edu.push(obj);
+		
+		$('#addedAffiliations').append(add);
+		var lal = document.getElementById("affiliations");
+		lal.scrollTop = lal.scrollHeight;
+		
+		$('#courseName').val("");
+	}
 }
 
 function getDisciplines(){
@@ -299,7 +315,8 @@ function saveAccreditor(){
 	var email = $('#email').val();
 	var discipline = $('#disciplineForm').find(":selected").val();	
 	var primaryArea = $('#primaryArea').find(":selected").val();	
-	
+	var datetrained = $('datepicker1').val();
+	var city = $('city').val();
 	if(firstName == ""){
 		alert("Please fill out first name!");
 	}else if(lastName == ""){
@@ -310,6 +327,10 @@ function saveAccreditor(){
 		alert("Please choose a discipline!");
 	}else if(primaryArea == ""){
 		alert("Please choose a primary area!");
+	}else if(datetrained == ""){
+		alert("Please input date trained!");
+	}else if(city == ""){
+		alert("Please input city!")
 	}else{
 	
 		$.ajax({
@@ -495,7 +516,8 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
 				 <div class="title-block">
                         <h3 class="title" style="float:left;">
 							<a href="Accreditors"> List of Accreditors </a> > Add New Accreditor
-						</h3>
+						</h3><br><br>
+						<b style="color:red">*</b> - required fields
 			     </div>
 				<div class="col-md-12"id="maincard" >
 				<div class="card card-block sameheight-item"id="maincard">		
@@ -523,15 +545,15 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
       				</div>
       				<div class="col-xs-5">
 						<label><b style="color:red">*</b>First Name:</label>
-    					<input type="text" class="form-control underlined" id="firstName" name="firstName">
+    					<input type="text" style="text-transform: uppercase" class="form-control underlined" id="firstName" name="firstName">
     				</div>
     				<div class="col-xs-1">
 						<label>M.I.:</label>
-    					<input type="text" class="form-control underlined" id="middleName" name="middleName">
+    					<input type="text" style="text-transform: uppercase" class="form-control underlined" id="middleName" name="middleName">
     				</div>
       				<div class="col-xs-4">
     					<label><b style="color:red">*</b>Last Name:</label>
-    					<input type="text" class="form-control underlined" id="lastName" name="lastName">
+    					<input type="text" style="text-transform: uppercase" class="form-control underlined" id="lastName" name="lastName">
     				</div>
     				</div>
     				
@@ -551,7 +573,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
   						<input type="text" class="form-control underlined" id="address" name="address">
 					</div>
 					<div class="col-xs-5">
-						<label>City:</label>
+						<label><b style="color:red">*</b>City:</label>
   						<input type="text" class="form-control underlined" id="city" name="city">
 					</div>
   					</div>
@@ -578,7 +600,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
   						<input type="text" class="form-control underlined" id="venueTrained" name="venue_trained">
 					</div>
     				<div class="col-xs-5">
-						<label><b>Date Trained:</b></label>
+						<label><b style="color:red">*</b><b>Date Trained:</b></label>
 						<div class="input-daterange input-group">
     							<input type="text" class="form-control underlined" id="datepicker1" name="date_trained"/>
 								</div>
@@ -592,17 +614,17 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
 						<div class="col-xs-12">
 							<label><b style="color:red">*</b>Primary Survey Area:</label>
     					<select class="form-control underlined" name="primaryArea">
-    						<option>Faculty</option>
-    						<option>Instruction</option>
-        					<option>Laboratories</option>
-        					<option>Libraries</option>
-        					<option>Community</option>
-        					<option>Physical Facilities</option>
-        					<option>Student Services</option>
-							<option>Administration</option>
-							<option>Research</option>
-							<option>Clinical Training</option>
-							<option>Other Resources</option>
+    						<option value="1">Faculty</option>
+    						<option value="2">Instruction</option>
+        					<option value="3">Laboratories</option>
+        					<option value="4">Libraries</option>
+        					<option value="5">Community</option>
+        					<option value="6">Physical Facilities</option>
+        					<option value="7">Student Services</option>
+							<option value="8">Administration</option>
+							<option value="9">Research</option>
+							<option value="10">Clinical Training</option>
+							<option value="11">Other Resources</option>
   						</select>
 						</div>
 					</div>
@@ -610,18 +632,18 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
 						<div class="col-xs-12">
 							<label>Secondary Survey Area:</label>
     					<select class="form-control underlined" name="secondaryArea">
-    						<option></option>
-    						<option>Faculty</option>
-    						<option>Instruction</option>
-        					<option>Laboratories</option>
-        					<option>Libraries</option>
-        					<option>Community</option>
-        					<option>Physical Facilities</option>
-        					<option>Student Services</option>
-							<option>Administration</option>
-							<option>Research</option>
-							<option>Clinical Training</option>
-							<option>Other Resources</option>
+    						<option value="0"></option>
+    						<option value="1">Faculty</option>
+    						<option value="2">Instruction</option>
+        					<option value="3">Laboratories</option>
+        					<option value="4">Libraries</option>
+        					<option value="5">Community</option>
+        					<option value="6">Physical Facilities</option>
+        					<option value="7">Student Services</option>
+							<option value="8">Administration</option>
+							<option value="9">Research</option>
+							<option value="10">Clinical Training</option>
+							<option value="11">Other Resources</option>
   						</select>
 						</div>
 					</div>
@@ -630,18 +652,18 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
 						<div class="col-xs-12">
 							<label>Tertiary Survey Area:</label>
     					<select class="form-control underlined" name="tertiaryArea">
-    						<option></option>
-    						<option>Faculty</option>
-    						<option>Instruction</option>
-        					<option>Laboratories</option>
-        					<option>Libraries</option>
-        					<option>Community</option>
-        					<option>Physical Facilities</option>
-        					<option>Student Services</option>
-							<option>Administration</option>
-							<option>Research</option>
-							<option>Clinical Training</option>
-							<option>Other Resources</option>
+    						<option value="0"></option>
+    						<option value="1">Faculty</option>
+    						<option value="2">Instruction</option>
+        					<option value="3">Laboratories</option>
+        					<option value="4">Libraries</option>
+        					<option value="5">Community</option>
+        					<option value="6">Physical Facilities</option>
+        					<option value="7">Student Services</option>
+							<option value="8">Administration</option>
+							<option value="9">Research</option>
+							<option value="10">Clinical Training</option>
+							<option value="11">Other Resources</option>
   						</select>
 						</div>
 					</div>
@@ -680,17 +702,17 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
 						<div id="afi" class="tab-pane fade in active">
     						<div class="form-group" ><br>
     							
-		  						<label for="sel1">School System:</label><br>
+		  						<label for="sel1"><b style="color:red">*</b>School System:</label><br>
 		  						<select class="form-control underlined chosen-select" data-placeholder="Choose a System..." id="systemFormWork" style="background: transparent;"> 				
 		  						</select>
 							
-		  						<label for="sel1">Institutions:</label>
+		  						<label for="sel1"><b style="color:red">*</b>Institutions:</label>
 		  						<select class="form-control underlined chosen-select" data-placeholder="Choose an Institution..." id="institutionFormWork" style="background: transparent;">
 		  						</select>
 							
-    							<label>Position:</label>
+    							<label><b style="color:red">*</b>Position:</label>
     							<input type="text" class="form-control" id="pastPosition">
-    							<label>From:</label>
+    							<label><b style="color:red">*</b>From:</label>
     							<div class="input-daterange input-group">
     							<input type="text" class="form-control" id="datepicker2" />
 								</div>
@@ -706,15 +728,15 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
 						
 						<div id="edu" class="tab-pane fade in">
 							<div class="form-group" ><br>
-    							<label for="sel1">School System:</label><br>
+    							<label for="sel1"><b style="color:red">*</b>School System:</label><br>
 		  						<select class="form-control underlined chosen-select" data-placeholder="Choose a System..." id="systemFormEdu" style="background: transparent;"> 				
 		  						</select>
 							
-		  						<label for="sel1">Institutions:</label>
+		  						<label for="sel1"><b style="color:red">*</b>Institutions:</label>
 		  						<select class="form-control underlined chosen-select" data-placeholder="Choose an Institution..." id="institutionFormEdu" style="background: transparent;">
 		  						</select>
 		  						
-    							<label>Course:</label>
+    							<label><b style="color:red">*</b>Course:</label>
     							<input type="text" class="form-control" id="courseName">				
 							</div>
 							<div class="form-group">

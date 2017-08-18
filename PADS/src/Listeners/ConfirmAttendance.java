@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import Utilities.AccreditorUtil;
 import Utilities.InstitutionUtil;
 import Utilities.SurveyUtil;
 
@@ -34,9 +35,12 @@ public class ConfirmAttendance extends HttpServlet {
 		int accID = Integer.parseInt(request.getParameter("accID"));
 		int areaID = Integer.parseInt(request.getParameter("areaID"));
 		int PSID = Integer.parseInt(request.getParameter("PSID"));
-		
+		int add = Integer.parseInt(request.getParameter("add"));
 		SurveyUtil sUtil = new SurveyUtil();
-		sUtil.confirmAttendance(PSID, areaID, accID);
+		sUtil.confirmAttendance(PSID, areaID, accID,add);
+		
+		AccreditorUtil aUtil = new AccreditorUtil();
+		aUtil.updateTotalSurveys(accID, add);
 
 		RequestDispatcher rd = request.getRequestDispatcher("Institutions");
 		rd.forward(request, response);

@@ -123,11 +123,22 @@ $(document).ready(function() {
 	getSystems();
 	
 	<c:forEach items="${accreditor.getWorks()}" var="work">
+
 		var inst = "<c:out value="${work.getInstitution()}"/>";
 		var pos = "<c:out value="${work.getPosition()}"/>";
-		var from = "<c:out value="${work.getDate_entered()}"/>";
-		var to = "<c:out value="${work.getDate_finished()}"/>";
+		
+		var from = formatDate("<c:out value="${work.getDate_entered()}"/>");
+		
+		if("<c:out value="${work.getDate_finished()}"/>" == ""){
+			to = "";
+		}else{
+			var to = formatDate("<c:out value="${work.getDate_finished()}"/>");
+		}
+		
+		
+		
 		var institutionID = "<c:out value="${work.getAccreditorID()}"/>";
+		
 		if(to == ""){
 			var add = "<li class='list-group-item'>"+inst+"<ul class='list-group'><li class='list-group-item'>Position: " + pos + "</li><li class='list-group-item'>From " + from + " to present</li></ul></li>";
 
@@ -163,6 +174,41 @@ $(document).ready(function() {
 	</c:forEach>
 });
 
+
+
+function formatDate(date){
+	var date = date.split("-");
+	var year = date[0];
+	var month = date[1];
+	var day = date[2];
+	if(month == "01"){
+		month = "January";
+	}else if(month == "02"){
+		month = "February";
+	}else if(month == "03"){
+		month = "March";
+	}else if(month == "04"){
+		month = "April";
+	}else if(month == "05"){
+		month = "May";
+	}else if(month == "06"){
+		month = "June";
+	}else if(month == "07"){
+		month = "July";
+	}else if(month == "08"){
+		month = "August";
+	}else if(month == "09"){
+		month = "September";
+	}else if(month == "10"){
+		month = "October";
+	}else if(month == "11"){
+		month = "November";
+	}else if(month == "12"){
+		month = "December";
+	}
+	
+	return month + " " + day + ", " + year;
+}
 function getDisciplines(){
 	//GETS ALL DISCIPLINES FOR THE SELECT DROPDOWN
 	var obj = document.getElementById('disciplineForm');	
@@ -177,6 +223,9 @@ function getDisciplines(){
 			var option = document.createElement("option");
 			option.text = value.disciplineName;
 			option.value = value.disciplineID;
+			if(option.text == "${acc.getDiscipline()}"){
+				option.selected = true;
+			}
 			obj.add(option);
 		
 		});	
@@ -250,20 +299,42 @@ function changeDetails(){
 
 function saveAccreditor(){
 	var id = "<c:out value='${accreditor.getAccreditorID()}'/>";
-
-	$.ajax({
-		url: 'SaveEditAccreditor?accreditorID=' + id + "&" + $('#accForm').serialize(),
-		type: 'POST',
-		async: false,
-		dataType: 'json',
-		data: {affObject: JSON.stringify(affObject)},
-		success: function(result){
-			
-		}
-	});
-	alert('Accreditor successfully edited! Redirecting you to the accreditors page...')
-
-	document.location.href = "Accreditors";
+	var firstName = $('#firstName').val();
+	var lastName = $('#lastName').val();
+	var email = $('#email').val();
+	var discipline = $('#disciplineForm').find(":selected").val();	
+	var primaryArea = $('#primaryArea').find(":selected").val();	
+	var datetrained = $('datepicker1').val();
+	var city = $('city').val();
+	if(firstName == ""){
+		alert("Please fill out first name!");
+	}else if(lastName == ""){
+		alert("Please fill out last name!");
+	}else if(email == ""){
+		alert("Please fill out email!");
+	}else if(discipline == ""){
+		alert("Please choose a discipline!");
+	}else if(primaryArea == ""){
+		alert("Please choose a primary area!");
+	}else if(datetrained = ""){
+		alert("Please input date trained!");
+	}else if(city = ""){
+		alert("Please input city!")
+	}else{
+		$.ajax({
+			url: 'SaveEditAccreditor?accreditorID=' + id + "&" + $('#accForm').serialize(),
+			type: 'POST',
+			async: false,
+			dataType: 'json',
+			data: {affObject: JSON.stringify(affObject)},
+			success: function(result){
+				
+			}
+		});
+		alert('Accreditor successfully edited! Redirecting you to the accreditors page...')
+	
+		document.location.href = "Accreditors";
+	}
 }
 var affObject = {
 		works: [],
@@ -275,28 +346,38 @@ function addAffiliation(){
 	var pos = $('#pastPosition').val();
 	var from = $('#datepicker2').val();
 	var to = $('#datepicker3').val();
-	var institutionID = $('#institutionFormWork').find(":selected").val();	
-	if (to == ""){
-		var add = "<li class='list-group-item'>"+inst+"<ul class='list-group'><li class='list-group-item'>Position: " + pos + "</li><li class='list-group-item'>From " + from + " to present</li></ul></li>";
-
-	}else{
-		var add = "<li class='list-group-item'>"+inst+"<ul class='list-group'><li class='list-group-item'>Position: " + pos + "</li><li class='list-group-item'>From " + from + " to " + to + "</li></ul></li>";
-
-	}
-
-	var obj = {};
-	obj.institutionID = institutionID;
-	obj.pos = pos;
-	obj.from = from;
-	obj.to = to;
-	affObject.works.push(obj);
-	$('#addedAffiliations').append(add);
-	var lal = document.getElementById("affiliations");
-	lal.scrollTop = lal.scrollHeight;
 	
-	$('#pastPosition').val("");
-	$('#datepicker2').val("");
-	$('#datepicker3').val("");
+	var institutionID = $('#institutionFormWork').find(":selected").val();	
+	
+	if(inst ==  ""){
+		alert("Please fill out institution!");
+	}else if(pos == ""){
+		alert("Please input position!");
+	}else if(from == ""){
+		alert("Please input date!");
+	}else{
+		if(to == ""){
+			var add = "<li class='list-group-item'>"+inst+"<ul class='list-group'><li class='list-group-item'>Position: " + pos + "</li><li class='list-group-item'>From " + from + " to present</li></ul></li>";
+	
+		}else{
+			var add = "<li class='list-group-item'>"+inst+"<ul class='list-group'><li class='list-group-item'>Position: " + pos + "</li><li class='list-group-item'>From " + from + " to " + to + "</li></ul></li>";
+	
+		}
+	
+		var obj = {};
+		obj.institutionID = institutionID;
+		obj.pos = pos;
+		obj.from = from;
+		obj.to = to;
+		affObject.works.push(obj);
+		$('#addedAffiliations').append(add);
+		var lal = document.getElementById("affiliations");
+		lal.scrollTop = lal.scrollHeight;
+		
+		$('#pastPosition').val("");
+		$('#datepicker2').val("");
+		$('#datepicker3').val("");
+	}
 
 }
 
@@ -305,18 +386,23 @@ function addEducation(){
 	var univ = $('#institutionFormEdu').find(":selected").text();
 	var add = "<li class='list-group-item'>"+univ+"<ul class='list-group'><li class='list-group-item'>Course: " + course + "</li></ul></li>";
 	
-	var obj = {};
-	obj.institutionID = $('#institutionFormEdu').find(":selected").val();
-	obj.course = course;
-	affObject.edu.push(obj);
-	
-	$('#addedAffiliations').append(add);
-	var lal = document.getElementById("affiliations");
-	lal.scrollTop = lal.scrollHeight;
-	
-	$('#courseName').val("");
+	if(course == ""){
+		alert("Please input course!");
+	}else if(univ = ""){
+		alert("Please choose an institution!");
+	}else{
+		var obj = {};
+		obj.institutionID = $('#institutionFormEdu').find(":selected").val();
+		obj.course = course;
+		affObject.edu.push(obj);
+		
+		$('#addedAffiliations').append(add);
+		var lal = document.getElementById("affiliations");
+		lal.scrollTop = lal.scrollHeight;
+		
+		$('#courseName').val("");
+	}
 }
-
 function togglePresent(){
 	$('#datepicker3').prop('disabled', function(i, v) { return !v; });
 }
@@ -585,36 +671,37 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
 					<div class="form-group row">
 						<div class="col-xs-12">
 							<label>Primary Survey Area:</label>
-    					<select class="form-control underlined" name="primaryArea" value="${acc.getPrimaryArea()}">
-    						<option>Faculty</option>
-    						<option>Instruction</option>
-        					<option>Laboratories</option>
-        					<option>Libraries</option>
-        					<option>Community</option>
-        					<option>Physical Facilities</option>
-        					<option>Student Services</option>
-							<option>Administration</option>
-							<option>Research</option>
-							<option>Clinical Training</option>
-							<option>Other Resources</option>
+    					<select  id="primaryArea" class="form-control underlined" name="primaryArea" value="${acc.getPrimaryArea()}">
+    						<option value="1">Faculty</option>
+    						<option value="2">Instruction</option>
+        					<option value="3">Laboratories</option>
+        					<option value="4">Libraries</option>
+        					<option value="5">Community</option>
+        					<option value="6">Physical Facilities</option>
+        					<option value="7">Student Services</option>
+							<option value="8">Administration</option>
+							<option value="9">Research</option>
+							<option value="10">Clinical Training</option>
+							<option value="11">Other Resources</option>
   						</select>
 						</div>
 					</div>
 					<div class="form-group row">
 						<div class="col-xs-12">
 							<label>Secondary Survey Area:</label>
-    					<select class="form-control underlined" name="secondaryArea" value="${acc.getSecondaryArea()}">
-    						<option>Faculty</option>
-    						<option>Instruction</option>
-        					<option>Laboratories</option>
-        					<option>Libraries</option>
-        					<option>Community</option>
-        					<option>Physical Facilities</option>
-        					<option>Student Services</option>
-							<option>Administration</option>
-							<option>Research</option>
-							<option>Clinical Training</option>
-							<option>Other Resources</option>
+    					<select  id="secondaryArea" class="form-control underlined" name="secondaryArea" value="${acc.getSecondaryArea()}">
+    						<option value="0"></option>
+    						<option value="1">Faculty</option>
+    						<option value="2">Instruction</option>
+        					<option value="3">Laboratories</option>
+        					<option value="4">Libraries</option>
+        					<option value="5">Community</option>
+        					<option value="6">Physical Facilities</option>
+        					<option value="7">Student Services</option>
+							<option value="8">Administration</option>
+							<option value="9">Research</option>
+							<option value="10">Clinical Training</option>
+							<option value="11">Other Resources</option>
   						</select>
 						</div>
 					</div>
@@ -622,23 +709,30 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
 					<div class="form-group row">
 						<div class="col-xs-12">
 							<label>Tertiary Survey Area:</label>
-    					<select class="form-control underlined" name="tertiaryArea" value="${acc.getTertiaryArea()}">
-    						<option>Faculty</option>
-    						<option>Instruction</option>
-        					<option>Laboratories</option>
-        					<option>Libraries</option>
-        					<option>Community</option>
-        					<option>Physical Facilities</option>
-        					<option>Student Services</option>
-							<option>Administration</option>
-							<option>Research</option>
-							<option>Clinical Training</option>
-							<option>Other Resources</option>
+    					<select id="tertiaryArea" class="form-control underlined" name="tertiaryArea">
+    						<option value="0"></option>
+    						<option value="1">Faculty</option>
+    						<option value="2">Instruction</option>
+        					<option value="3">Laboratories</option>
+        					<option value="4">Libraries</option>
+        					<option value="5">Community</option>
+        					<option value="6">Physical Facilities</option>
+        					<option value="7">Student Services</option>
+							<option value="8">Administration</option>
+							<option value="9">Research</option>
+							<option value="10">Clinical Training</option>
+							<option value="11">Other Resources</option>
   						</select>
 						</div>
 					</div>
         				
-        	
+        			<script>
+        				$('#primaryArea').val("${acc.getPrimaryAreaID()}");
+        				$('#secondaryArea').val("${acc.getSecondaryAreaID()}");
+        				$('#tertiaryArea').val("${acc.getTertiaryAreaID()}");
+						
+        			</script>
+        			
 					<div class="form-group" style="float:right;top:25px;">
   						<button type="button" class="btn btn-success" onclick="addProp();"style="position:relative;top:35px; right:0px;" data-toggle="tab" href="#menu2">
   						Next Step

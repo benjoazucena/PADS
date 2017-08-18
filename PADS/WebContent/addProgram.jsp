@@ -60,10 +60,17 @@
 
 <script>
 
-	$(document).ready(function() {}
-		
-		/* initialize the external events
-		-----------------------------------------------------------------*/
+function validateForm(){
+	if($('#progName').val() == ""){
+		alert("Please input discipline name!");
+		return false;
+	}else if($('#progAcr').val() == ""){
+		alert("Please input discipline acronym!");
+		return false;
+	}else{
+		return true;
+	}
+}
 </script>
 <style>
 
@@ -218,12 +225,12 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
 											<h3 class="title">
 							New Discipline Form
 						</h3> </div>
-							<form method="post" action="AddProgram" class="form">
+							<form method="post" onsubmit="return validateForm()" action="AddProgram" class="form">
 								<div class="form-group" style="width:48%; padding-right"> 
 								<label class="control-label">Discipline Name<b style="color:red">*</b></label> 
-								<input type="text" class="form-control underlined" style="width:90%;"  placeholder="e.g. Biology" name="programName"> 
+								<input type="text" id="progName" class="form-control underlined" style="width:90%;"  placeholder="e.g. Biology" name="programName"> 
 								<label class="control-label">Acronym of the Discipline<b style="color:red">*</b></label> 
-								<input type="text" class="form-control underlined" style="width:90%;"  placeholder="e.g. BIO" name="acronym"> 
+								<input type="text" id="progAcr" class="form-control underlined" style="width:90%;"  placeholder="e.g. BIO" name="acronym"> 
 								
 								</div>	
 							<br>

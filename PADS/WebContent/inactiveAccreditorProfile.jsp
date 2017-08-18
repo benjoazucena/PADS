@@ -157,10 +157,10 @@
                                 <a href="#demo" data-toggle="collapse"> <i class="fa fa-file-text-o"></i> Database <i class="fa arrow"></i> </a>
                                     
                                     <ul id="demo" class="collapse">
-                                        <li  class = "active"> <a href="Accreditors">
+                                        <li > <a href="Accreditors">
     								Accreditors
     							</a> </li>
-                                        <li > <a href="Institutions">
+                                        <li class = "active" > <a href="Institutions">
     								Institutions
     							</a> </li>
 								 <li> <a href="SchoolSystems">
@@ -216,13 +216,9 @@
 													
 													
 													Discipline: <b><c:out value="${acc.getDiscipline()}"/></b><br>
-													Areas of Expertise:
-													<p style="padding-left:10px;">
-													<div style="width: 110px; display:inline-block;">Primary Area </div>: <b><c:out value="${acc.getPrimaryArea()}"/></b><br>
-													<div style="width: 110px; display:inline-block;">Secondary Area </div>: <b><c:out value="${acc.getSecondaryArea()}"/></b><br>
-													<div style="width: 110px; display:inline-block;">Tertiary Area </div>: <b><c:out value="${acc.getTertiaryArea()}"/></b><br></p>
+													Areas of Expertise: <b><c:out value="${acc.getPrimaryArea()}"/>, <c:out value="${acc.getSecondaryArea()}"/>, <c:out value="${acc.getTertiaryArea()}"/></b><br>
 													Number of Surveys : <b><c:out value="${acc.getTotalSurveys()}"/></b><br>
-													Contact Number: <c:out value="${acc.getContact()}"/> <br>													
+													<c:out value="${acc.getContact()}"/> <br>													
 													E-mail: <c:out value="${acc.getEmail()}"/><br>
 													<c:out value="${acc.getCity()}"/>, <c:out value="${acc.getCountry()}"/><br>
 													
@@ -327,7 +323,7 @@
 								</div>		 
 							</div>			 
 						</div>				 
-								 <a href="DeleteAccreditor?accreditorID=<c:out value='${acc.getAccreditorID()}'/>">Set this accreditor to INACTIVE</a>
+								 <a href="ActivateAccreditor?accreditorID=<c:out value='${acc.getAccreditorID()}'/>">Set this accreditor to ACTIVE</a>
 								
                     </section><!--main section-->
 					

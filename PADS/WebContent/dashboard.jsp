@@ -48,17 +48,9 @@ $(document).ready(function() {
 	buildAwards();
 	buildExpirations();
 	buildUnconfirmedSurveys();
+	buildRead();
 	
-	document.getElementById("awardNotif").onclick = function() {
-    window.location = "reportGA.html";
-	}
-	document.getElementById("unconfirmedNotif").onclick = function() {
-    window.location = "confirmationPage.html";
-	}
-	document.getElementById("expiryNotif").onclick = function() {
-    window.location = "institutionProgramProfile.html";
-	}
-
+	
 });
   
 
@@ -86,7 +78,7 @@ function buildHome(){
 	    		add += " <div>   <b><c:out value='${all.getContent()}'/></b> <div><c:out value='${all.getType()}'/></div></div></div>";
 	    		add += "<div class='item-col item-col-date'>";           
 	         	add += "    <div class='no-overflow'> <c:out value='${all.getDateCreated()}'/> </div>";
-	         	add += "<div class='col-md-1' > <i class='fa fa-times' id='deleteNotif'></i> </div></div>";
+	         	add += "<div class='col-md-1' > <i class='fa fa-times' id='deleteNotif' onclick='deleteNotif(${all.getNotificationID()}, this)'></i> </div></div>";
 	        add += "</div>";
 	    add += "</li>";    
 	</c:forEach>   
@@ -97,6 +89,38 @@ function buildHome(){
     $('#home-pills').append(add);
          
          
+}
+
+function buildRead(){
+	var add = "";	
+	add += "<ul class='item-list striped' id='g' >";	
+	<c:forEach items="${read}" var="read">
+		add += "<li class='item'  >";
+		add += "<div class='item-row' id='awardNotif'> ";
+	    add += "<div class='item-col fixed item-col-check'> <label class='item-check' id='select-all-items'><span></span></label> </div>";
+	    var type = '${read.type}';
+	    if( type=="Awards"){	
+	    	add += " <div class='item-col fixed item-col-img md'><i class='fa fa-trophy fa-2x'></i></div>";
+	    }
+	    else if(type =="Expirations"){	
+	    	add += " <div class='item-col fixed item-col-img md'> <i class='fa fa-exclamation fa-2x'></i></div>";
+	    }
+	    else if(type =="UnconfirmedSurveys"){	
+	    	add += " <div class='item-col fixed item-col-img md'> <i class='fa fa-warning fa-2x'></i></div>";
+	    }
+	   
+	    		add += "<div class='item-col fixed pull-left item-col-title'>";
+	    		add += " <div>   <b><c:out value='${read.getContent()}'/></b> <div><c:out value='${read.getType()}'/></div></div></div>";
+	    		add += "<div class='item-col item-col-date'>";           
+	         	add += "    <div class='no-overflow'> <c:out value='${read.getDateCreated()}'/> </div>";
+	        add += "</div>";
+	    add += "</li>";    
+	</c:forEach>   
+	    
+    add += "</ul>";
+        
+    
+    $('#readNotifications-pills').append(add);
 }
 
 function buildAwards(){
@@ -113,7 +137,7 @@ function buildAwards(){
 	    		add += " <div>   <c:out value='${awards.getContent()}'/> <div>Award</div></div></div>";
 	    		add += "<div class='item-col item-col-date'>";           
 	         	add += "    <div class='no-overflow'> <c:out value='${all.getDateCreated()}'/> </div>";
-	         	add += "<div class='col-md-1' > <i class='fa fa-times' id='deleteNotif'></i> </div></div>";
+	         	add += "<div class='col-md-1' > <i class='fa fa-times' id='deleteNotif' onclick='deleteNotif(${awards.getNotificationID()}, this)'></i> </div></div>";
 	        add += "</div>";
 	    add += "</li>";    
 	</c:forEach>   
@@ -124,6 +148,19 @@ function buildAwards(){
     $('#award-pills').append(add);
          
          
+}
+
+function deleteRead(){
+	$('#readNotifications-pills ul li').remove();
+	alert('wew3');
+	var sure = confirm("Are you sure?");
+	if(sure == true){
+		$.ajax({URL:'DeleteReadNotifications', success: function(data){
+			alerT("Successfully deleted all notifications!");
+		}
+		});
+	}
+	
 }
 
 function buildExpirations(){
@@ -139,7 +176,7 @@ function buildExpirations(){
 	    		add += " <div>   <c:out value='${expirations.getContent()}'/> <div>Expirations</div></div></div>";
 	    		add += "<div class='item-col item-col-date'>";           
 	         	add += "    <div class='no-overflow'> <c:out value='${expirations.getDateCreated()}'/> </div>";
-	         	add += "<div class='col-md-1' > <i class='fa fa-times' id='deleteNotif'></i> </div></div>";
+	         	add += "<div class='col-md-1' > <i class='fa fa-times' id='deleteNotif' onclick='deleteNotif( ${expirations.getNotificationID()}, this )'></i> </div></div>";
 	        add += "</div>";
 	    add += "</li>";    
 	</c:forEach>   
@@ -166,7 +203,7 @@ function buildUnconfirmedSurveys(){
 	    		add += " <div>   <c:out value='${unconfirmedSurveys.getContent()}'/> <div>Unconfirmed Survey</div></div></div>";
 	    		add += "<div class='item-col item-col-date'>";           
 	         	add += "    <div class='no-overflow'> <c:out value='${unconfirmedSurveys.getDateCreated()}'/> </div>";
-	         	add += "<div class='col-md-1' > <i class='fa fa-times' id='deleteNotif'></i> </div></div>";
+	         	add += "<div class='col-md-1' > <i class='fa fa-times' id='deleteNotif' onclick='deleteNotif(${unconfirmedSurveys.getNotificationID()}, this)'></i> </div></div>";
 	        add += "</div>";
 	    add += "</li>";    
 	</c:forEach>   
@@ -179,6 +216,20 @@ function buildUnconfirmedSurveys(){
          
 }
 
+function deleteNotif(notificationID, btn){
+	var deleter = btn.parentNode.parentNode.parentNode.parentNode;
+	btn.parentNode.removeChild(btn);
+	var divDel = deleter.cloneNode(true);
+	deleter.remove();
+	$('#readNotifications-pills ul').append(divDel);
+
+	var sure = confirm("Set this notification as read?");
+	if (sure == true){
+		$.ajax({url:"MarkNotification?notificationID=" + notificationID, success: function(data){}
+			
+		});
+	}
+}
 
 
 </script>
@@ -484,7 +535,8 @@ function buildUnconfirmedSurveys(){
                             </ul>
                         </nav>
                     </div>
-                    <footer class="sidebar-footer">
+                    </div>
+                   
             
 			
 					
@@ -495,6 +547,7 @@ function buildUnconfirmedSurveys(){
   <!-- WCAG general accessibility recommendation is that media such as background video play through only once. Loop turned on for the purposes of illustration; if removed, the end of the video will fade in the same way created by pressing the "Pause" button  -->
 
 <source src="assets/vid.mp4" type="video/mp4">
+</video>
 </video>
 </div>
             <div id="welcome">
@@ -507,131 +560,27 @@ box-shadow:         0px 2px 11px 2px rgba(50, 50, 50, 0.58); ">
     			<i class="fa fa-bars"></i>
     		</button> </div>
                   
-					<div style="position:relative; left:43%" >
-<!--                      <h2 ><small>Dashboard</small></h2> -->
-					 </div>
-                    <div class="header-block header-block-nav">
-                        <ul class="nav-profile">
-                            <li class="notifications new">
-                                <a href="" data-toggle="dropdown"> <i class="fa fa-bell-o"></i> <sup>
-    			      <span class="counter">1</span>
-    			    </sup> </a>
-                                <div class="dropdown-menu notifications-dropdown-menu">
-                                    <ul class="notifications-container">
-                                        <li>
-                                            <a href="" class="notification-item">
-                                                <div class="img-col">
-                                                    <div class="img" style="background-image: url('assets/faces/marcos,nelson.jpg')"></div>
-                                                </div>
-                                                <div class="body-col">
-                                                    <p> <span class="accent">Marcos, Nelson Phd</span> Achievement: <span class="accent">Completed 100th survey</span>. </p>
-                                                </div>
-                                            </a>
-                                        </li>
-                                       
-                                    </ul>
-                                    <footer>
-                                        <ul>
-                                            <li> <a href="">
-    			            View All
-    			          </a> </li>
-                                        </ul>
-                                    </footer>
-                                </div>
-                            </li>
-                            
-                        </ul>
-                    </div>
                 </header>
                 
                 <article class="content dashboard-page" >
-                    <section class="section" style="position: relative; top:-130px;">
-                      
-					
-						<hr>
-						<!--Start Card format-->
-							<div class="col-xl-3">
-                                <div class="card card-primary" id="notifcard">
-                                    <div class="card-header">
-                                        <div class="header-block">
-                                            <p class="title"> Week events </p>
-                                        </div>
-                                    </div>
-                                    <div class="card-block">
-                                     
-										<p id="pnum_primary">4</p>
-										<p id="psub"> Upcoming </p>
-									
-									  </div>
-                                    <div class="card-footer"> <a href="survey.html">View Calendar</a> </div>
-                                </div>
-                            </div>
-							
-							<div class="col-xl-3">
-                                <div class="card card-info" id="notifcard">
-                                    <div class="card-header">
-                                        <div class="header-block">
-                                            <p class="title"> Month events </p>
-                                        </div>
-                                    </div>
-                                    <div class="card-block">
-										<p id="pnum_info">23</p>
-										<p id="psub"> Total </p>
-									</div>
-                                    <div class="card-footer"> <a href="survey.html">View Calendar</a> </div>
-                                </div>
-                            </div>
-							
-							<div class="col-xl-3">
-                                <div class="card card-warning" id="notifcard">
-                                    <div class="card-header">
-                                        <div class="header-block">
-                                            <p class="title"> Notifications </p>
-                                        </div>
-                                    </div>
-                                    <div class="card-block">
-										<p id="pnum_warning">2</p>
-										<p id="psub"> Unread </p>
-                                    </div>
-                                    <div class="card-footer"> <a href="survey.html">View Notifications</a> </div>
-                                </div>
-                            </div>
-							
-							<div class="col-xl-3">
-                                <div class="card card-danger" id="notifcard">
-                                    <div class="card-header">
-                                        <div class="header-block">
-                                            <p class="title"> Unconfirmed </p>
-                                        </div>
-                                    </div>
-                                    <div class="card-block">
-										<p id="pnum_danger">6</p>
-										<p id="psub"> Past Surveys </p>
-                                    </div>
-                                    <div class="card-footer"> <a href="survey.jsp">View Unconfimed</a> </div>
-                                </div>
-                            </div>
-						
-						<!--End Card format-->
-						
-						
-						
-                    </section>
+                   
                     
-                     <section class="section" style="position: relative; top:200px; left:-25px; width:105%;" >
+                     <section class="section" style="position: relative; top:-130px; left:-25px; width:105%;" >
                     <div class="card items">
 					
                     <div class="card sameheight-item" >
-                                    <div class="card-block" style="position:relative; top:-240px">
+                                    <div class="card-block" style="position:relative; top:0px">
                                         <div class="card-title-block">
                                             <h3 class="title">Notifications</h3> 
                                         </div>
                                     <!-- Nav tabs -->
-                                        <ul class="nav nav-pills">
-                                            <li class="nav-item"> <a href="" class="nav-link active" data-target="#home-pills" aria-controls="home-pills" data-toggle="tab" role="tab">All</a> </li>
-                                            <li class="nav-item"> <a href="" class="nav-link" data-target="#award-pills" aria-controls="awards-pills" data-toggle="tab" role="tab">Awards</a> </li>
-                                            <li class="nav-item"> <a href="" class="nav-link" data-target="#expiration-pills" aria-controls="expiration-pills" data-toggle="tab" role="tab">Accreditation Expirations</a> </li>
-                                            <li class="nav-item"> <a href="" class="nav-link" data-target="#unconfirmedSurvey-pills" aria-controls="unconfirmedSurvey-pills" data-toggle="tab" role="tab">Unconfirmed Surveys</a> </li>
+                                        <ul class="nav nav-pills" style="width: 100%;">
+                                            <li class="nav-item"> <a href="" onclick="document.getElementById('deleteRead').style.visibility = 'hidden';" class="nav-link active" data-target="#home-pills" aria-controls="home-pills" data-toggle="tab" role="tab">All</a> </li>
+                                            <li class="nav-item"> <a href="" onclick="document.getElementById('deleteRead').style.visibility = 'hidden';" class="nav-link" data-target="#award-pills" aria-controls="awards-pills" data-toggle="tab" role="tab">Awards</a> </li>
+                                            <li class="nav-item"> <a href="" onclick="document.getElementById('deleteRead').style.visibility = 'hidden';" class="nav-link" data-target="#expiration-pills" aria-controls="expiration-pills" data-toggle="tab" role="tab">Accreditation Expirations</a> </li>
+                                            <li class="nav-item"> <a href="" onclick="document.getElementById('deleteRead').style.visibility = 'hidden';" class="nav-link" data-target="#unconfirmedSurvey-pills" aria-controls="unconfirmedSurvey-pills" data-toggle="tab" role="tab">Unconfirmed Surveys</a> </li>
+                                        	<li class="nav-item"> <a href="" onclick="document.getElementById('deleteRead').style.visibility = 'visible';" class="nav-link" data-target="#readNotifications-pills" aria-controls="readNotifications-pills" data-toggle="tab" role="tab">Show Read Notifications</a> </li>
+                                        	<button class="btn btn-danger btn-sm" id="deleteRead" onclick="deleteRead();" style="float:right; visibility:hidden;">Delete Read Notifications</button>
                                         </ul>
                                     <!-- Tab panes -->
 					                    <div class="tab-content">                     
@@ -643,6 +592,8 @@ box-shadow:         0px 2px 11px 2px rgba(50, 50, 50, 0.58); ">
 					                        <div class="tab-pane fade" id="expiration-pills">					                                            
 					                        </div>
 					                        <div class="tab-pane fade" id="unconfirmedSurvey-pills">					                                               
+					                        </div>
+					                        <div class="tab-pane fade" id="readNotifications-pills">					                                               
 					                        </div>
 					                   </div>
                                     </div>
