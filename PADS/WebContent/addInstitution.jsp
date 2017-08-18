@@ -335,7 +335,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
 				
          
                 <article class="content dashboard-page">
-				<form name="addInstForm" method="post" action="AddInstitution" class="form">
+				<form name="addInstForm" onsubmit="return validateForm()"  method="post" action="AddInstitution" class="form">
 				
 				 <div class="title-block">
                         <h3 class="title" style="float:left;">
