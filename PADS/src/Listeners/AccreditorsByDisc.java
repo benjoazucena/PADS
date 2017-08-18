@@ -44,6 +44,7 @@ public class AccreditorsByDisc extends HttpServlet {
 		}
 		request.setAttribute("accreditors", accreditors);
 		request.setAttribute("disciplineID", disciplineID);
+//		System.out.println(x);
 		RequestDispatcher rd = request.getRequestDispatcher("accreditors.jsp");
 		rd.forward(request, response);
 	}

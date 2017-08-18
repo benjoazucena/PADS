@@ -83,6 +83,23 @@ public class SurveyUtil {
 		}
 	}
 	
+	public void updateSurveyType(int PSID, String type){
+		try{
+			Connection conn = db.getConnection();
+			PreparedStatement ps = conn.prepareStatement("UPDATE `program-survey` SET `survey_type` = ?  WHERE PSID=?");
+			ps.setString(1, type);
+			ps.setInt(2,PSID);
+
+			ps.executeUpdate();
+			
+		} catch (Exception e){
+			System.out.println("Error in SurveyUtil:updateSurveyType()");
+			
+			e.printStackTrace();
+		}
+	
+	}
+	
 	public String deletePSID(int PSID){
 		String temp = new String();
 		try{
@@ -325,7 +342,7 @@ public class SurveyUtil {
 					
 					ps = conn.prepareStatement("INSERT INTO `decisions` (PSID, decisionBy) VALUES (?, ?)");
 					ps.setInt(1, PSID);
-					ps.setString(2, "Committee");
+					ps.setString(2, "Commission");
 					
 					ps.executeUpdate();
 					ps.close();
@@ -492,8 +509,8 @@ public class SurveyUtil {
 				JSONArray programSurvey = new JSONArray();
 				job.put("id", rs.getInt(1));
 				job.put("title", getTitle(rs.getInt(6)));
-				job.put("institutionName", getInstitution(rs.getInt(6)));
 				job.put("institutionID", rs.getInt(6));
+				job.put("institutionName", getInstitution(rs.getInt(6)));
 				job.put("institutionCity", getInstitutionCity(rs.getInt(6)));
 				job.put("start", rs.getString(2));
 				job.put("endDate", rs.getString(3));
@@ -508,7 +525,6 @@ public class SurveyUtil {
 				job.put("chairpersonInstitution", chairperson.get(1));
 				job.put("chairpersonPosition", chairperson.get(2));
 				job.put("chairpersonCity", chairperson.get(3));
-				System.out.println("Chairperson: " + rs.getInt(13) + " "+ chairperson.get(0) + " " + chairperson.get(1) + " " + chairperson.get(2) + " " + chairperson.get(3));
 				programSurvey = getPS(rs.getInt(1));
 				
 				job.put("programs", programSurvey);
@@ -569,13 +585,12 @@ public class SurveyUtil {
 					
 					if(job.get("status").equals("confirmed") ){
 						job.put("backgroundColor", "rgb(12, 48, 107)");
-						System.out.println("BENJBENJ: " + tempDecBy);
 						if(tempDecBy.equals("Team")){
 							job.put("borderColor", "rgb(149, 209, 229)");
 						}else if(tempDecBy.equals("Board")){
 							job.put("borderColor", "rgb(234, 232, 114)");
-						}else if(tempDecBy.equals("Committee")){
-							job.put("borderColor", "rgb(12, 48, 107)");
+						}else if(tempDecBy.equals("Commission")){
+							job.put("borderColor", "rgetgb(12, 48, 107)");
 						}
 						
 					}else if(job.get("status").equals("unconfirmed")){
@@ -623,7 +638,6 @@ public class SurveyUtil {
 	private String getInstitution(int institutionID){
 		String name = null;
 		try{
-			System.out.println("INSTITUTION ID @@@@@@@"+institutionID);
 			Connection conn = db.getConnection();
 			PreparedStatement ps = conn.prepareStatement("SELECT * FROM institutions WHERE institutionID = ?");
 			ps.setInt(1, institutionID);
@@ -691,7 +705,6 @@ public class SurveyUtil {
 				}else{
 					job.put("boardApprovalDate", "");
 				}
-				System.out.println("HEEEEEEEEEY !!!!! +++++++" + rs.getString(6));
 				rs.getDate(4);
 				if(!rs.wasNull()){
 					job.put("valid_thru", formatDate(rs.getString(4)));
@@ -759,7 +772,7 @@ public class SurveyUtil {
 				job.put("for_consultation", rs.getString(7));
 				job.put("for_progressReport", rs.getString(8));
 				job.put("PSID", rs.getInt(9));
-				job.put("option",rs.getString(10));
+				job.put("optionID",rs.getString(10));
 				
 				decisionJSON.put(job);
 			}
@@ -879,7 +892,6 @@ public class SurveyUtil {
 			}else{
 				title = "N/A";
 			}
-			System.out.println(title);
 		} catch (Exception e){
 			System.out.println("Error in SurveyUtil:getTitle()");
 			e.printStackTrace();
@@ -888,6 +900,20 @@ public class SurveyUtil {
 		return title;
 	}
 
+public void addSurveyArea(String PSID,String areaID){
+	try{
+		Connection conn = db.getConnection();
+		PreparedStatement ps = conn.prepareStatement("INSERT INTO `program-area`(PSID,areaID,accreditorID,position,attendance_confirmation) Values(?,?,null,'Accreditor','Unconfirmed')");
+		ps.setInt(1, Integer.parseInt(PSID));
+		ps.setInt(2, Integer.parseInt(areaID));
+		ps.executeUpdate();
+		
+	} catch (Exception e){
+		System.out.println("Error in SurveyUtil:getTitle()");
+		e.printStackTrace();
+	}
+}
+	
 public int getSystemID(int institutionID){
 	int id = 0;
 	try{
@@ -904,6 +930,33 @@ public int getSystemID(int institutionID){
 	}
 	
 	return id;
+}
+
+
+
+public int addNewProgram(int surveyID, int SPID){
+	int temp = 0;
+	try{
+		Connection conn = db.getConnection();
+		PreparedStatement ps = conn.prepareStatement("INSERT INTO `program-survey` (surveyID, SPID, `survey_type`) VALUES (?, ?, ?)");
+		ps.setInt(1, surveyID);
+		ps.setInt(2, SPID);
+		ps.setString(3, "Preliminary");
+		ps.executeUpdate();
+		
+		ps = conn.prepareStatement("SELECT LAST_INSERT_ID()");
+		ResultSet rs = ps.executeQuery();
+		rs.next();
+		int PSID = rs.getInt(1);
+		
+		temp = PSID;
+		
+		
+	} catch (Exception e){
+		System.out.println("Error in SurveyUtil:addNewProgram()");
+		e.printStackTrace();
+	}
+	return temp;
 }
 
 public JSONArray getConfirmationSurvey(int SurveyID){
@@ -948,7 +1001,6 @@ public void confirmAttendance(int PSID,int areaID,int accID){
 		ps.setInt(2, accID);
 		ps.setInt(3, PSID);
 		ps.setInt(4, areaID);
-		System.out.println("PSID: " + PSID + " AREA: " + areaID + " accID: " + accID);
 		ps.executeUpdate();
 		
 	} catch (Exception e){
@@ -991,9 +1043,7 @@ private static String formatDate(String date){
 	String month = "";
 	String day;
 	String year;
-	System.out.println("Date: " + date);
 	if((date == null) || (date.equals(""))||(date.equals(" ")) ){}else{
-		System.out.println("pumaosk");
 	String[] parts = date.split("-");
 	if(parts[1].equals("01")){
 		month = "January";

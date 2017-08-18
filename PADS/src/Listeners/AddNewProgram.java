@@ -1,4 +1,4 @@
-	package Listeners;
+package Listeners;
 
 import java.io.IOException;
 import javax.servlet.ServletException;
@@ -7,19 +7,19 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import Utilities.NotificationUtil;
+import Utilities.SurveyUtil;
 
 /**
- * Servlet implementation class MarkNotification
+ * Servlet implementation class AddNewProgram
  */
-@WebServlet("/MarkNotification")
-public class MarkNotification extends HttpServlet {
+@WebServlet("/AddNewProgram")
+public class AddNewProgram extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public MarkNotification() {
+    public AddNewProgram() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -29,9 +29,13 @@ public class MarkNotification extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
-		NotificationUtil notUtil = new NotificationUtil();
-		int notificationID = Integer.parseInt(request.getParameter("notificationID"));
-		notUtil.setNotificationRead(notificationID);
+		int surveyID = Integer.parseInt(request.getParameter("surveyID"));
+		int SPID = Integer.parseInt(request.getParameter("programID"));
+		SurveyUtil surUtil = new SurveyUtil();
+		int PSID = surUtil.addNewProgram(surveyID, SPID);
+		response.setContentType("text/plain");  // Set content type of the response so that jQuery knows what it can expect.
+	    response.setCharacterEncoding("UTF-8");
+		response.getWriter().write(String.valueOf(PSID));
 	}
 
 	/**

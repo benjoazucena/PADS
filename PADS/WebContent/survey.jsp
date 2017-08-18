@@ -376,7 +376,6 @@ function formatDate(date) {
 				var d1 = Date.parse(today);
 				var institutionID = event.institutionID;
 		    	var d2 = Date.parse(event.start);
-	            alert(surveyID);
 
 				if(d2 <= d1 ){
 					
@@ -406,7 +405,7 @@ function formatDate(date) {
 	            
 	            add += ("<button class='btn btn-sm btn-info' data-toggle='collapse' data-target='#reports' style='float:right;'><i class='fa fa-folder-open'></i> Reports</button>");
 	            add += ("<div style='width: 20%; float:left; background-color:white;' id='reports' class='collapse'><div style='float:right;'><button class='btn btn-link btn-sm' onclick=\'generateTeam(" + JSON.stringify(event.programs) + ", \"" + event.institutionName + "\" , \"" + event.institutionCity + "\" , \" " + dateStart + "\", \"" + event.chairpersonName + "\" , \"" + event.chairpersonInstitution + "\" , \"" + event.chairpersonPosition + "\" , \"" + event.chairpersonCity + "\" , \"" +   event.paascu1Name + "\" , \""  + event.paascu1Position + "\" , \"" +  event.paascu2Name + "\" , \""  + event.paascu2Position + "\")' data-toggle='tooltip' data-placement='left' title='This will generate a ready-to-print PDF file of the team line up for this survey.'><i class='fa fa-file-pdf-o'></i> Team Line Up</button><label class='btn btn-link btn-sm' data-toggle='tooltip' data-placement='left' title='This will let you upload the Team Recommendations file the accreditors have filled up after the visit.'><i class='fa fa-upload'></i> Team Recommendation <input style='display:none;' type='file'></label><button class='btn btn-link btn-sm' data-toggle='tooltip' data-placement='left' title='This will let you download a copy of the survey details.'><i class='fa fa-download'></i> Survey Details</button></div></div>");
-	            add += ("<br><br><br><hr><div><h4>Programs and Proponents</h4><label for='sel1'>Programs:</label><select class='form-control underlined chosen-select' data-placeholder='Choose a Program...' id='programForm' style='background: transparent;''></select><button class='btn btn-sm btn-link' style='float:right;'><i class='fa fa-plus'></i>  Add Program</button> <br><hr><ul class='list-group'>");
+	            add += ("<br><br><br><hr><div><h4>Programs and Proponents</h4><label for='sel1'>Programs:</label><select class='form-control underlined chosen-select' data-placeholder='Choose a Program...' id='programForm' style='background: transparent;''></select><button class='btn btn-sm btn-link' style='float:right;' onclick=\"addNewProgram(" + surveyID + ", " + institutionID + ");\"><i class='fa fa-plus'></i>  Add Program</button> <br><hr><ul class='list-group' id='progList'>");
 	            
 	            
 	            
@@ -444,7 +443,7 @@ function formatDate(date) {
 		            
 		            	}
 		            }
-		            add += ("<tr class='info' style='height:65px'><td><select id='areaSelect'><option>Faculty</option><option>Instruction</option><option>Laboratories</option><option>Libraries</option><option>Community</option><option>Physical Facilities</option><option>Student Services</option><option>Administration</option><option>Research</option><option>Clinical Training</option><option>Other Resources</option></select></td><td><button onclick='addNewSurveyArea("+PSID+", " + institutionID + ")'  class='btn btn-info btn-sm' style='position:relative; left:50%; top:10px'><i class='fa fa-plus'></i> Add New Area</button></td><td></td></tr>");
+		            add += ("<tr class='info' style='height:65px'><td><select id='areaSelect" + PSID + "'><option>Faculty</option><option>Instruction</option><option>Laboratories</option><option>Libraries</option><option>Community</option><option>Physical Facilities</option><option>Student Services</option><option>Administration</option><option>Research</option><option>Clinical Training</option><option>Other Resources</option></select></td><td><button onclick='addNewSurveyArea("+PSID+", " + institutionID + ")'  class='btn btn-info btn-sm' style='position:relative; left:50%; top:10px'><i class='fa fa-plus'></i> Add New Area</button></td><td></td></tr>");
 		            add += ("</tbody>");
 		            add += ("</table></li>");
 
@@ -455,7 +454,6 @@ function formatDate(date) {
 	            
 	            add += ("</ul></div>");
 	            $('#modalBody').append(add);
-	            alert(institutionID);
 	            $('#programForm').empty();
 				var temp = document.createElement("option");
 				temp.text = "";
@@ -696,6 +694,35 @@ function addAlert(){
 	$('#section').append('<div class="alert alert-success"><a class="close" data-dismiss="alert" aria-label="close">&times;</a><strong>Success!</strong> Successfully added survey called: '+asd +'.</div> <br>');
 }
 
+function addNewProgram(surveyID, institutionID){
+	var programID = $('#programForm').find(":selected").val();
+	var programName = $('#programForm').find(":selected").text();
+	var adder = $('#progList');
+	if(programName ==""){
+		alert("Please choose a program!");
+	}else{
+		$.ajax({url: 'AddNewProgram?surveyID=' + surveyID + "&programID=" + programID,
+				success: function(data){
+					var PSID = data;
+					var add = "";
+					add += ("<li class='list-group-item'><label id='PSID"+PSID+"'>" + programName + " - Preliminary <i id='editIcon' style='position:relative; top:0px;right:-5px;' onclick='editType("+PSID+",\""+ programName +"\", \"Preliminary\")' class='fa fa-pencil-square-o'></i></label><button onclick='DeleteProgram(" + PSID + ", this)' class='btn btn-link btn-sm' style='float:right;' data-toggle='tooltip' title='This will delete the whole program currently associated with the visit.'><i class='fa fa-times'></i> Delete</button>");
+				    add += ("<br><br><table class='table'>");
+				    add += ("<thead><tr><th style='width: 20%;'>Name</th> <th style='width: 40%;'>Area</th> <th style='width: 40%;'>Specify Availability</th></tr></thead>");
+				    add += ("<tbody>"); 
+	
+				    
+				    add += ("<tr class='info' style='height:65px'><td><select id='areaSelect"+ PSID + "'><option>Faculty</option><option>Instruction</option><option>Laboratories</option><option>Libraries</option><option>Community</option><option>Physical Facilities</option><option>Student Services</option><option>Administration</option><option>Research</option><option>Clinical Training</option><option>Other Resources</option></select></td><td><button onclick='addNewSurveyArea("+PSID+", " + institutionID + ")'  class='btn btn-info btn-sm' style='position:relative; left:50%; top:10px'><i class='fa fa-plus'></i> Add New Area</button></td><td></td></tr>");
+				    add += ("</tbody>");
+				    add += ("</table></li>");
+				    adder.append(add);
+				    $("#calendar").fullCalendar("refetchEvents");
+					$("#calendar").fullCalendar("rerenderEvents");
+				}
+		});
+	
+	}
+}
+
 function editType(PSID,pName, orig){
 	var content = document.getElementById("PSID"+PSID).innerHTML;
 	content =  pName + " - <select id='selected"+PSID+"'><option>Preliminary</option><option>Formal</option><option>Consultancy</option><option>Revisit</option><option>Interim</option><option>Resurvey</option></select> <i id='saveIcon' style='position:relative; top:0px;right:-5px;' onclick='saveType("+PSID+",\""+pName+"\", \"" + orig + "\")' class='fa fa-check'></i>" +
@@ -731,7 +758,7 @@ function saveType2(PSID,pName, orig){
 }
 
 function addNewSurveyArea(PSID, institutionID){
-	var e = document.getElementById("areaSelect");
+	var e = document.getElementById("areaSelect" + PSID);
 	var area = e.options[e.selectedIndex].value;
 	if(area=="Faculty"){var areaID = 1}
 	else if(area=="Instruction"){var areaID = 2}
@@ -757,7 +784,7 @@ function addNewSurveyArea(PSID, institutionID){
      e.parentNode.parentNode.remove();
      add += ("<tr><td>None</td><td>" + area+ "</td><td><button class='btn btn-pill-left btn-sm btn-secondary' onclick='UpdateConfirmation(\"Not Available\", " + "0" + ", " + PSID + ", " + areaID + ", this)'><i class='fa fa-thumbs-o-down'></i> Not Available</button><button class='btn btn-link btn-sm btn-secondary btn-pill-right' onclick='UpdateConfirmation(\"Confirmed\", " + "0" + ", " + PSID + ", " + areaID + ", this)'><i class='fa fa-thumbs-o-up'></i> Available</button><button class='btn btn-link btn-sm'  style='float:right;' onclick='deleteArea(" + "0" + ", " + PSID + ", " + areaID + ", this)'><i class='fa fa-times'></i></button><button class='btn btn-link btn-sm'  style='float:right;' onclick='editAccreditor(" + "0" + ", " + institutionID + "," + PSID + ", " + areaID + ", this)'><i class='fa fa-pencil-square-o'></i></button></td></tr>");
      
-     add += ("<tr class='info' style='height:65px'><td><select id='areaSelect'><option>Faculty</option><option>Instruction</option><option>Laboratories</option><option>Libraries</option><option>Community</option><option>Physical Facilities</option><option>Student Services</option><option>Administration</option><option>Research</option><option>Clinical Training</option><option>Other Resources</option></select></td><td><button onclick='addNewSurveyArea("+PSID+", "+ institutionID + ")'  class='btn btn-info btn-sm' style='position:relative; left:50%; top:10px'><i class='fa fa-plus'></i> Add New Area</button></td><td></td></tr>");
+     add += ("<tr class='info' style='height:65px'><td><select id='areaSelect" + PSID + "'><option>Faculty</option><option>Instruction</option><option>Laboratories</option><option>Libraries</option><option>Community</option><option>Physical Facilities</option><option>Student Services</option><option>Administration</option><option>Research</option><option>Clinical Training</option><option>Other Resources</option></select></td><td><button onclick='addNewSurveyArea("+PSID+", "+ institutionID + ")'  class='btn btn-info btn-sm' style='position:relative; left:50%; top:10px'><i class='fa fa-plus'></i> Add New Area</button></td><td></td></tr>");
 	nice.innerHTML += add;
 }
 
