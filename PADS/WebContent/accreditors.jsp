@@ -64,7 +64,6 @@ $(document).ready(function() {
 	getDisciplines();
 	var discForm = document.getElementById('discForm');
 	
-	
 	$('#discForm').chosen().change(function(){
 		var discID = $('#discForm').find(":selected").val();
 // 		$.ajax({url: "AccreditorsByDisc?disciplineID=" + discID, success: function(result){
@@ -72,11 +71,7 @@ $(document).ready(function() {
 // 	    }});
 		window.location.href = "AccreditorsByDisc?disciplineID=" + discID;
 	});
-	
-	
-	
     $('#smarttable').DataTable( {
-    	
     	
     	buttons: [
             {
@@ -130,7 +125,7 @@ $.fn.dataTable.ext.errMode = 'none';
 function getDisciplines(){
 	//GETS ALL SYSTEMS FOR THE SELECT DROPDOWN
 	var obj = document.getElementById('discForm');
-	alert(${disciplineID}+ "PAREHAS");
+	
 	$.getJSON("DisciplineLoader", function(data){
 		var option = document.createElement("option");
 		option.text = "Show All";
@@ -140,14 +135,13 @@ function getDisciplines(){
 			var option = document.createElement("option");
 			option.text = value.disciplineName;
 			option.value = value.disciplineID;
-			alert(${disciplineID}+ "PAREHAS");
+			
 			if(value.disciplineID == ${disciplineID}){
 				option.selected = "selected";
 			}
 			obj.add(option);
 			
 		});	
-		
 		$('#discForm').trigger("chosen:updated");
 	});
 	
@@ -452,16 +446,13 @@ function getDisciplines(){
                                             </div>   </section>
                                     </div>
                                 </div>
-                               
                             </div>
                         </div>
 						
                     </section>
-                    
-                  
                 </article>
              
-               
+             
              
         <!-- Reference block for JS -->
         <div class="ref" id="ref">

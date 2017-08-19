@@ -37,6 +37,7 @@ public class Accreditors extends HttpServlet {
 		AccreditorUtil accUtil = new AccreditorUtil();
 		accreditors = accUtil.getAccreditors();
 		request.setAttribute("accreditors", accreditors);
+		request.setAttribute("disciplineID", 0);
 		RequestDispatcher rd = request.getRequestDispatcher("accreditors.jsp");
 		rd.forward(request, response);
 	}
