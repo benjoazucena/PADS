@@ -281,10 +281,9 @@ function addProgram(){
 	var strSurvey = $('#surveyForm option:selected').text();
 	var programID = $('#programForm option:selected').val();
 	var systemID = $('#systemForm option:selected').val();
-	
 	if(strUser == ""){
 		alert("Please choose a program!");
-	}else if(strSurvey = ""){
+	}else if(strSurvey == ""){
 		alert("Please choose survey type!");
 	}else{
 	var obj = {};
@@ -295,7 +294,8 @@ function addProgram(){
 	obj.id = globalPrograms;
 	var areaCounter = 0;
 	var counter = 0;
-	
+	alert(strSurvey);
+
 	var add =  "<li class='list-group-item' id='programLi"+ globalPrograms +"'><h6>" + strUser + " - " + strSurvey + "</h6> <ul class='list-group'>";
 	
 	
@@ -307,6 +307,7 @@ function addProgram(){
 	var tableDiv = document.createElement("div");
 	tableDiv.className = "table-responsive";
 	tableDiv.style.width = "100%";
+	tableDiv.id = "accTable" + globalPrograms;
 	
 	var table = document.createElement("table");
 	table.className = "table table-striped";
@@ -600,9 +601,12 @@ function addProgram(){
 	btnX.appendChild(closer);
 	btnX.onclick = function(){
 		$("#programLi"+lel).remove();
+		$("#accTable"+lel).remove();
+
 		surveyObject.programList = surveyObject.programList.filter(function(item){
 			return item.id !== lel;
 		});
+		
    	};	      
    	
    	$("#programLi"+lel).find("h6").append(btnX);
@@ -610,7 +614,7 @@ function addProgram(){
 	var lal = document.getElementById("added");
 	lal.scrollTop = lal.scrollHeight;
 	
-	$('#addedList2').append(title);	
+	tableDiv.appendChild(title);
 	tableDiv.appendChild(table);
 	$('#addedList2').append(tableDiv);
 
@@ -781,23 +785,32 @@ function addAccreditor(area, program, survey, areaCounter, programCounter, btn){
 	 $('#smarttable tbody').on('click', 'tr', function () {
 			var chosenAccreditor = table.row(this).data();
 			var accIDs = surveyObject.programList[programCounter].areas[areaCounter].accreditorIDs;
-			accIDs.push(chosenAccreditor[0]);
-			var accCounter = accIDs.indexOf(chosenAccreditor[0]);
-		
+			var ch = false;
+			accIDs.filter(function(item){
+				if(item == chosenAccreditor[0]){
+					ch = true;
+				}
+			});
+			if(ch == true){
+				alert("You have selected a duplicate!");
+			}else{
+				accIDs.push(chosenAccreditor[0]);
+				var accCounter = accIDs.indexOf(chosenAccreditor[0]);
+	
+	
+	       		var accBtn = document.createElement("BUTTON");
+	       		accBtn.innerHTML = "<i class='fa fa-times-circle' aria-hidden='true' ></i> "+ chosenAccreditor[2] + " ";
+	       		accBtn.onclick = function() { 
+	       			accBtn.parentNode.removeChild(accBtn);
+	       			accIDs.splice(accCounter, 1);
+	       		};
 
-       		var accBtn = document.createElement("BUTTON");
-       		accBtn.innerHTML = "<i class='fa fa-times-circle' aria-hidden='true' ></i> "+ chosenAccreditor[2] + " ";
-       		accBtn.onclick = function() { 
-       			accBtn.parentNode.removeChild(accBtn);
-       			accIDs.splice(accCounter, 1);
-       		};
-       		//var t = document.createTextNode( );
-       		//accBtn.appendChild(t);
-       		btn.parentNode.insertBefore(accBtn, btn);
-       		//btn.parentNode.innerHTML(chosenAccreditor[1]);
+	       		btn.parentNode.insertBefore(accBtn, btn);
+				
+				
+				$('#addModal').modal('toggle');
+			}
 			
-			
-			$('#addModal').modal('toggle');
     } );
 	
 	$('#addModal').modal();

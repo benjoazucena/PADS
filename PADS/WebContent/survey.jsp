@@ -297,12 +297,12 @@ function formatDate(date) {
 			eventDrop: function(event, delta, revertFunc) {
 				var d1 = Date.parse(today);
 		    	var d2 = Date.parse(event.start.format());
-		    	
-		        $.ajax({url: "ScheduleSurvey?surveyID=" + event.id + "&start=" + event.start.format() + "&end=" + event.start.format(), success: function(result){
+		    	var d3 = Date.parse(event.end.format());
+		        $.ajax({url: "ScheduleSurvey?surveyID=" + event.id + "&start=" + event.start.format() + "&end=" + event.end.format(), success: function(result){
 			        alert(result);
 			    }});
-		        if(d2 <= d1 ){
-					event.backgroundColor = past;
+		        if(d3 <= d1 ){
+		        	event.backgroundColor = past;
 				}else{
 					if(event.completeness == 'complete'){
 						event.backgroundColor = complete;
@@ -315,10 +315,21 @@ function formatDate(date) {
 		        $('#calendar').fullCalendar('refresh');
 
 		    },
+		    eventResize: function(event, delta, revertFunc, element) {
+		    	
+		        if (!confirm("Resize survey?")) {
+		            revertFunc();
+		        }else{
+		        	$.ajax({url: "ResizeSurvey?surveyID=" + event.id + "&end=" + event.end.format(), success: function(result){
+				        alert(result);
+				    }});
+		        }
+
+		    },
 		    eventReceive: function(event) {
 		        event.start.stripTime();
+				
 		        event.end = event.start;
-		        
 		        
 		        $.ajax({url: "ScheduleSurvey?surveyID=" + event.id + "&start=" + event.start.format() + "&end=" + event.end.format(), success: function(result){
 			        alert(result);
@@ -339,7 +350,7 @@ function formatDate(date) {
 		    },
 		    eventRender: function(event, element) {
 		    	var d1 = Date.parse(today);
-		    	var d2 = Date.parse(event.start);
+		    	var d2 = Date.parse(event.endDate);
 				if(d2 <= d1 ){
 					if(event.status == "unconfirmed"){
 						event.backgroundColor = incomplete;
@@ -354,18 +365,14 @@ function formatDate(date) {
 					add +=  (i + 1) + ".) " + event.programs[i].programName + " - " + event.programs[i].surveyType+ "<br>";
 				}
 				add += "</p>";
+				
+			    $(element).tooltip('destroy');
+
 				$(element).tooltip({title:add, placement:"auto left", html:true, container:'body'}); 
 				
 				
 				$('[data-toggle="tooltip"]').tooltip(); 
-	            element.find(".closeon").click(function() {
-					if(confirm("Are you sure?")) {
-						alert(event.title + " was removed.");
-						$('#calendar').fullCalendar('removeEvents',event._id);
-						
-					}
-	            });
-				$('[data-toggle="tooltip"]').tooltip(); 
+	            
 	        },
 	        
 			eventClick: function(event, jsEvent, view){
@@ -692,6 +699,12 @@ function formatDate(date) {
 $('[data-toggle="tooltip"]').tooltip(); 
 function addAlert(){
 	$('#section').append('<div class="alert alert-success"><a class="close" data-dismiss="alert" aria-label="close">&times;</a><strong>Success!</strong> Successfully added survey called: '+asd +'.</div> <br>');
+}
+
+
+function revertEndDate(date){
+	var dates = String(date.format()).split("-");
+	return dates[0] + "-" + (dates[1] - 1) + "-" + dates[2];
 }
 
 function addNewProgram(surveyID, institutionID){

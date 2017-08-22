@@ -5,6 +5,7 @@ import java.sql.ResultSet;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 
 import org.json.JSONArray;
@@ -25,13 +26,42 @@ public class SurveyUtil {
 			Connection conn = db.getConnection();
 			PreparedStatement ps = conn.prepareStatement("UPDATE `surveys` SET `start_date` = ? , `end_date` = ? WHERE surveyID=?");
 			ps.setString(1, start);
-			ps.setString(2, end);
+			String dt = end;  // Start date
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+			Calendar c = Calendar.getInstance();
+			c.setTime(sdf.parse(dt));
+			c.add(Calendar.DATE, -1);  // number of days to add
+			dt = sdf.format(c.getTime());  
+			ps.setString(2, dt);
 			ps.setInt(3, surveyID);
 			ps.executeUpdate();
 			temp = "Successfully scheduled survey!";
 		} catch (Exception e){
 			System.out.println("Error in SurveyUtil:scheduleSurvey()");
 			temp = "Error in scheduling survey!";
+			e.printStackTrace();
+		}
+		return temp;
+	}
+	
+	public String resizeSurvey(int surveyID, String end){
+		String temp = new String();
+		try{
+			Connection conn = db.getConnection();
+			PreparedStatement ps = conn.prepareStatement("UPDATE `surveys` SET `end_date` = ? WHERE surveyID=?");
+			String dt = end;  // Start date
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+			Calendar c = Calendar.getInstance();
+			c.setTime(sdf.parse(dt));
+			c.add(Calendar.DATE, -1);  // number of days to add
+			dt = sdf.format(c.getTime());  
+			ps.setString(1, dt);
+			ps.setInt(2, surveyID);
+			ps.executeUpdate();
+			temp = "Successfully resized survey!";
+		} catch (Exception e){
+			System.out.println("Error in SurveyUtil:resizeSurvey()");
+			temp = "Error in resizing survey!";
 			e.printStackTrace();
 		}
 		return temp;
@@ -514,9 +544,19 @@ public class SurveyUtil {
 				job.put("institutionCity", getInstitutionCity(rs.getInt(6)));
 				job.put("start", rs.getString(2));
 				job.put("endDate", rs.getString(3));
+				
+				String dt = rs.getString(3);  // Start date
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+				Calendar c = Calendar.getInstance();
+				c.setTime(sdf.parse(dt));
+				c.add(Calendar.DATE, 1);  // number of days to add
+				dt = sdf.format(c.getTime());  // dt is now the new date
+				System.out.println("START DATE: " + rs.getString(2)+ " END DATE: " + dt);
+				job.put("end", dt);
 				job.put("dateRequested", rs.getString(5));
 				job.put("dateApproved", rs.getString(4));
 				job.put("paascu1Name", rs.getString(7));
+				job.put("allDay", true);
 				job.put("paascu1Position", rs.getString(8));
 				job.put("paascu2Name", rs.getString(10));
 				job.put("paascu2Position", rs.getString(11));

@@ -195,6 +195,10 @@ var affObject = {
 		works: [],
 		edu: []
 };
+
+var globalWork = 0;
+var globalEdu = 0;
+
 function changeDetails(){
 	$("#progProponents").className = "progress-bar progress-bar-success progress-bar-striped";
 	$("#progDetails").className = "progress-bar progress-bar-success";
@@ -218,10 +222,10 @@ function addAffiliation(){
 		alert("Please input date!");
 	}else{
 		if(to == ""){
-			var add = "<li class='list-group-item'>"+inst+"<ul class='list-group'><li class='list-group-item'>Position: " + pos + "</li><li class='list-group-item'>From " + from + " to present</li></ul></li>";
+			var add = "<li class='list-group-item' id='work" + globalWork + "'>"+inst+"<ul class='list-group'><li class='list-group-item'>Position: " + pos + "</li><li class='list-group-item'>From " + from + " to present</li></ul></li>";
 	
 		}else{
-			var add = "<li class='list-group-item'>"+inst+"<ul class='list-group'><li class='list-group-item'>Position: " + pos + "</li><li class='list-group-item'>From " + from + " to " + to + "</li></ul></li>";
+			var add = "<li class='list-group-item' id='work" + globalWork + "'>"+inst+"<ul class='list-group'><li class='list-group-item'>Position: " + pos + "</li><li class='list-group-item'>From " + from + " to " + to + "</li></ul></li>";
 	
 		}
 	
@@ -234,6 +238,30 @@ function addAffiliation(){
 		$('#addedAffiliations').append(add);
 		var lal = document.getElementById("affiliations");
 		lal.scrollTop = lal.scrollHeight;
+		
+		var lel = globalWork;
+		
+		var closer = document.createElement("i");
+		closer.className="fa fa-times";
+		closer.style ="top:-10px; position:relative;";
+		
+		var btnX = document.createElement('BUTTON');
+		btnX.type="button";
+		btnX.className = "btn btn-s btn-link";
+		btnX.style="float:right;";
+		btnX.appendChild(closer);
+		btnX.onclick = function(){
+			$("#work"+lel).remove();
+			affObject.works = affObject.works.filter(function(item){
+				return item.id !== lel;
+
+			});
+
+	   	};	      
+	   	
+	   	$("#work"+lel).prepend(btnX);
+		globalWork++;
+
 		
 		$('#pastPosition').val("");
 		$('#datepicker2').val("");
@@ -266,7 +294,7 @@ function validateAccreditor(){
 function addEducation(){
 	var course = $('#courseName').val();
 	var univ = $('#institutionFormEdu').find(":selected").text();
-	var add = "<li class='list-group-item'>"+univ+"<ul class='list-group'><li class='list-group-item'>Course: " + course + "</li></ul></li>";
+	var add = "<li class='list-group-item' id='edu" + globalEdu + "'>"+univ+"<ul class='list-group'><li class='list-group-item'>Course: " + course + "</li></ul></li>";
 	
 	if(course == ""){
 		alert("Please input course!");
@@ -281,6 +309,30 @@ function addEducation(){
 		$('#addedAffiliations').append(add);
 		var lal = document.getElementById("affiliations");
 		lal.scrollTop = lal.scrollHeight;
+		
+		var lel = globalEdu;
+		
+		var closer = document.createElement("i");
+		closer.className="fa fa-times";
+		closer.style ="top:-10px; position:relative;";
+		
+		var btnX = document.createElement('BUTTON');
+		btnX.type="button";
+		btnX.className = "btn btn-s btn-link";
+		btnX.style="float:right;";
+		btnX.appendChild(closer);
+		btnX.onclick = function(){
+			$("#edu"+lel).remove();
+			affObject.works = affObject.edu.filter(function(item){
+				return item.id !== lel;
+
+			});
+
+	   	};	      
+	   	
+	   	$("#edu"+lel).prepend(btnX);
+	   	globalEdu++;
+
 		
 		$('#courseName').val("");
 	}
