@@ -152,7 +152,7 @@ function buildAwards(){
 
 function deleteRead(){
 	$('#readNotifications-pills ul li').remove();
-	alert('wew3');
+	
 	var sure = confirm("Are you sure?");
 	if(sure == true){
 		$.ajax({URL:'DeleteReadNotifications', success: function(data){
@@ -617,31 +617,31 @@ box-shadow:         0px 2px 11px 2px rgba(50, 50, 50, 0.58); ">
 					
 					
 					
-                    <nav class="text-xs-right">
-                        <ul class="pagination">
-                            <li class="page-item"> <a class="page-link" href="">
-				Prev
-			</a> </li>
-                            <li class="page-item active"> <a class="page-link" href="">
-				1
-			</a> </li>
-                            <li class="page-item"> <a class="page-link" href="">
-				2
-			</a> </li>
-                            <li class="page-item"> <a class="page-link" href="">
-				3
-			</a> </li>
-                            <li class="page-item"> <a class="page-link" href="">
-				4
-			</a> </li>
-                            <li class="page-item"> <a class="page-link" href="">
-				5
-			</a> </li>
-                            <li class="page-item"> <a class="page-link" href="">
-				Next
-			</a> </li>
-                        </ul>
-                    </nav>
+<!--                     <nav class="text-xs-right"> -->
+<!--                         <ul class="pagination"> -->
+<!--                             <li class="page-item"> <a class="page-link" href=""> -->
+<!-- 				Prev -->
+<!-- 			</a> </li> -->
+<!--                             <li class="page-item active"> <a class="page-link" href=""> -->
+<!-- 				1 -->
+<!-- 			</a> </li> -->
+<!--                             <li class="page-item"> <a class="page-link" href=""> -->
+<!-- 				2 -->
+<!-- 			</a> </li> -->
+<!--                             <li class="page-item"> <a class="page-link" href=""> -->
+<!-- 				3 -->
+<!-- 			</a> </li> -->
+<!--                             <li class="page-item"> <a class="page-link" href=""> -->
+<!-- 				4 -->
+<!-- 			</a> </li> -->
+<!--                             <li class="page-item"> <a class="page-link" href=""> -->
+<!-- 				5 -->
+<!-- 			</a> </li> -->
+<!--                             <li class="page-item"> <a class="page-link" href=""> -->
+<!-- 				Next -->
+<!-- 			</a> </li> -->
+<!--                         </ul> -->
+<!--                     </nav> -->
                     </section>
                 </article>
                 
