@@ -64,7 +64,8 @@ function buildHome(){
 		add += "<div class='item-row' id='awardNotif'> ";
 	    add += "<div class='item-col fixed item-col-check'> <label class='item-check' id='select-all-items'><span></span></label> </div>";
 	    var type = '${all.type}';
-	    if( type=="Awards"){	
+	    
+	    if( type=="Awards"){	 
 	    	add += " <div class='item-col fixed item-col-img md'><i class='fa fa-trophy fa-2x'></i></div>";
 	    }
 	    else if(type =="Expirations"){	

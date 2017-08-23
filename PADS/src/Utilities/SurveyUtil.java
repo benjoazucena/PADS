@@ -1034,6 +1034,7 @@ public JSONArray getConfirmationSurvey(int SurveyID){
 	return jArray;
 }
 
+
 public void confirmAttendance(int PSID,int areaID,int accID){
 	try{
 		Connection conn = db.getConnection();

@@ -4,6 +4,7 @@
 <!doctype html>
 <html class="no-js" lang="en">
 	
+	
     <head>
      <script src='js/jquery.min.js'></script>
     <script src='js/jquery-ui.min.js'></script>
