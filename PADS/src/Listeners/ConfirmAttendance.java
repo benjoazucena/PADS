@@ -37,7 +37,7 @@ public class ConfirmAttendance extends HttpServlet {
 		int PSID = Integer.parseInt(request.getParameter("PSID"));
 		int add = Integer.parseInt(request.getParameter("add"));
 		SurveyUtil sUtil = new SurveyUtil();
-		sUtil.confirmAttendance(PSID, areaID, accID,add);
+		sUtil.confirmAttendance(PSID, areaID, accID);
 		
 		AccreditorUtil aUtil = new AccreditorUtil();
 		aUtil.updateTotalSurveys(accID, add);
