@@ -7,6 +7,9 @@
 
     <head>
 	  <!-- IMPORTS -->
+	  
+	<%@page import="Models.Institution" %>
+	<% Institution inst = (Institution)request.getAttribute("institution"); %>
      <script src='js/jquery.min.js'></script>
     <script src='js/jquery-ui.min.js'></script>
     <link rel="stylesheet" href="css/bootstrap.css">
@@ -142,6 +145,7 @@ function getSystems(){
 	//GETS ALL SYSTEMS FOR THE SELECT DROPDOWN
 	var obj = document.getElementById('systemForm');
 	
+	
 	$.getJSON("SystemsLoader", function(data){
 		var option = document.createElement("option");
 		option.text = "";
@@ -151,6 +155,9 @@ function getSystems(){
 			var option = document.createElement("option");
 			option.text = value.systemName;
 			option.value = value.systemID;
+			if(<%=inst.getSchoolsystemID() %> == value.systemID){
+				option.selected=true;
+			}
 			obj.add(option);
 			
 		});	
@@ -353,10 +360,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
 				 <section class="section" id="section">   
 				 <div class="tab-content">     
 				 	<div id="menu1" class="tab-pane fade in active">          
-					
-					<%@page import="Models.Institution" %>
-					<% Institution inst = (Institution)request.getAttribute("institution"); %>
-										
+													
 						<div class="col-md-12">
 									<div class="card card-block sameheight-item">
 										<div class="title-block">

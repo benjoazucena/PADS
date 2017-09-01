@@ -267,7 +267,7 @@ function formatDate(date){
 function getDisciplines(){
 	//GETS ALL DISCIPLINES FOR THE SELECT DROPDOWN
 	var discipline = "${acc.getDiscipline()}";
-	alert(discipline);
+	
 	var obj = document.getElementById('disciplineForm');	
 	$.getJSON("DisciplineLoader", function(data){	
 		var option = document.createElement("option");
