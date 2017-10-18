@@ -385,20 +385,24 @@ function saveAccreditor(){
 		alert("Please input city!")
 	}else{
 	
-		$.ajax({
-			url: 'AddAccreditor?' + $('#accForm').serialize(),
-			type: 'POST',
-			async: false,
-			dataType: 'json',
-			data: {affObject: JSON.stringify(affObject)},
-			success: function(result){
-				
-			}
-		});
-		alert('Accreditor successfully added! Redirecting you to the accreditors page...')
-	
-		document.location.href = "Accreditors";
+	addProp();
 	}
+}
+
+function submitAccreditor(){	
+	$.ajax({
+		url: 'AddAccreditor?' + $('#accForm').serialize(),
+		type: 'POST',
+		async: false,
+		dataType: 'json',
+		data: {affObject: JSON.stringify(affObject)},
+		success: function(result){
+			
+		}
+	});
+	alert('Accreditor successfully added! Redirecting you to the accreditors page...')
+
+	document.location.href = "Accreditors";
 }
 
 function togglePresent(){
@@ -480,7 +484,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
 						
 					 </div>
                     
-                    <div class="header-block header-block-nav">
+                   
                         <ul class="nav-profile">
                             <li class="notifications new">
                                 <a href="" data-toggle="dropdown"> <i class="fa fa-bell-o"></i> <sup>
@@ -722,10 +726,10 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
         				
         	
 					<div class="form-group" style="float:right;top:25px;">
-  						<button type="button" class="btn btn-success" onclick="addProp();"style="position:relative;top:35px; right:0px;" data-toggle="tab" href="#menu2">
+  						<button type="button" class="btn btn-success" onclick="validateAcreditor()"style="position:relative;top:35px; right:0px;" data-toggle="tab" href="#menu2">
   						Next Step
   						</button>
-  						
+<!--   						addProp(); -->
 					</div>
 					
 					
@@ -823,7 +827,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
   						
 						
   						
-  						<button type="button" class="btn btn-success" onclick="validateAccreditor()" style="float:right;">
+  						<button type="button" class="btn btn-success" onclick="submitAccreditor()" style="float:right;">
   						Submit
   						</button>
   						

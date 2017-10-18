@@ -298,6 +298,7 @@ function formatDate(date) {
 				var d1 = Date.parse(today);
 		    	var d2 = Date.parse(event.start.format());
 		    	var d3 = Date.parse(event.end.format());
+		  
 		        $.ajax({url: "ScheduleSurvey?surveyID=" + event.id + "&start=" + event.start.format() + "&end=" + event.end.format(), success: function(result){
 			        alert(result);
 			    }});
@@ -1472,7 +1473,7 @@ left:5px;
                                             <p class="title"> Pending Surveys</p>
                                         </div>
                                     </div>
-                                    <div class="card-block"style="height:75%;">
+                                    <div class="card-block"style="height:75%;overflow-y: scroll;">
 												<div id='external-events' style=" padding:5px;height:100%;width:100%;border-radius: 6px 6px 6px 6px;-moz-border-radius: 6px 6px 6px 6px;-webkit-border-radius: 6px 6px 6px 6px;border: 1px solid #e6e6e6;">
 							
 							

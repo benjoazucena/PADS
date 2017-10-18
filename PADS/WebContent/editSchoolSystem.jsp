@@ -189,6 +189,47 @@ function addSurvey(){
 	addAlert(surveyName);
 }
 
+function duplicateCheck(ss){
+	var hasMatch = false;
+// 	alert(entry);
+	 $.ajax({
+   	  url: "SystemsLoader",
+   	  dataType: 'json',
+   	  async: false,
+   	  success: function(data) {
+   		  $.each(data, function (key, value){
+   			
+   				if(ss.toUpperCase() == value.systemName.toUpperCase()){
+	   				alert("This institution already exists in the database."); 
+	   				hasMatch=true; 
+	   				return false;
+   				} 
+   			});	
+   		
+   	  }
+   	});	
+	 if(!hasMatch){return true;}	
+}
+
+
+function validateForm() {
+	
+	
+	var ssName = document.forms["addSSForm"]["ssName"].value;
+	
+
+    if(duplicateCheck(ssName)){
+    if(ssName==""){
+    	alert("School System must be selected");
+        return false;	
+    } 
+    else{
+    	alert("succesfully added institution!");
+    	
+        }}
+    else return false;
+}
+
 function addProp(){
 	$("#progBar").html("<div class='progress-bar progress-bar-success' role='progressbar' style='width:33%' id='progDetails'>1. Details</div><div class='progress-bar progress-bar-success progress-bar-striped' role='progressbar' style='width:33%' id='progProponents'>2. Proponents </div>");
 
@@ -275,7 +316,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
 						
 					 </div>
                     
-                    <div class="header-block header-block-nav">
+                   
                         <ul class="nav-profile">
                             <li class="notifications new">
                                 <a href="" data-toggle="dropdown"> <i class="fa fa-bell-o"></i> <sup>
@@ -365,14 +406,14 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
 				
 				 <div class="title-block">
                         <h3 class="title" style="float:left;">
-							<a href="SchoolSystems"> List of School Systems </a> > Add New Institution
+							<a href="SchoolSystems"> List of School Systems </a> > Edit School System
 						</h3>
 			     </div>
 				
 				<section class="section" id="section">   
 				 <div class="tab-content">     
 				 	<div id="menu1" class="tab-pane fade in active">          
-		<form method="post" action="UpdateSchoolSystem" class="form">
+		<form name="addSSForm" onsubmit="return validateForm()"  method="post" action="UpdateSchoolSystem" class="form">
 						<div class="col-md-12">
 									<div class="card card-block sameheight-item">
 										<div class="title-block">
@@ -403,9 +444,8 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
 <!-- 									<button type="button" class="btn btn-success" onclick="location.href = 'schoolProfile_sample.html'; alert('Successfully added Institutions! \nYou may now add programs in this School System.')" data-toggle="tab" style="float:right; padding-right:15px;"> -->
 <!-- 									Submit then add an Institutions 						 -->
 <!-- 									</button> -->
-									
-									<button type="submit" class="btn btn-info" onclick="alert('Successfully Edited!');location.href = 'SchoolSystems';"  style="float:right; padding-right:15px;">
-									Submit
+								
+									<button type="submit" class="btn btn-info" style="float:right; padding-right:15px;">Save
 									</button>
 								</div>
 						</div>

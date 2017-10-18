@@ -281,11 +281,20 @@ function addProgram(){
 	var strSurvey = $('#surveyForm option:selected').text();
 	var programID = $('#programForm option:selected').val();
 	var systemID = $('#systemForm option:selected').val();
+	
+	var programIDs = surveyObject.programList;
+	var ch = false;
+	programIDs.filter(function(item){
+		
+		if(item.SPID == programID){
+			ch = true;
+		}
+	});
 	if(strUser == ""){
 		alert("Please choose a program!");
 	}else if(strSurvey == ""){
 		alert("Please choose survey type!");
-	}else{
+	}else if(ch == false){
 	var obj = {};
 	obj.SPID = programID;
 	obj.surveyType = strSurvey;
@@ -294,7 +303,6 @@ function addProgram(){
 	obj.id = globalPrograms;
 	var areaCounter = 0;
 	var counter = 0;
-	alert(strSurvey);
 
 	var add =  "<li class='list-group-item' id='programLi"+ globalPrograms +"'><h6>" + strUser + " - " + strSurvey + "</h6> <ul class='list-group'>";
 	
@@ -618,6 +626,8 @@ function addProgram(){
 	tableDiv.appendChild(table);
 	$('#addedList2').append(tableDiv);
 
+	}else{
+		alert("You have already selected this program!");
 	}
 }
 
@@ -964,7 +974,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
 						
 					 </div>
                     
-                    <div class="header-block header-block-nav">
+                   
                         <ul class="nav-profile">
                             <li class="notifications new">
                                 <a href="" data-toggle="dropdown"> <i class="fa fa-bell-o"></i> <sup>

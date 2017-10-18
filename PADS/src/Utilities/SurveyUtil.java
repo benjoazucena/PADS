@@ -574,7 +574,13 @@ public class SurveyUtil {
 				String tempDecBy = "None";
 				
 				int i = ((JSONArray) job.get("programs")).length();
-				for(int j = 0; j<i;j++){
+				
+				if(i==0){
+					job.put("completeness", "incomplete");
+					job.put("status", "unconfirmed");
+				}
+				else{
+					for(int j = 0; j<i;j++){
 					String com = ((JSONObject) ((JSONArray) job.get("programs")).get(j)).get("completeness").toString();	
 					String decBy;
 					if ( ((JSONObject) ((JSONArray) job.get("programs")).get(j)).has("decisionBy")){
@@ -614,6 +620,7 @@ public class SurveyUtil {
 				}
 				if(!job.has("status")){
 					job.put("status", "confirmed");
+				}
 				}
 				
 				

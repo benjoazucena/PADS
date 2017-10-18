@@ -6,25 +6,28 @@
 <html class="no-js" lang="en">
 
     <head>
-	  <!-- IMPORTS -->
-	  
-	<%@page import="Models.Institution" %>
+<!-- IMPORTS -->
+<%@page import="Models.Institution" %>
 	<% Institution inst = (Institution)request.getAttribute("institution"); %>
-     <script src='js/jquery.min.js'></script>
-    <script src='js/jquery-ui.min.js'></script>
+    <script src='js/jquery.min.js'></script>
+<!--     <script src='js/jquery-ui.min.js'></script> -->
     <link rel="stylesheet" href="css/bootstrap.css">
-  <link rel="stylesheet" href="chosen/chosen.css">
-  <script src="chosen/chosen.jquery.js" type="text/javascript"></script>
     <script src="js/bootstrap.min.js"></script>
-    
-        <meta charset="utf-8">
-        <meta http-equiv="x-ua-compatible" content="ie=edge">
-        <title> PAASCU - Accreditation Schedule Manager </title>
-        <meta name="description" content="">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="apple-touch-icon" href="apple-touch-icon.png">
-        <!-- Place favicon.ico in the root directory -->
-        <link rel="stylesheet" href="css/vendor.css">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <link rel="stylesheet" href="css/vendor.css">
+<!--     <link href='fullcalendar.css' rel='stylesheet' /> -->
+<!--     <link href='calendar/fullcalendar.print.css' rel='stylesheet' media='print' /> -->
+<!-- 	<script src='calendar/lib/moment.min.js'></script> -->
+	<link rel="stylesheet" href="chosen/chosen.css">
+ 	<script src="chosen/chosen.jquery.js" type="text/javascript"></script>
+	<link rel="stylesheet" type="text/css" href="css/jquery.dataTables.min.css">
+	
+	
+<!--  	<link title="timeline-styles" rel="stylesheet" href="css/timeline.css"> -->
+ 	<script src="js/bootstrap-datepicker.min.js"></script>
+ 	<link rel="stylesheet" href="css/bootstrap-datepicker.css">
+<!-- 	<link title="timeline-styles" rel="stylesheet" href="css/datepicker.css"> -->
+	<!-- END IMPORTS -->
         <!-- Theme initialization -->
         <script>
             var themeSettings = (localStorage.getItem('themeSettings')) ? JSON.parse(localStorage.getItem('themeSettings')) :
@@ -42,6 +45,7 @@
 
 
 <script >	
+
 
 $(document).ready(function() {
 	getSystems();
@@ -73,71 +77,10 @@ $(document).ready(function() {
 	});
 
 	
-	$('#calendar').fullCalendar({
-		header: {
-			left: 'prev,next today',
-			center: 'title',
-			right: 'month,basicWeek,basicDay'
-		},
-		defaultDate: '2016-09-12',
-		navLinks: true, // can click day/week names to navigate views
-		editable: true,
-		droppable: true, // this allows things to be dropped onto the calendar
-		drop: function() {
-				$(this).remove();
-			}
-		,
-		eventDrop: function(event, delta, revertFunc) {
-	        alert(event.title + " was dropped on " + event.start.format());
-	    },
-	    eventReceive: function(event) {
-	        alert(event.title + " was dropped on " + event.start.format());
-	    },
-	    eventRender: function(event, element) {
-            element.append( "<a class='closeon'> Delete</a>" );
-            element.find(".closeon").click(function() {
-            	alert(event.title + " was removed.");
-               $('#calendar').fullCalendar('removeEvents',event._id);
-            });
-        },
-
-		eventLimit: true, // allow "more" link when too many events
-		events: [
-			{
-				title: 'All Day Event',
-				start: '2016-09-01'
-			},
-			{
-				title: 'Conference',
-				start: '2016-09-11'
-			},
-			{
-				title: 'Meeting',
-				start: '2016-09-12T10:30:00',
-				end: '2016-09-12T12:30:00'
-			},
-			{
-				title: 'Lunch',
-				start: '2016-09-12T12:00:00'
-			},
-			{
-				title: 'Meeting',
-				start: '2016-09-12T14:30:00'
-			},
-			{
-				title: 'Happy Hour',
-				start: '2016-09-12T17:30:00'
-			},
-			{
-				title: 'Dinner',
-				start: '2016-09-12T20:00:00'
-			},
-			{
-				title: 'Birthday Party',
-				start: '2016-09-13T07:00:00'
-			}
-		]
-	});
+	$('#datepicker').datepicker({
+ 		format: "MM dd, yyyy",
+ 		autoclose:true,
+ 	});
 	
 });
 
